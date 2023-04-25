@@ -10,7 +10,7 @@ from Impeller import *
 
 Imp = Impeller()
 
-Element = Imp.importpickle('best_solution_Element_2.pickle')
+Element = Imp.importpickle('Element_23_04_22.pickle')
 Imp.parameters(Element)
 Hub = Imp.hub()
 
