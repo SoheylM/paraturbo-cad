@@ -1,7 +1,6 @@
 import cadquery as cq
 import numpy as np
 import os
-import pickle
 
 class SGTB():
     def __init__(self):
@@ -9,13 +8,6 @@ class SGTB():
         self.color = True
         self.sectionview = False
         self.cwf = os.path.dirname(os.path.abspath(__file__))
-
-    def importpickle(self,filename):
-        file = open(self.cwf  + '/' + filename, 'rb')
-        Element = pickle.load(file)
-        file.close
-
-        return Element
 
     def parameters(self,Element):
         if type(Element) == dict:
