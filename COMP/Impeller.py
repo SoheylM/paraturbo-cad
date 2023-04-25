@@ -88,6 +88,75 @@ class Impeller():
 
         return Element
     
+    def parameters(self,Element):
+        #################################################
+        #extracting element parameters from pickle in mm#
+        #################################################
+
+        #the coordinate system origin is the center of reference
+
+        #diamaters and heights of cylindrical representation
+        self.Laenge = [i * 1000 for i in Element['Laenge']]
+        self.DI1 = [i * 1000 for i in Element['DI1']]
+        self.DI2 = [i * 1000 for i in Element['DI2']]
+        self.DI3 = [i * 1000 for i in Element['DI3']]
+        self.DA1 = [i * 1000 for i in Element['DA1']]
+        self.DA2 = [i * 1000 for i in Element['DA2']]
+        self.DA3 = [i * 1000 for i in Element['DA3']]
+
+        #tip radius (7mm-35mm)
+        self.r_4 = round(Element['r4_COMP1'][0],12)*1000
+
+        #tip width (0.1mm-10.5mm)
+        self.b_4 = (Element['b4_r4_COMP1'][0])*self.r_4
+
+        #inlet hub radius (0.7mm-10.5mm)
+        self.r_2h = (Element['r2h_r4_COMP1'][0])*self.r_4
+
+        #inlet shoulder radius (0.84mm-24.5mm)
+        self.r_2s = (Element['r2s_r2h_COMP1'][0])*self.r_2h
+
+        #inducer inlet radius (0.84mm-35mm)
+        self.r_1 = (Element['r1_r2s_COMP1'][0])*self.r_2s
+
+        # diffuser exit radius (7mm-52.5mm)
+        self.r_5 = (Element['r5_r4_COMP1'][0])*self.r_4
+
+        #blade thickness (0.1mm-0.5mm)
+        self.e_bld = (Element['Blade_e_COMP1'][0])*1000
+
+        #inducer length (7mm-140mm)
+        self.L_ind = (Element['L_ind_r4_COMP1'][0])*self.r_4
+
+        #tip clearance (0.001mm-0.158mm)
+        self.e_tip = (Element['Clearance_b4_COMP1'][0])*self.b_4
+
+        #backface clearance (0.007mm-5.25mm)
+        self.e_back = (Element['Backface_r4_COMP1'][0])*self.r_4
+
+        #exit blade angle (-45deg-0deg)
+        self.beta_4 = Element['beta4_COMP1'][0]
+
+        if self.beta_4 ==0:
+            self.beta_4 = 0.01
+
+        #number of blades (5blades-11blades)
+        self.N_bld = int(Element['N_blades_COMP1'][0])
+
+        # radius of rotor
+        self.R_rot = (Element['R_ROT'][0])*1000
+    
+        #defining geometrical parameters
+        self.phi = 1.618
+        self.b_6 = self.b_4/self.phi
+        self.a = (self.r_4/self.phi)-self.b_4
+        self.b = self.r_4-self.r_2s
+        self.c = self.r_4/self.phi
+        self.d = self.r_4-self.r_2h
+        self.e =(self.r_4/(self.phi**2))-self.b_6
+        self.f = self.r_4-self.R_rot
+        self.L_imp = self.r_2h+self.c+self.b_6+self.e
+
     def settings(self,top_a,bot_a,top_i,bot_i,top_h,bot_h):
         self.top_aux=top_a
         self.bottom_aux=bot_a
