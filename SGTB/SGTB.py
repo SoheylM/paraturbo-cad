@@ -4,7 +4,7 @@ import os
 
 class SGTB():
     def __init__(self):
-        self.n_grooves_SGTB = 28
+        self.n_grooves = 28
         self.color = True
         self.sectionview = False
         self.cwf = os.path.dirname(os.path.abspath(__file__))
@@ -12,18 +12,23 @@ class SGTB():
     def parameters(self,Element):
         if type(Element) == dict:
         # Check for information exist in dictionary
-            if all(x in Element.keys() for x in ['Laenge','DA3','sys_pos','alpha_SGTB','beta_SGTB','gamma_SGTB','hg_SGTB','hr_SGTB']):
+            if all(x in Element.keys() for x in ['Laenge','DA3','sys_pos','parameters']) and \
+                all(x in Element['parameters'].keys() for x in ['sgtb']) and \
+                    all(x in Element['parameters']['sgtb'].keys() for x in ['alpha','beta', 'hg', 'hr', 'Ri', 'Rg', 'Ro', 'gamma', 'L']):
                     if len(Element['Laenge']) == len(Element['DA3']):
                         # Taking variables from Element
                         self.length = 1000*np.array(Element['Laenge'])
                         self.DO3 = 1000*np.array(Element['DA3'])
-                        self.pos_SGTB = np.int64(Element['sys_pos']['pos_sgtb'])
-                        self.alpha_SGTB = np.float64(Element['alpha_SGTB'][0])
-                        self.beta_SGTB = np.float64(Element['beta_SGTB'][0])
-                        self.beta_SGTB = (np.pi*self.beta_SGTB)/180 
-                        self.gamma_SGTB = np.float64(Element['gamma_SGTB'][0])
-                        self.hg_SGTB = 1000*np.float64(Element['hg_SGTB'][0])
-                        self.hr_SGTB = 1000*np.float64(Element['hr_SGTB'][0])        
+                        self.pos = np.int64(Element['sys_pos']['pos_sgtb'])
+                        self.alpha = np.float64(Element['parameters']['sgtb']['alpha'])
+                        self.beta = np.float64(Element['parameters']['sgtb']['beta'])
+                        self.beta = (np.pi*self.beta)/180 
+                        self.gamma = np.float64(Element['parameters']['sgtb']['gamma'])
+                        self.hg = 1000*np.float64(Element['parameters']['sgtb']['hg'])
+                        self.hr = 1000*np.float64(Element['parameters']['sgtb']['hr'])
+                        self.Ri_= 1000*np.float64(Element['parameters']['sgtb']['Ri'])
+                        self.Rg = 1000*np.float64(Element['parameters']['sgtb']['Rg'])
+                        self.R0 = 1000*np.float64(Element['parameters']['sgtb']['Ro'])                
                     else:
                         print('SGTB.parameters: Size of the needed dictionary values are not equal.')
                         return
@@ -34,18 +39,21 @@ class SGTB():
             print('SGTB.parameters: Element type is not dictionary.')
             return
         
-    def parameters_manual(self,Length,DO3,pos_SGTB,alpha_SGTB,beta_SGTB,gamma_SGTB,hg_SGTB,hr_SGTB):
+    def parameters_manual(self,Length,DO3,pos_SGTB,alpha_SGTB,beta_SGTB,gamma_SGTB,hg_SGTB,hr_SGTB,Ri_SGTB,Rg_SGTB,R0_SGTB):
         if type(Length) == list and type(DO3) == list:
                 if len(Length) == len(DO3):
                     # Taking variables from user
                     self.length = np.array(Length)
                     self.DO3 = np.array(DO3)
-                    self.pos_SGTB = np.int64(pos_SGTB)
-                    self.alpha_SGTB = np.float64(alpha_SGTB)
-                    self.beta_SGTB = np.float64(beta_SGTB)
-                    self.gamma_SGTB = np.float64(gamma_SGTB)
-                    self.hg_SGTB = np.float64(hg_SGTB)
-                    self.hr_SGTB = np.float64(hr_SGTB)
+                    self.pos = np.int64(pos_SGTB)
+                    self.alpha = np.float64(alpha_SGTB)
+                    self.beta = np.float64(beta_SGTB)
+                    self.gamma = np.float64(gamma_SGTB)
+                    self.hg = np.float64(hg_SGTB)
+                    self.hr = np.float64(hr_SGTB)
+                    self.Ri = np.float64(hg_SGTB)
+                    self.Rg = np.float64(hr_SGTB)
+                    self.R0 = np.float64(hg_SGTB)
                 else:
                     print('SGTB.parameters_manual: Size of the given list values are not equal.')
                     return
@@ -58,25 +66,25 @@ class SGTB():
         self.sectionview = sectionview
 
     def grooves(self,n_grooves):
-        self.n_grooves_SGTB = n_grooves
+        self.n_grooves = n_grooves
 
     def CAD(self):
         # Parameters
-        Ri  = np.round((self.DO3[self.pos_SGTB+1]/2),1)+0.5       # on drawing - SGTB inner diameter
-        R0  = np.round((self.DO3[self.pos_SGTB]/2),1)             # on drawing - Rotor axial stop
-        n_SG = self.n_grooves_SGTB                                # number of grooves generally between 28 - 30
-        Rg = self.gamma_SGTB*(R0-Ri)+Ri  
-        a_SG = (2*np.pi*Rg*self.alpha_SGTB)/n_SG 
+        Ri  = np.round((self.DO3[self.pos+1]/2),1)+0.5       # on drawing - SGTB inner diameter
+        R0  = np.round((self.DO3[self.pos]/2),1)             # on drawing - Rotor axial stop
+        n_SG = self.n_grooves                                # number of grooves generally between 28 - 30
+        Rg = self.gamma*(R0-Ri)+Ri  
+        a_SG = (2*np.pi*Rg*self.alpha)/n_SG 
         phi_lag_SG = a_SG/Rg
 
         # Building the grooves
         R0 = R0 + 0.3                                 # oversized radius for safety between 0.3 - 0.5
         n = 10                                        # nb of points for each log spiral splines
         alpha = np.linspace(-0.2, 1, num=n)
-        alpha = np.linspace(0, np.log(R0/Rg)/np.tan(self.beta_SGTB), num=n)
+        alpha = np.linspace(0, np.log(R0/Rg)/np.tan(self.beta), num=n)
         
         # Generating the spiral
-        r_SGTB = Rg * np.exp(np.tan(self.beta_SGTB)*alpha)
+        r_SGTB = Rg * np.exp(np.tan(self.beta)*alpha)
         alpha_lag = alpha + phi_lag_SG
 
         # Building the data vector for CAD
@@ -135,7 +143,7 @@ class SGTB():
                 .spline(secondcurve).spline(secondcircle).close()
             locals().update(curves)
             thrust_right = thrust_right.spline(firstcurve).spline(firstcircle)\
-                .spline(secondcurve).spline(secondcircle).close().cutBlind(self.hg_SGTB,clean=True)
+                .spline(secondcurve).spline(secondcircle).close().cutBlind(self.hg,clean=True)
 
         if self.sectionview == True:
             thrust_right = thrust_right.rect(80,40,(-40,0)).cutThruAll()
@@ -147,12 +155,12 @@ class SGTB():
 
     def position(self):
         # Positioning the bearings
-        pos_right = self.hr_SGTB
-        for i in range(0,self.pos_SGTB+1):
+        pos_right = self.hr
+        for i in range(0,self.pos+1):
             pos_right += self.length[i]
 
-        pos_left = -self.hr_SGTB
-        for i in range(0,self.pos_SGTB):
+        pos_left = -self.hr
+        for i in range(0,self.pos):
             pos_left += self.length[i]
 
         self.pos_right = pos_right
