@@ -129,7 +129,6 @@ L_imp = r_2h+c+b_6+e
 #components positions
 pos_comp1 = Element['sys_pos']['pos_comp1']
 
-
 ##############################################################
 #temporary for manual coupling until we parametrize blades
 #manually defining impeller variables (in mm)
@@ -266,9 +265,6 @@ if show_rotor==True:
     #updating the position at the center of each element along the x axis
         if i<len(Laenge)-1:
             hor_pos.insert(i+1,hor_pos[i]+Laenge[i]/2+Laenge[i+1]/2)
-
-
-
 
 
 #defining boolean to either model the hub or not
