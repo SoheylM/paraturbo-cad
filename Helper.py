@@ -3,7 +3,7 @@ import numpy as np
 import os
 import pickle
 
-class GeneralFuncs():
+class Helper():
     def __init__(self):
         self.cwf = os.path.dirname(os.path.abspath(__file__))
 

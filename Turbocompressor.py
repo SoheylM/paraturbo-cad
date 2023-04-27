@@ -2,7 +2,7 @@ import cadquery as cq
 import numpy as np
 import time
 import os
-cwf = os.path.dirname(os.path.abspath(__file__))
+cwf = os.getcwd()
 
 import sys
 sys.path.append(cwf  + '/SGTB')
@@ -10,7 +10,7 @@ sys.path.append(cwf  + '/ROT')
 
 from SGTB import *
 from Rotor import *
-from GeneralFuncs import *
+from Helper import *
 
 '''
 IMPORTANT
@@ -59,9 +59,9 @@ SGTB Construction
     should be used together with .mirror
 '''
 
-Gen = GeneralFuncs()
+Turbo = Helper()
 
-Element = Gen.importpickle('Element_23_04_22.pickle')
+Element = Turbo.importpickle('Element_23_04_22.pickle')
 
 SGTB = SGTB()
 
@@ -102,8 +102,8 @@ Rotor.parameters(Element)
 Rotor.settings(True,False)
 my_Rotor = Rotor.CAD()
 
-# show_object(my_Rotor, name='Rotor')
+# show_object(my_Rotor)
 
-Gen.assemble((my_SGTBs,my_Rotor))
+Turbo.assemble((my_SGTBs,my_Rotor))
 
 print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')

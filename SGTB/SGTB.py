@@ -26,9 +26,10 @@ class SGTB():
                         self.gamma = np.float64(Element['parameters']['sgtb']['gamma'])
                         self.hg = 1000*np.float64(Element['parameters']['sgtb']['hg'])
                         self.hr = 1000*np.float64(Element['parameters']['sgtb']['hr'])
-                        self.Ri_= 1000*np.float64(Element['parameters']['sgtb']['Ri'])
+                        self.Ri= 1000*np.float64(Element['parameters']['sgtb']['Ri'])
                         self.Rg = 1000*np.float64(Element['parameters']['sgtb']['Rg'])
-                        self.R0 = 1000*np.float64(Element['parameters']['sgtb']['Ro'])                
+                        self.R0 = 1000*np.float64(Element['parameters']['sgtb']['Ro'])
+                        self.L = 1000*np.float64(Element['parameters']['sgtb']['L'])                 
                     else:
                         print('SGTB.parameters: Size of the needed dictionary values are not equal.')
                         return
@@ -39,7 +40,7 @@ class SGTB():
             print('SGTB.parameters: Element type is not dictionary.')
             return
         
-    def parameters_manual(self,Length,DO3,pos_SGTB,alpha_SGTB,beta_SGTB,gamma_SGTB,hg_SGTB,hr_SGTB,Ri_SGTB,Rg_SGTB,R0_SGTB):
+    def parameters_manual(self,Length,DO3,pos_SGTB,alpha_SGTB,beta_SGTB,gamma_SGTB,hg_SGTB,hr_SGTB,Ri_SGTB,Rg_SGTB,R0_SGTB,L_SGTB):
         if type(Length) == list and type(DO3) == list:
                 if len(Length) == len(DO3):
                     # Taking variables from user
@@ -51,9 +52,10 @@ class SGTB():
                     self.gamma = np.float64(gamma_SGTB)
                     self.hg = np.float64(hg_SGTB)
                     self.hr = np.float64(hr_SGTB)
-                    self.Ri = np.float64(hg_SGTB)
-                    self.Rg = np.float64(hr_SGTB)
-                    self.R0 = np.float64(hg_SGTB)
+                    self.Ri = np.float64(Ri_SGTB)
+                    self.Rg = np.float64(Rg_SGTB)
+                    self.R0 = np.float64(R0_SGTB)
+                    self.L = np.float64(L_SGTB)
                 else:
                     print('SGTB.parameters_manual: Size of the given list values are not equal.')
                     return
@@ -70,10 +72,10 @@ class SGTB():
 
     def CAD(self):
         # Parameters
-        Ri  = np.round((self.DO3[self.pos+1]/2),1)+0.5       # on drawing - SGTB inner diameter
-        R0  = np.round((self.DO3[self.pos]/2),1)             # on drawing - Rotor axial stop
+        Ri  = self.Ri                                        # on drawing - SGTB inner diameter
+        R0  = self.R0                                        # on drawing - Rotor axial stop
         n_SG = self.n_grooves                                # number of grooves generally between 28 - 30
-        Rg = self.gamma*(R0-Ri)+Ri  
+        Rg = self.Rg  
         a_SG = (2*np.pi*Rg*self.alpha)/n_SG 
         phi_lag_SG = a_SG/Rg
 
@@ -126,7 +128,7 @@ class SGTB():
         wp = cq.Workplane('XY')
         b_di = Ri*2
         b_do = np.round(R0*2*1.4,1)
-        b_l = np.round(b_do*0.09,1)
+        b_l = self.L
 
         thrust_right = wp.cylinder(b_l,b_do/2,
         direct=(0,0,1),angle=360,centered=(True,True,False),
