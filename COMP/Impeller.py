@@ -1,3 +1,5 @@
+
+#importing required libraries
 import cadquery as cq
 import numpy as np
 import pandas as pd
@@ -7,18 +9,17 @@ from cq_warehouse import *
 from cq_warehouse.extensions import *
 import os
 
+#defining a class to model the impeller
 class Impeller():
+
+    #defining the class constructor
     def __init__(self):
         self.top_hub = True
         self.bottom_hub = True
         self.cwf = os.getcwd()
 
-    def parameters(self,Element):
-        #################################################
-        #extracting element parameters from pickle in mm#
-        #################################################
-
-        #the coordinate system origin is the center of reference
+    #defining a method to extract rotor parameters from the pickle file in mm
+    def parameters_rotor(self,Element):
 
         #diamaters and heights of cylindrical representation
         self.Laenge = [i * 1000 for i in Element['Laenge']]
@@ -28,6 +29,17 @@ class Impeller():
         self.DA1 = [i * 1000 for i in Element['DA1']]
         self.DA2 = [i * 1000 for i in Element['DA2']]
         self.DA3 = [i * 1000 for i in Element['DA3']]
+
+        #component types by layer
+        self.elem_type1 = Element['elem_type1']
+        self.elem_type2 = Element['elem_type2']
+        self.elem_type3 = Element['elem_type3']
+
+        #components positions
+        self.pos_comp1 = Element['sys_pos']['pos_comp1']
+
+    #defining a method to extract the impeller parameters from the pickle file in mm
+    def parameters_impeller(self,Element):     
 
         #tip radius (7mm-35mm)
         self.r_4 = round(Element['parameters']['comp1']['r4'],12)*1000
@@ -62,16 +74,18 @@ class Impeller():
         #exit blade angle (-45deg-0deg)
         self.beta_4 = Element['parameters']['comp1']['beta4']
 
-        if self.beta_4 ==0:
+        '''
+        if self.beta_4 == 0:
             self.beta_4 = 0.01
+        '''
 
         #number of blades (5blades-11blades)
         self.N_bld = int(Element['parameters']['comp1']['N_blades'])
 
-        #inlet blade angle (-45deg)
+        #inlet blade angle (constant)
         self.beta_2 = -56
 
-        #inlet blade angle shroud (-56deg)
+        #inlet blade angle shroud (constant)
         self.beta_2s = -60
 
         #component types by layer
@@ -79,9 +93,10 @@ class Impeller():
         self.elem_type2 = Element['elem_type2']
         self.elem_type3 = Element['elem_type3']
 
+        #rotor radius
         self.R_rot = (Element['parameters']['comp1']['Rrot'])*1000
 
-        #defining geometrical parameters
+        #defining calculated geometrical parameters
         self.phi = 1.618
         self.b_6 = self.b_4/self.phi
         self.a = (self.r_4/self.phi)-self.b_4
@@ -95,45 +110,87 @@ class Impeller():
         #components positions
         self.pos_comp1 = Element['sys_pos']['pos_comp1']
 
-    def settings(self,top_h,bot_h):
+    #defining a method to manually define impeller variables (in mm) by the user
+    def manualparams_impeller(self,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot):
+
+        self.r_4 = r_4 
+        self.r_2s = r_2s
+        self.beta_4 = beta_4 
+        self.b_4 = b_4 
+        self.rr_1 = r_1 
+        self.r_2h = r_2h 
+        self.r_5 = r_5 
+        self.e_bld = e_bld 
+        self.ce_tip = e_tip 
+        self.e_back = e_back 
+        self.L_ind = L_ind 
+        self.beta_2 = beta_2 
+        self.beta_2s = beta_2s 
+        self.N_bld = N_bld 
+        self.R_rot = R_rot 
+
+        #defining calculated geometrical parameters
+        self.phi = 1.618
+        self.b_6 = self.b_4/self.phi
+        self.a = (self.r_4/self.phi)-self.b_4
+        self.b = self.r_4-self.r_2s
+        self.c = self.r_4/self.phi
+        self.d = self.r_4-self.r_2h
+        self.e =(self.r_4/(self.phi**2))-self.b_6
+        self.f = self.r_4-self.R_rot
+        self.L_imp = self.r_2h+self.c+self.b_6+self.e
+
+        return
+
+    # defining a method to change the hub modeling settings
+    def settings_hub(self,top_h,bot_h):
+
+        #boolean parameters to show a section of the hub
         self.top_hub = top_h
         self.bottom_hub = bot_h
 
+    # defining a method to model the hub
     def hub(self):
-        #######################################
-        #modeling the hub from the pickle file#
-        #######################################
 
-        #controls the smoothness of the curve
-        # step_hub=int(L_imp/b_6)*10
+        r_2h = self.r_2h
+        r_4 = self.r_4
+        b_4 = self.b_4
+        
+        phi = 1.618
+        b_6 = b_4/phi
+        c = r_4/phi
+        e =(r_4/(phi**2))-b_6
+        L_imp = r_2h+c+b_6+e
+
+        # tolerance to control the smoothness of the hub profile
         self.step_hub=100
 
         #initializing the x and y coordinate arrays
-        self.x_hub = np.linspace(0,self.L_imp,self.step_hub)
+        self.x_hub = np.linspace(0,L_imp,self.step_hub)
         self.y_hub=[]
         self.y_hub.insert(0,0)
 
         #dividing the hub into 4 parts: hub_1,hub_2,hub_3,hub_4
-        #looping over the 4 parts to update the x and y cooridinates
+        #looping over the 4 parts to update the x and y coordinates
         for i in range(0,len(self.x_hub)):
 
         #hub_1
-            if (self.x_hub[i]>=0)&(self.x_hub[i]<=self.r_2h):
+            if (self.x_hub[i]>=0)&(self.x_hub[i]<=r_2h):
                 self.y_hub[i] = eval('((self.r_2h**2)-((self.x_hub[i]-self.r_2h)**2))**0.5')
                 self.y_hub.insert(i,self.y_hub[i])
 
         #hub_2
-            if (self.x_hub[i]>=self.r_2h)&(self.x_hub[i]<=self.r_2h+self.c):
+            if (self.x_hub[i]>=r_2h)&(self.x_hub[i]<=r_2h+c):
                 self.y_hub[i] = eval('self.r_4-((self.d**2)-((self.d/self.c)**2)*((self.x_hub[i]-self.r_2h)**2))**0.5')
                 self.y_hub.insert(i,self.y_hub[i])
 
         #hub_3
-            if (self.x_hub[i]>=self.r_2h+self.c)&(self.x_hub[i]<=self.r_2h+self.c+self.b_6):
-                self.y_hub[i]=self.r_4
+            if (self.x_hub[i]>=r_2h+c)&(self.x_hub[i]<=r_2h+c+b_6):
+                self.y_hub[i]=r_4
                 self.y_hub.insert(i,self.y_hub[i])
 
         #hub_4
-            if (self.x_hub[i]>=self.r_2h+self.c+self.b_6)&(self.x_hub[i]<=self.L_imp):
+            if (self.x_hub[i]>=r_2h+c+b_6)&(self.x_hub[i]<=L_imp):
 
                 self.y_hub[i] = eval('self.r_4-((self.f**2)-((self.f/self.e)**2)*((self.x_hub[i]-self.L_imp)**2))**0.5')
                 self.y_hub.insert(i,self.y_hub[i])
@@ -145,31 +202,33 @@ class Impeller():
         self.sketch_hub = (cq.Workplane("XY")
                     .polyline(self.coords_hub,includeCurrent=False)
                     .vLineTo(0)
-                    .close()
-                    )
+                    .close())
 
-        #revolving the sketch about the x axis
+        #revolving the sketch about the rotation axis
         hub = (self.sketch_hub
                 .revolve(360,(0,0,0),(1,0,0))
                 #.translate((0,0,0))
-                .split(keepTop=self.top_hub,keepBottom=self.bottom_hub)
-                )
+                .split(keepTop=self.top_hub,keepBottom=self.bottom_hub))
         
+        # calculating the shift in the position of the true impeller model
         shift = 0
         for i in range(len(self.Laenge)):
             if self.elem_type1[i]=='COMP1' or self.elem_type2[i]=='COMP1' or self.elem_type3[i]=='COMP1':
                 shift += self.Laenge[i]
 
+        # transforming the model to an assembly
         assembly = cq.Assembly(hub,color=cq.Color("red"),loc = cq.Location((-abs(self.L_imp-shift),0,0)))
 
         return assembly
     
+    # defining a method to retrieve the coordinates of the blades from the excel file
     def blades_excel(self,filename):
+
         #storing lists of non-planar blade curves
         points_blade = {}
         coords_blade = {}
         
-        #reading the excel file with points of the blades
+        #reading the excel file with blade points
         excelfile = self.cwf  + '/COMP/' + filename
         print(excelfile)
         df_blade = pd.read_excel(io=excelfile,header=None)
@@ -203,16 +262,14 @@ class Impeller():
         
         return coords_blade
     
+    #defining a method to model the blades
     def model_blades(self,coords):
-        ##############################################
-        #modeling the blades from the excel file#
-        ##############################################
                 
         #Adding the first point of the curve to the end of its point array to close it
         coords[0].append(coords[0][0])
         coords[len(coords)-1].append(coords[len(coords)-1][0])
         
-        #initializing lists to store the edges, surfaces, solids, and shells
+        #initializing lists to store the solids
         blade_solid={}
         
         #sketching the first blade curve as an edge
@@ -238,15 +295,17 @@ class Impeller():
 
         return blade_solid
     
+    #defining a method to pattern the blades
     def rotate_blade(self,blade):
+
         assembly = cq.Assembly(blade[0])
 
         #looping to model the blade pattern
         for i in range(0,self.N_bld-1):
         
             #rotating about the x axis by the corresponding angle
-            blade[i+1] = (blade[i]
-                                .transformed((360/self.N_bld,0,0)))
+            blade[i+1] = (blade[i].transformed((360/self.N_bld,0,0)))
             assembly.add(blade[i+1])
 
         return assembly
+    
