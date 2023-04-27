@@ -14,7 +14,7 @@ Element = Imp.importpickle('Element_23_04_22.pickle')
 Imp.parameters(Element)
 Hub = Imp.hub()
 
-show_object(Hub,options={"alpha":0, "color": (255,0,0)})
+show_object(Hub)
 
 
 
