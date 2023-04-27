@@ -25,6 +25,8 @@ Coords_splitterblades = Imp.blades_excel('POINT_BLADES2.xls')
 Splitterblade = Imp.model_blades(Coords_splitterblades)
 Splitterblades = Imp.rotate_blade(Splitterblade)
 
-show_object(Hub)
-show_object(Mainblades)
-show_object(Splitterblades)
+Help.assemble((Hub,Mainblades,Splitterblades))
+
+#show_object(Hub)
+#show_object(Mainblades)
+#show_object(Splitterblades)
