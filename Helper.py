@@ -5,7 +5,7 @@ import pickle
 
 class Helper():
     def __init__(self):
-        self.cwf = os.path.dirname(os.path.abspath(__file__))
+        self.cwf = os.getcwd()
 
     def importpickle(self,filename):
         file = open(self.cwf  + '/' + filename, 'rb')

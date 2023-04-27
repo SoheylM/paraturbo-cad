@@ -7,7 +7,7 @@ class SGTB():
         self.n_grooves = 28
         self.color = True
         self.sectionview = False
-        self.cwf = os.path.dirname(os.path.abspath(__file__))
+        self.cwf = os.getcwd()
 
     def parameters(self,Element):
         if type(Element) == dict:
