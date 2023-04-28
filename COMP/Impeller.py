@@ -157,11 +157,13 @@ class Impeller():
         return
 
     # defining a method to change the hub modeling settings
-    def settings_hub(self,top_h,bot_h):
+    def settings_hub(self,top_h,bot_h,bool_Rrot):
 
         #boolean parameters to show a section of the hub
         self.top_hub = top_h
         self.bottom_hub = bot_h
+        #automatically defining the radius of the rotor from the pickle file
+        self.auto_Rrot = bool_Rrot
 
     # defining a method to model the hub
     def hub(self):
@@ -389,14 +391,12 @@ class Impeller():
         return assembly
     
     #defining a method to change the rotor modeling settings
-    def settings_rotor(self,t_layer1,b_layer1,t_layer2,b_layer2,t_layer3,b_layer3,bool_Rrot):
-        #manually defining the radius of the rotor from the pickle file
+    def settings_rotor(self,t_layer1,b_layer1,t_layer2,b_layer2,t_layer3,b_layer3):
+        #booleans to create a section view
         self.top_layer1=t_layer1
         self.bottom_layer1=b_layer1
         self.top_layer2=t_layer2
         self.bottom_layer2=b_layer2
         self.top_layer3=t_layer3
         self.bottom_layer3=b_layer3
-        #automatically defining the radius of the rotor from the pickle file
-        self.auto_Rrot = bool_Rrot
 

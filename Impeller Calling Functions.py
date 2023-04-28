@@ -16,7 +16,7 @@ Imp = Impeller()
 
 #modeling the rotor
 Imp.parameters_rotor(Element)
-Imp.settings_rotor(True,False,True,False,True,False,True)
+Imp.settings_rotor(True,True,True,True,True,True)
 Rotor = Imp.model_rotor()
 
 #modeling the impeller
@@ -55,9 +55,9 @@ N_bld = 9
 # radius of rotor (mm)
 R_rot = 5
 
-
+#call these functions in this order
+Imp.settings_hub(True,True,True)
 Imp.manualparams_impeller(r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot)
-Imp.settings_hub(True,False)
 Hub = Imp.hub()
 
 #modeling the main blades
@@ -71,7 +71,7 @@ Splitterblade = Imp.model_blades(Coords_splitterblades)
 Splitterblades = Imp.rotate_blade(Splitterblade)
 
 #exporting to a step file
-#Help.assemble((Hub,Mainblades,Splitterblades))
+#Help.assemble((Rotor,Hub,Mainblades,Splitterblades))
 
 #displaying modeled components
 show_object(Rotor)
