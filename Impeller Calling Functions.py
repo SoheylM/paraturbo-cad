@@ -14,9 +14,15 @@ Element = Help.importpickle('Element_23_04_22.pickle')
 
 Imp = Impeller()
 
+#modeling the rotor
 Imp.parameters_rotor(Element)
+Imp.settings_rotor(True,False,True,False,True,False,True)
+Rotor = Imp.model_rotor()
+
+#modeling the impeller
 #Imp.parameters_impeller(Element)
 
+#manually defining the impeller parameters
 
 #tip radius (7mm-35mm)
 r_4 = 19
@@ -51,19 +57,25 @@ R_rot = 5
 
 
 Imp.manualparams_impeller(r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot)
+Imp.settings_hub(True,False)
 Hub = Imp.hub()
-Imp.settings_hub(True,True)
 
+#modeling the main blades
 Coords_mainblades = Imp.blades_excel('POINT_BLADES1.xls')
 Mainblade = Imp.model_blades(Coords_mainblades)
 Mainblades = Imp.rotate_blade(Mainblade)
 
+#modeling the splitter blades
 Coords_splitterblades = Imp.blades_excel('POINT_BLADES2.xls')
 Splitterblade = Imp.model_blades(Coords_splitterblades)
 Splitterblades = Imp.rotate_blade(Splitterblade)
 
+#exporting to a step file
 #Help.assemble((Hub,Mainblades,Splitterblades))
 
+#displaying modeled components
+show_object(Rotor)
 show_object(Hub)
 show_object(Mainblades)
 show_object(Splitterblades)
+

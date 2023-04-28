@@ -16,6 +16,13 @@ class Impeller():
     def __init__(self):
         self.top_hub = True
         self.bottom_hub = True
+        self.top_layer1=True
+        self.bottom_layer1=True
+        self.top_layer2=True
+        self.bottom_layer2=True
+        self.top_layer3=True
+        self.bottom_layer3=True
+        self.auto_Rrot = True
         self.cwf = os.getcwd()
 
     #defining a method to extract rotor parameters from the pickle file in mm
@@ -127,7 +134,14 @@ class Impeller():
         self.beta_2 = beta_2 
         self.beta_2s = beta_2s 
         self.N_bld = N_bld 
-        self.R_rot = R_rot 
+        self.R_rot = R_rot
+
+        if self.auto_Rrot==True:
+            #automatically defining the radius of the rotor from the pickle file
+            for k in range(len(self.Laenge)):
+                if self.elem_type1[k]!='COMP1' or self.elem_type2[k]!='COMP1' or self.elem_type3[k]!='COMP1':
+                            break
+                self.R_rot = self.DA3[k]/2
 
         #defining calculated geometrical parameters
         self.phi = 1.618
@@ -204,21 +218,20 @@ class Impeller():
                     .vLineTo(0)
                     .close())
 
-        #revolving the sketch about the rotation axis
-        hub = (self.sketch_hub
-                .revolve(360,(0,0,0),(1,0,0))
-                #.translate((0,0,0))
-                .split(keepTop=self.top_hub,keepBottom=self.bottom_hub))
-        
         # calculating the shift in the position of the true impeller model
         shift = 0
         for i in range(len(self.Laenge)):
             if self.elem_type1[i]=='COMP1' or self.elem_type2[i]=='COMP1' or self.elem_type3[i]=='COMP1':
                 shift += self.Laenge[i]
 
-        # transforming the model to an assembly
-        assembly = cq.Assembly(hub,color=cq.Color("red"),loc = cq.Location((-abs(self.L_imp-shift),0,0)))
-
+        #revolving the sketch about the rotation axis
+        hub = (self.sketch_hub
+                .revolve(360,(0,0,0),(1,0,0))
+                .translate((-abs(self.L_imp-shift),0,0))
+                .split(keepTop=self.top_hub,keepBottom=self.bottom_hub))
+    
+        assembly = cq.Assembly()
+        assembly.add(hub,color=cq.Color('red'))
         return assembly
     
     # defining a method to retrieve the coordinates of the blades from the excel file
@@ -291,21 +304,99 @@ class Impeller():
         blade_shell = cq.Shell.makeShell([blade_face0,blade_face_last,blade_lofted]).fix()
         
         #solidifying the produced shell and rotating
-        blade_solid[0] = cq.Solid.makeSolid(blade_shell).rotate((0,0,0),(0,1,0),90)
+        blade_solid[0] = cq.Solid.makeSolid(blade_shell).rotate((0,0,0),(0,1,0),90).translate((-13,0,0))
 
         return blade_solid
     
     #defining a method to pattern the blades
     def rotate_blade(self,blade):
 
-        assembly = cq.Assembly(blade[0])
+        assembly = cq.Assembly(blade[0],color=cq.Color('red'))
 
         #looping to model the blade pattern
         for i in range(0,self.N_bld-1):
         
             #rotating about the x axis by the corresponding angle
             blade[i+1] = (blade[i].transformed((360/self.N_bld,0,0)))
-            assembly.add(blade[i+1])
+            assembly.add(blade[i+1],color=cq.Color('red'))
 
         return assembly
     
+    #defining a method to model the rotor
+    def model_rotor(self):
+
+        #initialising disctionaries to store geometrical shapes per function
+        layer1={}
+        layer2={}
+        layer3={}
+
+        #initialising the position at the center of each element along the x axis
+        hor_pos=[]
+        shift=0
+        hor_pos.insert(0,self.Laenge[0]/2)
+
+        #modeling every element using a loop and the revolve function
+        for i in range(len(self.Laenge)):
+
+            #not modeling the cylindrical representation of the impeller
+            if self.elem_type1[i]!='COMP1' or self.elem_type2[i]!='COMP1' or self.elem_type3[i]!='COMP1':
+                #modeling layer 1
+                #modeling every element only if the inner diameter DI is not equal to the outer diameter DA
+                    if self.DI1[i]!=self.DA1[i]:
+                        layer1[i] = (cq.Workplane("XY")
+                                .moveTo(hor_pos[i],self.DI1[i]/2+(self.DA1[i]-self.DI1[i])/4)
+                                .rect(self.Laenge[i],(self.DA1[i]-self.DI1[i])/2)
+                                .revolve(360,(0,0,0),(1,0,0))
+                                .split(keepTop=self.top_layer1,keepBottom=self.bottom_layer1)                                )
+                            
+                #modeling layer 2
+                #modeling every element only if the inner diameter DI is not equal to the outer diameter DA
+                    if self.DI2[i]!=self.DA2[i]:
+            
+                        layer2[i] = (cq.Workplane("XY")
+                                    .moveTo(hor_pos[i],self.DI2[i]/2+(self.DA2[i]-self.DI2[i])/4)
+                                    .rect(self.Laenge[i],(self.DA2[i]-self.DI2[i])/2)
+                                    .revolve(360,(0,0,0),(1,0,0))
+                                    .split(keepTop=self.top_layer2,keepBottom=self.bottom_layer2)                                    )
+            
+                #modeling layer 3
+                #modeling every element only if the inner diameter DI is not equal to the outer diameter DA
+                    if self.DI3[i]!=self.DA3[i]:
+            
+                        layer3[i] = (cq.Workplane("XY")
+                                        .moveTo(hor_pos[i],self.DI3[i]/2+(self.DA3[i]-self.DI2[i])/4)
+                                        .rect(self.Laenge[i],(self.DA3[i]-self.DI3[i])/2)
+                                        .revolve(360,(0,0,0),(1,0,0))
+                                        .split(keepTop=self.top_layer2,keepBottom=self.bottom_layer3)                                        )
+
+        #updating the position at the center of each element along the x axis
+            if i<len(self.Laenge)-1:
+                hor_pos.insert(i+1,hor_pos[i]+self.Laenge[i]/2+self.Laenge[i+1]/2)
+
+        #asembling the three layers of the rotor
+        assembly = cq.Assembly()
+        for j in range(len(self.Laenge)):
+
+            if j in layer1.keys():
+                assembly.add(layer1[j],color=cq.Color("red"))
+
+            if j in layer2.keys():
+                assembly.add(layer2[j],color=cq.Color("green"))
+
+            if j in layer3.keys():
+                assembly.add(layer3[j],color=cq.Color("blue"))
+
+        return assembly
+    
+    #defining a method to change the rotor modeling settings
+    def settings_rotor(self,t_layer1,b_layer1,t_layer2,b_layer2,t_layer3,b_layer3,bool_Rrot):
+        #manually defining the radius of the rotor from the pickle file
+        self.top_layer1=t_layer1
+        self.bottom_layer1=b_layer1
+        self.top_layer2=t_layer2
+        self.bottom_layer2=b_layer2
+        self.top_layer3=t_layer3
+        self.bottom_layer3=b_layer3
+        #automatically defining the radius of the rotor from the pickle file
+        self.auto_Rrot = bool_Rrot
+
