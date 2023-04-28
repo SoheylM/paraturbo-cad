@@ -23,7 +23,7 @@ Rotor = Imp.model_rotor()
 #Imp.parameters_impeller(Element)
 
 #manually defining the impeller parameters
-
+# '''
 #tip radius (7mm-35mm)
 r_4 = 19
 #inlet shoulder radius (0.84mm-24.5mm)
@@ -54,6 +54,7 @@ beta_2s = -60
 N_bld = 9
 # radius of rotor (mm)
 R_rot = 5
+# '''
 
 #call these functions in this order
 Imp.settings_hub(True,True,True)
@@ -71,7 +72,7 @@ Splitterblade = Imp.model_blades(Coords_splitterblades)
 Splitterblades = Imp.rotate_blade(Splitterblade)
 
 #exporting to a step file
-#Help.assemble((Rotor,Hub,Mainblades,Splitterblades))
+Help.assemble((Rotor,Hub,Mainblades,Splitterblades))
 
 #displaying modeled components
 show_object(Rotor)

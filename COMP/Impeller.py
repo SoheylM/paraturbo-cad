@@ -141,7 +141,7 @@ class Impeller():
             for k in range(len(self.Laenge)):
                 if self.elem_type1[k]!='COMP1' or self.elem_type2[k]!='COMP1' or self.elem_type3[k]!='COMP1':
                             break
-                self.R_rot = self.DA3[k]/2
+            self.R_rot = self.DA3[k]/2
 
         #defining calculated geometrical parameters
         self.phi = 1.618
