@@ -6,6 +6,7 @@ import sys
 sys.path.append(cwf  + '/COMP')
 
 from Impeller import *
+from Rotor_revolve import *
 from Helper import *
 
 Help = Helper()
@@ -13,14 +14,15 @@ Help = Helper()
 Element = Help.importpickle('Element_23_04_22.pickle')
 
 Imp = Impeller()
+# Rot = Rotor_revolve()
 
 #modeling the rotor
-Imp.parameters_rotor(Element)
-Imp.settings_rotor(True,True,True,True,True,True)
-Rotor = Imp.model_rotor()
+# Rot.parameters_rotor(Element)
+# Rot.settings_rotor(True,True,True,True,True,True)
+# Rotor = Rot.model_rotor()
 
 #modeling the impeller
-#Imp.parameters_impeller(Element)
+# Imp.parameters_impeller(Element)
 
 #manually defining the impeller parameters
 # '''
@@ -57,8 +59,8 @@ R_rot = 5
 # '''
 
 #call these functions in this order
-Imp.settings_hub(True,True,True)
-Imp.manualparams_impeller(r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot)
+Imp.settings_hub(True,True,False)
+Imp.manualparams_impeller(Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot)
 Hub = Imp.hub()
 
 #modeling the main blades
@@ -72,10 +74,10 @@ Splitterblade = Imp.model_blades(Coords_splitterblades)
 Splitterblades = Imp.rotate_blade(Splitterblade)
 
 #exporting to a step file
-Help.assemble((Rotor,Hub,Mainblades,Splitterblades))
+#Help.assemble((Rotor,Hub,Mainblades,Splitterblades))
 
 #displaying modeled components
-show_object(Rotor)
+# show_object(Rotor)
 show_object(Hub)
 show_object(Mainblades)
 show_object(Splitterblades)
