@@ -45,40 +45,37 @@ SGTB Construction
     input Length(list), DO3(list), position(integer), alpha(float),
     beta(float), gamma(float), hg(float), hr(float)
     should not be used together with .parameters
-.settings:
-    input color(boolean) & sectionview(boolean)
-    by default it is True,False
 .grooves:
     input number of grooves(integer)
     by defauly it is 28
 .CAD:
     generates the CAD of SGTB for grooves towards right
+    for color input 'color' in the end
+    for section view input 'section view' in the end
 .combined:
-    should be used together with .mirror & .position
+    should be used together with .mirror
 .left:
     should be used together with .mirror
 '''
 
-Turbo = Helper()
+DesignTurbocompressor = Helper()
 
-Element = Turbo.importpickle('Element_23_04_22.pickle')
+Element = DesignTurbocompressor.importpickle('Element_23_04_22')
 
-SGTB = SGTB()
+DesignSGTB = SGTB()
 
-SGTB.parameters(Element)
-# SGTB.parameters_manual(Length,DO3,pos,alpha,beta,gamma,hg,hr)
-SGTB.settings(True,False)
-SGTB.grooves(28)
-SGTB.CAD()
-SGTB.mirror()
-SGTB.position()
-my_SGTBs = SGTB.combined()
-# my_SGTB_right = SGTB.right()
-# my_SGTB_left = SGTB.left()
+DesignSGTB.parameters(Element)
+# DesignSGTB.parameters_manual(Length,DO3,pos,alpha,beta,gamma,hg,hr)
+DesignSGTB.grooves(28)
+DesignSGTB.CAD('color')
+DesignSGTB.mirror()
+SGTBs = DesignSGTB.combined()
+# SGTB_right = DesignSGTB.right()
+# SGTB_left = DesignSGTB.left()
 
-# show_object(my_SGTBs, name='SGTBs')
-# show_object(my_SGTB_right, name='SGTB Right')
-# show_object(my_SGTB_left, name='SGTB Left')
+# show_object(SGTBs, name='SGTBs')
+# show_object(SGTB_right, name='SGTB Right')
+# show_object(SGTB_left, name='SGTB Left')
 
 '''
 Rotor Construction
@@ -88,22 +85,20 @@ Rotor Construction
     input Length(list), DI1(list), DI2(list), DI3(list),
     DO1(list), DO2(list), DO3(list)
     should not be used together with .parameters
-.settings:
-    input color(boolean) & sectionview(boolean)
-    by default it is True,False
 .CAD:
     generates the CAD of rotor
+    for color input 'color' in the end
+    for section view input 'section view' in the end
 '''
 
-Rotor = Rotor()
+DesignRotor = Rotor()
 
-Rotor.parameters(Element)
-# Rotor.parameters_manual(Length,DI1,DI2,DI3,DO1,DO2,DO3)
-Rotor.settings(True,False)
-my_Rotor = Rotor.CAD()
+DesignRotor.parameters(Element)
+# DesignRotor.parameters_manual(Length,DI1,DI2,DI3,DO1,DO2,DO3)
+Rotor = DesignRotor.CAD('color')
 
-# show_object(my_Rotor)
+# show_object(Rotor, name='Rotor')
 
-Turbo.assemble((my_SGTBs,my_Rotor))
+DesignTurbocompressor.assemble((SGTBs,Rotor),'Turbocompressor')
 
 print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')

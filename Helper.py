@@ -8,15 +8,15 @@ class Helper():
         self.cwf = os.getcwd()
 
     def importpickle(self,filename):
-        file = open(self.cwf  + '/' + filename, 'rb')
+        file = open(self.cwf  + '/' + filename + '.pickle', 'rb')
         Element = pickle.load(file)
         file.close
 
         return Element
     
-    def assemble(self,files):
-        assembly = cq.Assembly()
+    def assemble(self,files,filename):
+        assembly = cq.Assembly(name=filename)
         for i in range(0,len(files)):
-            assembly.add(files[i])
+            assembly.add(files[i],name='Subassembly'+str(i+1))
 
-        assembly.save(self.cwf  + '/Turbocompressor.step')
+        assembly.save(self.cwf  + '/STEP/' + filename + '.step')

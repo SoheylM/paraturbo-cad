@@ -4,8 +4,6 @@ import os
 
 class Rotor():
     def __init__(self):
-        self.color = True
-        self.sectionview = False
         self.cwf = os.getcwd()
   
     def parameters(self,Element):
@@ -21,6 +19,10 @@ class Rotor():
                         self.DO1 = 1000*np.array(Element['DA1'])
                         self.DO2 = 1000*np.array(Element['DA2'])
                         self.DO3 = 1000*np.array(Element['DA3'])
+                        self.elem_type1 = Element['elem_type1']
+                        self.elem_type2 = Element['elem_type2']
+                        self.elem_type3 = Element['elem_type3']
+                        self.elem_type = [self.elem_type1, self.elem_type2, self.elem_type3]
                     else:
                         print('Rotor.parameters: Size of the needed dictionary values are not equal.')
                         return
@@ -48,11 +50,17 @@ class Rotor():
             print('Rotor.parameters_manual: The type of the given variables are not suitable.')
             return
         
-    def settings(self,color,sectionview):
-        self.color = color
-        self.sectionview = sectionview
+    #def settings(self,color,sectionview):
+    #    self.color = color
+    #    self.sectionview = sectionview
 
-    def CAD(self):
+    def CAD(self,*settings):
+        # Checking for section view
+        if 'section view' in settings:
+            sectionview = True
+        else:
+            sectionview = False
+
         # Creating an empty cylinder dictionary
         cylinders = {}
 
@@ -88,32 +96,34 @@ class Rotor():
             else:
                 layer1 = wp
 
-            return (layer3,layer2,layer1)
+            return (layer1,layer2,layer3)
 
         # Using the function in loop to create turbocompressor
-        color = ('blue3','green4','red3','gray50')
-        assembly = cq.Assembly()
+        color = ('red3','green4','blue3','gray50')
+        assembly = cq.Assembly(name='Rotor')
         for i in range(0,len(self.length)):
-            cylinders['cylinder'+str(i)] = threelayercylinder(self.DI1[i],self.DI2[i],self.DI3[i],self.DO1[i],self.DO2[i],self.DO3[i],self.length[i],start,self.sectionview)
+            cylinders['cylinder'+str(i)] = threelayercylinder(self.DI1[i],self.DI2[i],self.DI3[i],self.DO1[i],self.DO2[i],self.DO3[i],self.length[i],start,sectionview)
             locals().update(cylinders)
             if self.DO1[i] != self.DI1[i]:
-                start = cylinders['cylinder'+str(i)][2].faces('>Z').workplane().center(0,0)
+                start = cylinders['cylinder'+str(i)][0].faces('>Z').workplane().center(0,0)
             elif self.DO2[i] != self.DI2[i]:
                 start = cylinders['cylinder'+str(i)][1].faces('>Z').workplane().center(0,0)
             else:
-                start = cylinders['cylinder'+str(i)][0].faces('>Z').workplane().center(0,0)
-
-            if self.color == False:
+                start = cylinders['cylinder'+str(i)][2].faces('>Z').workplane().center(0,0)
+            
+            if 'color' in settings:
                 for k in range(0,3):
-                    assembly.add(
-                        cylinders['cylinder'+str(i)][k],
-                        name='cylinder'+str(i)+str(k),color=cq.Color(color[3]))
-            elif self.color == True:
+                    if self.elem_type[k][i]!='COMP1':
+                        assembly.add(
+                            cylinders['cylinder'+str(i)][k],
+                            name='layer'+str(i+1)+'_'+str(k+1),color=cq.Color(color[k]))
+            else:
                 for k in range(0,3):
-                    assembly.add(
-                        cylinders['cylinder'+str(i)][k],
-                        name='cylinder'+str(i)+str(k),color=cq.Color(color[k]))
-
-        assembly.save(self.cwf  + '/Rotor.step')
+                    if self.elem_type[k][i]!='COMP1':
+                        assembly.add(
+                            cylinders['cylinder'+str(i)][k],
+                            name='layer'+str(i+1)+'_'+str(k+1),color=cq.Color(color[3]))
+               
+        assembly.save(self.cwf  + '/STEP/Rotor.step')
 
         return assembly

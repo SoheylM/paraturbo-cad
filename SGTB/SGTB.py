@@ -5,8 +5,6 @@ import os
 class SGTB():
     def __init__(self):
         self.n_grooves = 28
-        self.color = True
-        self.sectionview = False
         self.cwf = os.getcwd()
 
     def parameters(self,Element):
@@ -63,14 +61,10 @@ class SGTB():
             print('SGTB.parameters_manual: The type of the given variables are not suitable.')
             return
         
-    def settings(self,color,sectionview):
-        self.color = color
-        self.sectionview = sectionview
-
     def grooves(self,n_grooves):
         self.n_grooves = n_grooves
 
-    def CAD(self):
+    def CAD(self,*settings):
         # Parameters
         Ri  = self.Ri                                        # on drawing - SGTB inner diameter
         R0  = self.R0                                        # on drawing - Rotor axial stop
@@ -80,8 +74,8 @@ class SGTB():
         phi_lag_SG = a_SG/Rg
 
         # Building the grooves
-        R0 = R0 + 0.3                                 # oversized radius for safety between 0.3 - 0.5
-        n = 10                                        # nb of points for each log spiral splines
+        R0 = R0 + 0.3                                        # oversized radius for safety between 0.3 - 0.5
+        n = 10                                               # nb of points for each log spiral splines
         alpha = np.linspace(-0.2, 1, num=n)
         alpha = np.linspace(0, np.log(R0/Rg)/np.tan(self.beta), num=n)
         
@@ -100,7 +94,7 @@ class SGTB():
         Groovy_down_y = np.flip(Groovy_down_y)
 
         # Creating arcs for the sketch
-        n_circle = 5                                 # nb of points for each arc
+        n_circle = 5                                        # nb of points for each arc
         angle1 = np.arctan(Groovy_up_y[-1]/Groovy_up_x[-1])
         angle2 = np.arctan(Groovy_down_y[0]/Groovy_down_x[0])
         circle1angles = np.linspace(angle1,angle2, num=n_circle)
@@ -147,15 +141,17 @@ class SGTB():
             thrust_right = thrust_right.spline(firstcurve).spline(firstcircle)\
                 .spline(secondcurve).spline(secondcircle).close().cutBlind(self.hg,clean=True)
 
-        if self.sectionview == True:
+        if 'section view' in settings:
             thrust_right = thrust_right.rect(80,40,(-40,0)).cutThruAll()
 
         self.thrust_right = thrust_right
 
-    def mirror(self):
-        self.thrust_left = self.thrust_right.mirror(mirrorPlane = 'XY')
+        # Specifying color
+        if 'color' in settings:
+            self.color = True
+        else:
+            self.color = False
 
-    def position(self):
         # Positioning the bearings
         pos_right = self.hr
         for i in range(0,self.pos+1):
@@ -168,48 +164,52 @@ class SGTB():
         self.pos_right = pos_right
         self.pos_left = pos_left
 
+    def mirror(self):
+        self.thrust_left = self.thrust_right.mirror(mirrorPlane = 'XY')
+
     def combined(self):
         color = ('magenta4','gray50')
-        assembly = cq.Assembly()
-        if self.color == False:
-            assembly.add(self.thrust_right,loc = cq.Location((0,0,self.pos_right),(1,0,0),0),
-                name='rightSGTB',color=cq.Color(color[1]))
-            assembly.add(self.thrust_left,loc = cq.Location((0,0,self.pos_left),(1,0,0),0),
-                name='leftSGTB',color=cq.Color(color[1]))
-        elif self.color == True:
+        assembly = cq.Assembly(name='SGTB')
+        if self.color == True:
             assembly.add(self.thrust_right,loc = cq.Location((0,0,self.pos_right),(1,0,0),0),
                 name='rightSGTB',color=cq.Color(color[0]))
             assembly.add(self.thrust_left,loc = cq.Location((0,0,self.pos_left),(1,0,0),0),
                 name='leftSGTB',color=cq.Color(color[0]))
+        elif self.color == False:
+            assembly.add(self.thrust_right,loc = cq.Location((0,0,self.pos_right),(1,0,0),0),
+                name='rightSGTB',color=cq.Color(color[1]))
+            assembly.add(self.thrust_left,loc = cq.Location((0,0,self.pos_left),(1,0,0),0),
+                name='leftSGTB',color=cq.Color(color[1]))
 
-        assembly.save(self.cwf  + '/SGTBs.step')
+
+        assembly.save(self.cwf  + '/STEP/SGTBs.step')
 
         return assembly
 
     def right(self):
         color = ('magenta4','gray50')
-        assembly = cq.Assembly()
-        if self.color == False:
-            assembly.add(self.thrust_right,
-                name='rightSGTB',color=cq.Color(color[1]))
-        elif self.color == True:
+        assembly = cq.Assembly(name='SGTB')
+        if self.color == True:
             assembly.add(self.thrust_right,
                 name='rightSGTB',color=cq.Color(color[0]))
+        elif self.color == False:
+            assembly.add(self.thrust_right,
+                name='rightSGTB',color=cq.Color(color[1]))
 
-        assembly.save(self.cwf  + '/SGTB Right.step')
+        assembly.save(self.cwf  + '/STEP/SGTB Right.step')
 
         return assembly
     
     def left(self):
         color = ('magenta4','gray50')
-        assembly = cq.Assembly()
-        if self.color == False:
-            assembly.add(self.thrust_left,
-                name='leftSGTB',color=cq.Color(color[1]))
-        elif self.color == True:
+        assembly = cq.Assembly(name='SGTB')
+        if self.color == True:
             assembly.add(self.thrust_left,
                 name='leftSGTB',color=cq.Color(color[0]))
+        elif self.color == False:
+            assembly.add(self.thrust_left,
+                name='leftSGTB',color=cq.Color(color[1]))
 
-        assembly.save(self.cwf  + '/SGTB Left.step')
+        assembly.save(self.cwf  + '/STEP/SGTB Left.step')
 
         return assembly
