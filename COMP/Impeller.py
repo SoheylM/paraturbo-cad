@@ -148,7 +148,7 @@ class Impeller():
         if self.auto_Rrot==True:
             #automatically defining the radius of the rotor from the pickle file
             for k in range(len(self.Laenge)):
-                if self.elem_type1[k]!='COMP1_CONC' or self.elem_type2[k]!='COMP1_CONC' or self.elem_type3[k]!='COMP1_CONC':
+                if self.elem_type1[k]!='COMP1' or self.elem_type2[k]!='COMP1' or self.elem_type3[k]!='COMP1':
                             break
             self.R_rot = self.DA3[k]/2
 
@@ -321,7 +321,7 @@ class Impeller():
         blade_shell = cq.Shell.makeShell([blade_face0,blade_face_last,blade_lofted]).fix()
         
         #solidifying the produced shell and rotating
-        blade_solid[0] = cq.Solid.makeSolid(blade_shell).translate((0,0,-14)).rotate((0,0,0),(0,1,0),-180)
+        blade_solid[0] = cq.Solid.makeSolid(blade_shell).translate((0,0,-14))
 
         return blade_solid
     

@@ -67,7 +67,8 @@ class Rotor_revolve():
                                 .moveTo(hor_pos[i],self.DI1[i]/2+(self.DA1[i]-self.DI1[i])/4)
                                 .rect(self.Laenge[i],(self.DA1[i]-self.DI1[i])/2)
                                 .revolve(360,(0,0,0),(1,0,0))
-                                .split(keepTop=self.top_layer1,keepBottom=self.bottom_layer1))
+                                .split(keepTop=self.top_layer1,keepBottom=self.bottom_layer1)
+                                .rotate((0,0,0),(0,1,0),-90))
                             
                 #modeling layer 2
                 #modeling every element only if the inner diameter DI is not equal to the outer diameter DA
@@ -77,7 +78,8 @@ class Rotor_revolve():
                                     .moveTo(hor_pos[i],self.DI2[i]/2+(self.DA2[i]-self.DI2[i])/4)
                                     .rect(self.Laenge[i],(self.DA2[i]-self.DI2[i])/2)
                                     .revolve(360,(0,0,0),(1,0,0))
-                                    .split(keepTop=self.top_layer2,keepBottom=self.bottom_layer2))
+                                    .split(keepTop=self.top_layer2,keepBottom=self.bottom_layer2)
+                                    .rotate((0,0,0),(0,1,0),-90))
             
                 #modeling layer 3
                 #modeling every element only if the inner diameter DI is not equal to the outer diameter DA
@@ -87,7 +89,9 @@ class Rotor_revolve():
                                         .moveTo(hor_pos[i],self.DI3[i]/2+(self.DA3[i]-self.DI2[i])/4)
                                         .rect(self.Laenge[i],(self.DA3[i]-self.DI3[i])/2)
                                         .revolve(360,(0,0,0),(1,0,0))
-                                        .split(keepTop=self.top_layer2,keepBottom=self.bottom_layer3))
+                                        .split(keepTop=self.top_layer2,keepBottom=self.bottom_layer3)
+                                        .rotate((0,0,0),(0,1,0),-90))
+                                        
 
         #updating the position at the center of each element along the x axis
             if i<len(self.Laenge)-1:

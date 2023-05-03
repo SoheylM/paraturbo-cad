@@ -22,9 +22,9 @@ Rot.settings_rotor(True,True,True,True,True,True)
 Rotor = Rot.model_rotor()
 
 #modeling the impeller
-Imp.parameters_impeller(Element)
+#Imp.parameters_impeller(Element)
 
-'''
+
 #manually defining the impeller parameters
 #tip radius (7mm-35mm)
 r_4 = 19
@@ -56,11 +56,11 @@ beta_2s = -60
 N_bld = 9
 # radius of rotor (mm)
 R_rot = 5
-'''
+
 
 #call these functions in this order
 Imp.settings_hub(True,True,True)
-#Imp.manualparams_impeller(Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot)
+Imp.manualparams_impeller(Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot)
 Hub = Imp.hub()
 
 #modeling the main blades
