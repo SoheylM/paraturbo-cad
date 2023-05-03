@@ -11,19 +11,20 @@ from Helper import *
 
 Help = Helper()
 
-Element = Help.importpickle('Element_23_05_03.pickle')
+Element = Help.importpickle('Element_23_05_03')
 
 Imp = Impeller()
 Rot = Rotor_revolve()
 
 #modeling the rotor
 Rot.parameters_rotor(Element)
-Rot.settings_rotor(True,False,True,False,True,False)
+Rot.settings_rotor(True,True,True,True,True,True)
 Rotor = Rot.model_rotor()
 
 #modeling the impeller
-#Imp.parameters_impeller(Element)
+Imp.parameters_impeller(Element)
 
+'''
 #manually defining the impeller parameters
 #tip radius (7mm-35mm)
 r_4 = 19
@@ -55,24 +56,24 @@ beta_2s = -60
 N_bld = 9
 # radius of rotor (mm)
 R_rot = 5
-
+'''
 
 #call these functions in this order
-Imp.settings_hub(True,True,False)
-Imp.manualparams_impeller(Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot)
+Imp.settings_hub(True,True,True)
+#Imp.manualparams_impeller(Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot)
 Hub = Imp.hub()
 
 #modeling the main blades
 
-# Coords_mainblades = Imp.blades_excel('POINT_BLADES1.xls')
-# #Coords_mainblades = Imp.blades_excel('coordinates_blade.xlsx')
-# Mainblade = Imp.model_blades(Coords_mainblades)
-# Mainblades = Imp.rotate_blade(Mainblade)
+Coords_mainblades = Imp.blades_excel('POINT_BLADES1.xls')
+#Coords_mainblades = Imp.blades_excel('coordinates_blade.xlsx')
+Mainblade = Imp.model_blades(Coords_mainblades)
+Mainblades = Imp.rotate_blade(Mainblade)
 
-# #modeling the splitter blades
-# Coords_splitterblades = Imp.blades_excel('POINT_BLADES2.xls')
-# Splitterblade = Imp.model_blades(Coords_splitterblades)
-# Splitterblades = Imp.rotate_blade(Splitterblade)
+#modeling the splitter blades
+Coords_splitterblades = Imp.blades_excel('POINT_BLADES2.xls')
+Splitterblade = Imp.model_blades(Coords_splitterblades)
+Splitterblades = Imp.rotate_blade(Splitterblade)
 
 #exporting to a step file
 #Help.assemble((Rotor,Hub,Mainblades,Splitterblades))
@@ -80,5 +81,10 @@ Hub = Imp.hub()
 #displaying modeled components
 show_object(Rotor)
 show_object(Hub)
-# show_object(Mainblades)
-# show_object(Splitterblades)
+show_object(Mainblades)
+show_object(Splitterblades)
+
+
+
+
+

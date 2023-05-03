@@ -243,6 +243,7 @@ class Impeller():
         hub = (self.sketch_hub
                 .revolve(360,(0,0,0),(1,0,0))
                 .translate((-abs(self.L_imp-shift),0,0))
+                .rotate((0,0,0),(0,1,0),90)
                 .split(keepTop=self.top_hub,keepBottom=self.bottom_hub))
     
         assembly = cq.Assembly()
@@ -320,7 +321,7 @@ class Impeller():
         blade_shell = cq.Shell.makeShell([blade_face0,blade_face_last,blade_lofted]).fix()
         
         #solidifying the produced shell and rotating
-        blade_solid[0] = cq.Solid.makeSolid(blade_shell).rotate((0,0,0),(0,1,0),90).translate((-13,0,0))
+        blade_solid[0] = cq.Solid.makeSolid(blade_shell).translate((0,0,-14)).rotate((0,0,0),(0,1,0),180)
 
         return blade_solid
     
@@ -333,7 +334,7 @@ class Impeller():
         for i in range(0,self.N_bld-1):
         
             #rotating about the x axis by the corresponding angle
-            blade[i+1] = (blade[i].transformed((360/self.N_bld,0,0)))
+            blade[i+1] = (blade[i].transformed((0,0,360/self.N_bld)))
             assembly.add(blade[i+1],color=cq.Color('red'))
 
         return assembly
