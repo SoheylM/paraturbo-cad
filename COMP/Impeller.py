@@ -148,7 +148,7 @@ class Impeller():
         if self.auto_Rrot==True:
             #automatically defining the radius of the rotor from the pickle file
             for k in range(len(self.Laenge)):
-                if self.elem_type1[k]!='COMP1' or self.elem_type2[k]!='COMP1' or self.elem_type3[k]!='COMP1':
+                if self.elem_type1[k]!='COMP1_CONC' or self.elem_type2[k]!='COMP1_CONC' or self.elem_type3[k]!='COMP1_CONC':
                             break
             self.R_rot = self.DA3[k]/2
 
@@ -260,6 +260,7 @@ class Impeller():
         excelfile = self.cwf  + '/COMP/' + filename
         print(excelfile)
         df_blade = pd.read_excel(io=excelfile,header=None)
+        #df_blade = pd.read_excel(excelfile,engine='openpyxl',header=None)
         
         #setting index markers to indicate start and end of storing values
         start = None
