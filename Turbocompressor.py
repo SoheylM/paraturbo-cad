@@ -1,4 +1,4 @@
-import cadquery as cq
+SSimport cadquery as cq
 import numpy as np
 import time
 import os
@@ -7,9 +7,11 @@ cwf = os.getcwd()
 import sys
 sys.path.append(cwf  + '/SGTB')
 sys.path.append(cwf  + '/ROT')
+sys.path.append(cwf  + '/COMP')
 
 from SGTB import *
 from Rotor import *
+from Impeller import *
 from Helper import *
 
 '''
@@ -43,7 +45,8 @@ SGTB Construction
     input Element(dictionary)
 .parameters.manual:
     input Length(list), DO3(list), position(integer), alpha(float),
-    beta(float), gamma(float), hg(float), hr(float)
+    beta(float), gamma(float), hg(float), hr(float), Ri(float),
+    Rg(float), R0(float), L(float)
     should not be used together with .parameters
 .grooves:
     input number of grooves(integer)
@@ -73,7 +76,7 @@ SGTBs = DesignSGTB.combined()
 # SGTB_right = DesignSGTB.right()
 # SGTB_left = DesignSGTB.left()
 
-# show_object(SGTBs, name='SGTBs')
+show_object(SGTBs, name='SGTBs')
 # show_object(SGTB_right, name='SGTB Right')
 # show_object(SGTB_left, name='SGTB Left')
 
@@ -97,8 +100,29 @@ DesignRotor.parameters(Element)
 # DesignRotor.parameters_manual(Length,DI1,DI2,DI3,DO1,DO2,DO3)
 Rotor = DesignRotor.CAD('color')
 
-# show_object(Rotor, name='Rotor')
+show_object(Rotor, name='Rotor')
 
-DesignTurbocompressor.assemble((SGTBs,Rotor),'Turbocompressor')
+Imp = Impeller()
+
+Imp.parameters_impeller(Element)
+
+Imp.settings_hub(True,True,False)
+Hub = Imp.hub()
+
+#modeling the main blades
+Coords_mainblades = Imp.blades_excel('POINT_BLADES1.xls')
+Mainblade = Imp.model_blades(Coords_mainblades)
+Mainblades = Imp.rotate_blade(Mainblade)
+
+#modeling the splitter blades
+Coords_splitterblades = Imp.blades_excel('POINT_BLADES2.xls')
+Splitterblade = Imp.model_blades(Coords_splitterblades)
+Splitterblades = Imp.rotate_blade(Splitterblade)
+
+show_object(Hub)
+show_object(Mainblades)
+show_object(Splitterblades)
+
+DesignTurbocompressor.assemble((SGTBs,Rotor,Hub,Mainblades,Splitterblades),'Turbocompressor')
 
 print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')

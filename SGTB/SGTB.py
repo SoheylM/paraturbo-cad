@@ -29,14 +29,11 @@ class SGTB():
                         self.R0 = 1000*np.float64(Element['parameters']['sgtb']['Ro'])
                         self.L = 1000*np.float64(Element['parameters']['sgtb']['L'])                 
                     else:
-                        print('SGTB.parameters: Size of the needed dictionary values are not equal.')
-                        return
+                        raise ValueError('SGTB.parameters: Size of the needed dictionary values are not equal.')
             else:
-                print('SGTB.parameters: Element dictionary does not include all the needed keys.')
-                return
+                raise KeyError('SGTB.parameters: Element dictionary does not include all the needed keys.')
         else:
-            print('SGTB.parameters: Element type is not dictionary.')
-            return
+            raise TypeError('SGTB.parameters: Element type is not dictionary.')
         
     def parameters_manual(self,Length,DO3,pos_SGTB,alpha_SGTB,beta_SGTB,gamma_SGTB,hg_SGTB,hr_SGTB,Ri_SGTB,Rg_SGTB,R0_SGTB,L_SGTB):
         if type(Length) == list and type(DO3) == list:
@@ -55,11 +52,9 @@ class SGTB():
                     self.R0 = np.float64(R0_SGTB)
                     self.L = np.float64(L_SGTB)
                 else:
-                    print('SGTB.parameters_manual: Size of the given list values are not equal.')
-                    return
+                    raise ValueError('SGTB.parameters_manual: Size of the given lists are not equal.')
         else:
-            print('SGTB.parameters_manual: The type of the given variables are not suitable.')
-            return
+            raise TypeError('SGTB.parameters_manual: The type of the given variables are not suitable.')
         
     def grooves(self,n_grooves):
         self.n_grooves = n_grooves
@@ -168,47 +163,43 @@ class SGTB():
         self.thrust_left = self.thrust_right.mirror(mirrorPlane = 'XY')
 
     def combined(self):
-        color = ('magenta4','gray50')
         assembly = cq.Assembly(name='SGTB')
         if self.color == True:
             assembly.add(self.thrust_right,loc = cq.Location((0,0,self.pos_right),(1,0,0),0),
-                name='rightSGTB',color=cq.Color(color[0]))
+                name='rightSGTB',color=cq.Color('magenta4'))
             assembly.add(self.thrust_left,loc = cq.Location((0,0,self.pos_left),(1,0,0),0),
-                name='leftSGTB',color=cq.Color(color[0]))
+                name='leftSGTB',color=cq.Color('magenta4'))
         elif self.color == False:
             assembly.add(self.thrust_right,loc = cq.Location((0,0,self.pos_right),(1,0,0),0),
-                name='rightSGTB',color=cq.Color(color[1]))
+                name='rightSGTB',color=cq.Color('gray50'))
             assembly.add(self.thrust_left,loc = cq.Location((0,0,self.pos_left),(1,0,0),0),
-                name='leftSGTB',color=cq.Color(color[1]))
-
+                name='leftSGTB',color=cq.Color('gray50'))
 
         assembly.save(self.cwf  + '/STEP/SGTBs.step')
 
         return assembly
 
     def right(self):
-        color = ('magenta4','gray50')
         assembly = cq.Assembly(name='SGTB')
         if self.color == True:
             assembly.add(self.thrust_right,
-                name='rightSGTB',color=cq.Color(color[0]))
+                name='rightSGTB',color=cq.Color('magenta4'))
         elif self.color == False:
             assembly.add(self.thrust_right,
-                name='rightSGTB',color=cq.Color(color[1]))
+                name='rightSGTB',color=cq.Color('gray50'))
 
         assembly.save(self.cwf  + '/STEP/SGTB Right.step')
 
         return assembly
     
     def left(self):
-        color = ('magenta4','gray50')
         assembly = cq.Assembly(name='SGTB')
         if self.color == True:
             assembly.add(self.thrust_left,
-                name='leftSGTB',color=cq.Color(color[0]))
+                name='leftSGTB',color=cq.Color('magenta4'))
         elif self.color == False:
             assembly.add(self.thrust_left,
-                name='leftSGTB',color=cq.Color(color[1]))
+                name='leftSGTB',color=cq.Color('gray50'))
 
         assembly.save(self.cwf  + '/STEP/SGTB Left.step')
 

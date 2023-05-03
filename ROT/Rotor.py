@@ -7,10 +7,12 @@ class Rotor():
         self.cwf = os.getcwd()
   
     def parameters(self,Element):
+        self.understandmethod = 'dictionary'
         if type(Element) == dict:
             # Check for information exist in dictionary
-            if all(x in Element.keys() for x in ['Laenge','DI1','DI2','DI3','DA1','DA2','DA3']):
-                    if len(Element['Laenge']) == len(Element['DI1']) == len(Element['DI2'])  == len(Element['DI3']) == len(Element['DA1']) == len(Element['DA2']) == len(Element['DA3']):
+            if all(x in Element.keys() for x in ['Laenge','DI1','DI2','DI3','DA1','DA2','DA3','elem_type1','elem_type2','elem_type3']):
+                    if len(Element['Laenge']) == len(Element['DI1']) == len(Element['DI2'])  == len(Element['DI3']) == len(Element['DA1']) == len(Element['DA2']) == len(Element['DA3'])\
+                        == len(Element['elem_type1']) == len(Element['elem_type2']) == len(Element['elem_type3']):
                         # Taking variables from Element
                         self.length = 1000*np.array(Element['Laenge'])
                         self.DI1 = 1000*np.array(Element['DI1'])
@@ -24,16 +26,14 @@ class Rotor():
                         self.elem_type3 = Element['elem_type3']
                         self.elem_type = [self.elem_type1, self.elem_type2, self.elem_type3]
                     else:
-                        print('Rotor.parameters: Size of the needed dictionary values are not equal.')
-                        return
+                        raise ValueError('Rotor.parameters: Size of the needed dictionary values are not equal.')
             else:
-                print('Rotor.parameters: Element dictionary does not include all the needed keys.')
-                return
+                raise KeyError('Rotor.parameters: Element dictionary does not include all the needed keys.')
         else:
-            print('Rotor.parameters: Element type is not dictionary.')
-            return 
+            raise TypeError('Rotor.parameters: Element type is not dictionary.')
         
     def parameters_manual(self,Length,DI1,DI2,DI3,DO1,DO2,DO3):
+        self.understandmethod = 'manual'
         if type(Length) == list and type(DO3) == list and type(DO2) == list and type(DO1) == list and type(DI3) == list and type(DI2) == list and type(DI1) == list: 
                 if len(Length) == len(DI1) == len(DI2)  == len(DI3) == len(DO1) == len(DO2) == len(DO3):
                     self.length = np.array(Length)
@@ -44,16 +44,10 @@ class Rotor():
                     self.DO2 = np.array(DO2)
                     self.DO3 = np.array(DO3)
                 else:
-                    print('Rotor.parameters_manual: Size of the given list values are not equal.')
-                    return
+                    raise ValueError('Rotor.parameters_manual: Size of the given lists are not equal.')
         else:
-            print('Rotor.parameters_manual: The type of the given variables are not suitable.')
-            return
+            raise TypeError('Rotor.parameters_manual: The type of the given variables are not suitable.')
         
-    #def settings(self,color,sectionview):
-    #    self.color = color
-    #    self.sectionview = sectionview
-
     def CAD(self,*settings):
         # Checking for section view
         if 'section view' in settings:
@@ -61,69 +55,106 @@ class Rotor():
         else:
             sectionview = False
 
-        # Creating an empty cylinder dictionary
-        cylinders = {}
+        # Creating dictionaries for layers
+        layer1 = {}
+        layer2 = {}
+        layer3 = {}
 
-        # Defining workplane
-        start = cq.Workplane('XY')
+        # Creating a count value for further use in union
+        count_PLUG = True
+        count_ROT = True
+        count_MAG = True
 
-        # Creating a fuction to make a three layered cylinder
-        def threelayercylinder(di1,di2,di3,do1,do2,do3,l,wp,sw):
-            if di3 != do3:
-                layer3 = wp.cylinder(l,do3/2,
+        wp = cq.Workplane('XY')
+
+        for i in range(len(self.length)):
+            # Constructing 3rd layer
+            if self.DO3[i] != self.DI3[i]:
+                cylinder3 = wp.cylinder(self.length[i],self.DO3[i]/2,
                 direct=(0,0,1),angle=360,centered=(True,True,False),
-                combine=False,clean=True).faces('>Z').hole(di3,depth=l,clean=True)
-                if sw == True:
-                    layer3 = layer3.rect(80,40,(-40,0)).cutThruAll()
+                combine=False,clean=True).faces('>Z').hole(self.DI3[i],depth=self.length[i],clean=True)
+                if sectionview == True:
+                    cylinder3 = cylinder3.rect(80,40,(-40,0)).cutThruAll()
+                layer3[i] = cylinder3
             else:
-                layer3 = wp
-
-            if di2 != do2:
-                layer2 = wp.cylinder(l,do2/2,
+                layer3[i] = 0
+            # Constructing 2nd layer
+            if self.DO2[i] != self.DI2[i]:
+                cylinder2 = wp.cylinder(self.length[i],self.DO2[i]/2,
                 direct=(0,0,1),angle=360,centered=(True,True,False),
-                combine=False,clean=True).faces('>Z').hole(di2,depth=l,clean=True)
-                if sw == True:
-                    layer2 = layer2.rect(80,40,(-40,0)).cutThruAll()
+                combine=False,clean=True).faces('>Z').hole(self.DI2[i],depth=self.length[i],clean=True)
+                if sectionview == True:
+                    cylinder2 = cylinder2.rect(80,40,(-40,0)).cutThruAll()
+                layer2[i] = cylinder2
             else:
-                layer2 = wp
-
-            if di1 != do1:
-                layer1 = wp.cylinder(l,do1/2,
-                direct=(0,0,1),angle=360,centered=(True,True,False),
-                combine=False,clean=True).faces('>Z').hole(di1,depth=l,clean=True)
-                if sw == True:
-                    layer1 = layer1.rect(80,40,(-40,0)).cutThruAll()
-            else:
-                layer1 = wp
-
-            return (layer1,layer2,layer3)
-
-        # Using the function in loop to create turbocompressor
-        color = ('red3','green4','blue3','gray50')
-        assembly = cq.Assembly(name='Rotor')
-        for i in range(0,len(self.length)):
-            cylinders['cylinder'+str(i)] = threelayercylinder(self.DI1[i],self.DI2[i],self.DI3[i],self.DO1[i],self.DO2[i],self.DO3[i],self.length[i],start,sectionview)
-            locals().update(cylinders)
+                layer2[i] = 0
+            # Constructing 1st layer
             if self.DO1[i] != self.DI1[i]:
-                start = cylinders['cylinder'+str(i)][0].faces('>Z').workplane().center(0,0)
-            elif self.DO2[i] != self.DI2[i]:
-                start = cylinders['cylinder'+str(i)][1].faces('>Z').workplane().center(0,0)
+                cylinder1 = wp.cylinder(self.length[i],self.DO1[i]/2,
+                direct=(0,0,1),angle=360,centered=(True,True,False),
+                combine=False,clean=True).faces('>Z').hole(self.DI1[i],depth=self.length[i],clean=True)
+                if sectionview == True:
+                    cylinder1 = cylinder1.rect(80,40,(-40,0)).cutThruAll()
+                layer1[i] = cylinder1
             else:
-                start = cylinders['cylinder'+str(i)][2].faces('>Z').workplane().center(0,0)
+                layer1[i] = 0 
             
-            if 'color' in settings:
-                for k in range(0,3):
-                    if self.elem_type[k][i]!='COMP1':
-                        assembly.add(
-                            cylinders['cylinder'+str(i)][k],
-                            name='layer'+str(i+1)+'_'+str(k+1),color=cq.Color(color[k]))
+            # Shifting workplane
+            if self.DO1[i] != self.DI1[i]:
+                wp = layer1[i].faces('>Z').workplane().center(0,0)
+            elif self.DO2[i] != self.DI2[i]:
+                wp = layer2[i].faces('>Z').workplane().center(0,0)
             else:
+                wp = layer3[i].faces('>Z').workplane().center(0,0)
+
+        layers = [layer1, layer2, layer3]
+
+        if self.understandmethod == 'dictionary':
+            # Uniting cylinders according to their type
+            for i in range(0,len(self.length)):
                 for k in range(0,3):
-                    if self.elem_type[k][i]!='COMP1':
-                        assembly.add(
-                            cylinders['cylinder'+str(i)][k],
-                            name='layer'+str(i+1)+'_'+str(k+1),color=cq.Color(color[3]))
-               
-        assembly.save(self.cwf  + '/STEP/Rotor.step')
+                    if layers[k][i] != 0:
+                        if self.elem_type[k][i] == 'MAG':
+                            if count_MAG == True:
+                                MAG = layers[k][i]
+                                count_MAG = False
+                            else:
+                                MAG = MAG.union(layers[k][i])
+                        if self.elem_type[k][i] == 'ROT':
+                            if count_ROT == True:
+                                ROT = layers[k][i]
+                                count_ROT = False
+                            else:
+                                ROT = ROT.union(layers[k][i])
+                        if self.elem_type[k][i] == 'PLUG':
+                            if count_PLUG == True:
+                                PLUG = layers[k][i]
+                                count_PLUG = False
+                            else:
+                                PLUG = PLUG.union(layers[k][i])
+
+            if 'color' in settings:
+                assembly = cq.Assembly(ROT, name = 'Rotor', color=cq.Color('green4'))
+                assembly.add(PLUG, name = 'Plug', color=cq.Color('blue3'))
+                assembly.add(MAG, name = 'Magnet', color=cq.Color('red3'))
+            else:
+                assembly = cq.Assembly(ROT, name = 'Rotor', color=cq.Color('gray50'))
+                assembly.add(PLUG, name = 'Plug', color=cq.Color('gray50'))
+                assembly.add(MAG, name = 'Magnet', color=cq.Color('gray50'))
+
+            assembly.save(self.cwf  + '/STEP/Rotor.step')
+        
+        elif self.understandmethod == 'manual':
+            assembly = cq.Assembly(name = 'Rotor')
+            color = ('red3','green4','blue3','gray50')
+            for i in range(0,len(self.length)):
+                for k in range(0,3):
+                    if layers[k][i] != 0:
+                        if 'color' in settings:
+                            assembly.add(layers[k][i], name = 'layer'+str(i+1)+'_'+str(k+1), color=cq.Color(color[k]))
+                        else:
+                            assembly.add(layers[k][i], name = 'layer'+str(i+1)+'_'+str(k+1), color=cq.Color(color[3]))
+
+            assembly.save(self.cwf  + '/STEP/Rotor.step')
 
         return assembly
