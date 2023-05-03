@@ -1,4 +1,4 @@
-SSimport cadquery as cq
+import cadquery as cq
 import numpy as np
 import time
 import os
