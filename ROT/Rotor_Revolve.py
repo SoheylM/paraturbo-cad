@@ -9,7 +9,7 @@ from cq_warehouse.extensions import *
 import os
 
 #defining a class to model the impeller
-class Rotor_revolve():
+class Rotor_Revolve():
 
     #defining the class constructor
     def __init__(self):

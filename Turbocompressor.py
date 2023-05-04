@@ -38,6 +38,21 @@ beta = -2.72
 gamma = 0.74
 hg = 0.024
 hr = 0.019
+r_4 = 19
+r_2s = 2
+b_4 = 2
+r_1 = 20
+r_2h = 3
+r_5 = 15
+e_bld = 0.25
+e_tip = 0.01
+e_back = 0.01
+L_ind = 40
+beta_4 = -45
+beta_2 = -56
+beta_2s = -60
+N_bld = 9
+R_rot = 5
 
 '''
 SGTB Construction
@@ -102,20 +117,23 @@ Rotor = DesignRotor.CAD('color')
 
 show_object(Rotor, name='Rotor')
 
+'''
+joseph manual how to use methods like dog sample
+'''
+
 Imp = Impeller()
 
 Imp.parameters_impeller(Element)
-
+# Imp.manualparams_impeller(Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot)
 Imp.settings_hub(True,True,False)
+
 Hub = Imp.hub()
 
-#modeling the main blades
-Coords_mainblades = Imp.blades_excel('POINT_BLADES1.xls')
+Coords_mainblades = Imp.blades_excel('coordinates_blade_n200.xlsx')
 Mainblade = Imp.model_blades(Coords_mainblades)
 Mainblades = Imp.rotate_blade(Mainblade)
 
-#modeling the splitter blades
-Coords_splitterblades = Imp.blades_excel('POINT_BLADES2.xls')
+Coords_splitterblades = Imp.blades_excel('coordinates_blade_n200.xlsx')
 Splitterblade = Imp.model_blades(Coords_splitterblades)
 Splitterblades = Imp.rotate_blade(Splitterblade)
 
