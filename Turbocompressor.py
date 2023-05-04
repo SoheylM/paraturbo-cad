@@ -126,7 +126,7 @@ DesignRotor.parameters(Element)
 # DesignRotor.parameters_manual(Length,DI1,DI2,DI3,DO1,DO2,DO3,elem_type1=types1,elem_type2=types2,elem_type3=types3)
 Rotor = DesignRotor.CAD('color')
 
-# show_object(Rotor, name='Rotor')
+show_object(Rotor, name='Rotor')
 
 '''
 joseph manual how to use methods like dog sample
@@ -134,24 +134,23 @@ joseph manual how to use methods like dog sample
 
 Imp = Impeller()
 
-Imp.parameters_impeller(Element)
-# Imp.manualparams_impeller(Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot)
-Imp.settings_hub(True,True,False)
+#Imp.parameters_impeller(Element)
+Imp.manualparams_impeller(Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot,'sfrew')
 
 Hub = Imp.hub()
 
-Coords_mainblades = Imp.blades_excel('coordinates_blade_n200.xlsx')
-Mainblade = Imp.model_blades(Coords_mainblades)
-Mainblades = Imp.rotate_blade(Mainblade,'Main Blade')
+# Coords_mainblades = Imp.blades_excel('coordinates_blade_n200.xlsx')
+# Mainblade = Imp.model_blades(Coords_mainblades)
+# Mainblades = Imp.rotate_blade(Mainblade,'Main Blade')
 
-Coords_splitterblades = Imp.blades_excel('coordinates_blade_n200.xlsx')
-Splitterblade = Imp.model_blades(Coords_splitterblades)
-Splitterblades = Imp.rotate_blade(Splitterblade,'Splitter Blade')
+# Coords_splitterblades = Imp.blades_excel('coordinates_blade_n200.xlsx')
+# Splitterblade = Imp.model_blades(Coords_splitterblades)
+# Splitterblades = Imp.rotate_blade(Splitterblade,'Splitter Blade')
 
-# show_object(Hub,name = 'Hub')
+show_object(Hub,name = 'Hub')
 # show_object(Mainblades, name = 'Mainblades')
 # show_object(Splitterblades, name = 'Splitterblades')
 
-DesignTurbocompressor.assemble((Rotor,SGTBs,Hub,Mainblades,Splitterblades),'Turbocompressor')
+#DesignTurbocompressor.assemble((Rotor,SGTBs,Hub,Mainblades,Splitterblades),'Turbocompressor')
 
 print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')

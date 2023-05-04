@@ -5,7 +5,7 @@ import os
 class Rotor():
     def __init__(self):
         self.cwf = os.getcwd()
-        self.method = 'good'
+        self.method = 'Joseph'
 
     def parameters(self,Element):
         if type(Element) == dict:

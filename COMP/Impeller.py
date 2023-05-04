@@ -14,14 +14,6 @@ class Impeller():
 
     #defining the class constructor
     def __init__(self):
-        self.top_hub = True
-        self.bottom_hub = True
-        self.top_layer1=True
-        self.bottom_layer1=True
-        self.top_layer2=True
-        self.bottom_layer2=True
-        self.top_layer3=True
-        self.bottom_layer3=True
         self.auto_Rrot = True
         self.cwf = os.getcwd()
 
@@ -115,7 +107,7 @@ class Impeller():
         self.pos_comp1 = Element['sys_pos']['pos_comp1']
 
     #defining a method to manually define impeller variables (in mm) by the user
-    def manualparams_impeller(self,Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot):
+    def manualparams_impeller(self,Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot,*settings):
 
         self.Laenge = [i * 1000 for i in Element['Laenge']]
         self.DI1 = [i * 1000 for i in Element['DI1']]
@@ -143,18 +135,28 @@ class Impeller():
         self.beta_2 = beta_2 
         self.beta_2s = beta_2s 
         self.N_bld = N_bld 
-        self.R_rot = R_rot
 
-        if self.auto_Rrot==True:
+        
+
+        if 'auto_rotor' in settings:
             #automatically defining the radius of the rotor from the pickle file
+            self.R_rot = (Element['parameters']['comp1']['Rrot'])*1000
+
+            '''
             for k in range(len(self.Laenge)):
                 if self.elem_type1[k]!='COMP1' or self.elem_type2[k]!='COMP1' or self.elem_type3[k]!='COMP1':
                             break
             self.R_rot = self.DA3[k]/2
+            '''
 
+        if 'manual_rotor' in settings:
+            self.R_rot = R_rot
+
+        else:
+            self.R_rot = (Element['parameters']['comp1']['Rrot'])*1000
+            
         #---------------------OR
-        #rotor radius
-        #self.R_rot = (Element['parameters']['comp1']['Rrot'])*1000
+
 
         #defining calculated geometrical parameters
         self.phi = 1.618
@@ -169,17 +171,12 @@ class Impeller():
 
         return
 
-    # defining a method to change the hub modeling settings
-    def settings_hub(self,top_h,bot_h,bool_Rrot):
-
-        #boolean parameters to show a section of the hub
-        self.top_hub = top_h
-        self.bottom_hub = bot_h
-        #automatically defining the radius of the rotor from the pickle file
-        self.auto_Rrot = bool_Rrot
-
     # defining a method to model the hub
-    def hub(self):
+    def hub(self,*settings):
+        if 'section view' in settings:
+            bottom_hub = False
+        else:
+            bottom_hub = True
 
         r_2h = self.r_2h
         r_4 = self.r_4
@@ -243,9 +240,11 @@ class Impeller():
         #revolving the sketch about the rotation axis
         hub = (self.sketch_hub
                 .revolve(360,(0,0,0),(1,0,0))
+                .split(keepTop=True,keepBottom=bottom_hub)
                 .translate((-abs(self.L_imp-self.shift),0,0))
                 .rotate((0,0,0),(0,1,0),-90)
-                .split(keepTop=self.top_hub,keepBottom=self.bottom_hub))
+                .rotate((0,0,0),(0,0,1),90))
+                
     
         assembly = cq.Assembly(name = 'Turboompressor Hub')
         assembly.add(hub,color=cq.Color('red3'), name = 'Hub')
