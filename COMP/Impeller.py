@@ -321,8 +321,12 @@ class Impeller():
         blade_shell = cq.Shell.makeShell([blade_face0,blade_face_last,blade_lofted]).fix()
         
         #solidifying the produced shell and rotating
+<<<<<<< HEAD
         #blade_solid[0] = cq.Solid.makeSolid(blade_shell).translate((0,0,-14))
         blade_solid[0] = cq.Solid.makeSolid(blade_shell).translate((-abs(self.L_imp-shift),0,0))
+=======
+        blade_solid[0] = cq.Solid.makeSolid(blade_shell)
+>>>>>>> main
 
         return blade_solid
     
@@ -339,4 +343,3 @@ class Impeller():
             assembly.add(blade[i+1],color=cq.Color('red'))
 
         return assembly
-    
