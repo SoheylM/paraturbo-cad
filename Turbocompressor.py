@@ -27,6 +27,9 @@ DI3 = [11.0, 5.0, 5.0, 5.0, 13.0, 13.0, 27.5, 13.0, 14.0, 14.0, 14.0, 13.8999999
 DO1 = [11.0, 5.0, 5.0, 5.0, 13.0, 8.0, 0.0, 0.0, 0.0, 0.0, 0.0, 9.0, 13.0, 13.0, 13.0]
 DO2 = [11.0, 5.0, 5.0, 5.0, 13.0, 13.0, 27.5, 13.0, 14.0, 14.0, 14.0, 13.899999999999999, 13.899999999999999, 13.899999999999999, 13.899999999999999]
 DO3 = [11.0, 11.0, 15.6, 25.0, 13.0, 13.0, 27.5, 13.0, 14.0, 14.0, 14.0, 13.899999999999999, 13.899999999999999, 13.899999999999999, 13.899999999999999]
+types1 = ['COMP1','COMP1','COMP1','COMP1','PLUG','PLUG','ROT','ROT','ROT','ROT','ROT','ROT','ROT','MAG','MAG']
+types2 = ['COMP1','COMP1','COMP1','COMP1','PLUG','ROT','ROT','ROT','ROT','ROT','ROT','ROT','ROT','ROT','ROT']
+types3 = ['COMP1','COMP1','COMP1','COMP1','PLUG','ROT','ROT','ROT','ROT','ROT','ROT','ROT','ROT','ROT','ROT']
 pos = 6
 alpha = 0.53
 beta = -2.72
@@ -99,7 +102,7 @@ SGTBs = DesignSGTB.combined()
 # SGTB_right = DesignSGTB.right()
 # SGTB_left = DesignSGTB.left()
 
-show_object(SGTBs, name='SGTBs')
+# show_object(SGTBs, name='SGTBs')
 # show_object(SGTB_right, name='SGTB Right')
 # show_object(SGTB_left, name='SGTB Left')
 
@@ -120,10 +123,10 @@ Rotor Construction
 DesignRotor = Rotor()
 
 DesignRotor.parameters(Element)
-# DesignRotor.parameters_manual(Length,DI1,DI2,DI3,DO1,DO2,DO3)
+# DesignRotor.parameters_manual(Length,DI1,DI2,DI3,DO1,DO2,DO3,elem_type1=types1,elem_type2=types2,elem_type3=types3)
 Rotor = DesignRotor.CAD('color')
 
-show_object(Rotor, name='Rotor')
+# show_object(Rotor, name='Rotor')
 
 '''
 joseph manual how to use methods like dog sample
@@ -131,8 +134,8 @@ joseph manual how to use methods like dog sample
 
 Imp = Impeller()
 
-# Imp.parameters_impeller(Element)
-Imp.manualparams_impeller(Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot)
+Imp.parameters_impeller(Element)
+# Imp.manualparams_impeller(Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot)
 Imp.settings_hub(True,True,False)
 
 Hub = Imp.hub()
@@ -145,10 +148,10 @@ Coords_splitterblades = Imp.blades_excel('coordinates_blade_n200.xlsx')
 Splitterblade = Imp.model_blades(Coords_splitterblades)
 Splitterblades = Imp.rotate_blade(Splitterblade)
 
-show_object(Hub)
-show_object(Mainblades)
-show_object(Splitterblades)
+# show_object(Hub)
+# show_object(Mainblades)
+# show_object(Splitterblades)
 
-DesignTurbocompressor.assemble((SGTBs,Rotor,Hub,Mainblades,Splitterblades),'Turbocompressor')
+DesignTurbocompressor.assemble((Rotor,SGTBs,Hub,Mainblades),'Turbocompressor')
 
 print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')

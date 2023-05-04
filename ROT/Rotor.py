@@ -5,9 +5,9 @@ import os
 class Rotor():
     def __init__(self):
         self.cwf = os.getcwd()
-  
+        self.method = 'good'
+
     def parameters(self,Element):
-        self.understandmethod = 'dictionary'
         if type(Element) == dict:
             # Check for information exist in dictionary
             if all(x in Element.keys() for x in ['Laenge','DI1','DI2','DI3','DA1','DA2','DA3','elem_type1','elem_type2','elem_type3']):
@@ -32,8 +32,44 @@ class Rotor():
         else:
             raise TypeError('Rotor.parameters: Element type is not dictionary.')
         
-    def parameters_manual(self,Length,DI1,DI2,DI3,DO1,DO2,DO3):
-        self.understandmethod = 'manual'
+    def parameters_manual(self,Length,DI1,DI2,DI3,DO1,DO2,DO3,**elemtypes):
+        elemtypes_check = True
+        if elemtypes:
+            if 'elem_type1' in elemtypes and 'elem_type2' in elemtypes and 'elem_type3' in elemtypes:
+                if len(elemtypes['elem_type1']) == len(elemtypes['elem_type2']) == len(elemtypes['elem_type3']) == len(Length) == len(DI1) == len(DI2)  == len(DI3) == len(DO1) == len(DO2) == len(DO3):
+                    if type(elemtypes['elem_type1']) == list and type(elemtypes['elem_type2']) == list and  type(elemtypes['elem_type3']) == list:
+                        for types in elemtypes['elem_type1']:
+                            if types in ['COMP1','MAG','ROT','PLUG']:
+                                pass
+                            else:
+                                elemtypes_check = False
+                                raise ValueError('Rotor.parameters_manual: Wrong element type is given.')
+                        for types in elemtypes['elem_type2']:
+                            if types in ['COMP1','MAG','ROT','PLUG']:
+                                pass
+                            else:
+                                elemtypes_check = False
+                                raise ValueError('Rotor.parameters_manual: Wrong element type is given.')
+                        for types in elemtypes['elem_type3']:
+                            if types in ['COMP1','MAG','ROT','PLUG']:
+                                pass
+                            else:
+                                elemtypes_check = False
+                                raise ValueError('Rotor.parameters_manual: Wrong element type is given.')
+                        if elemtypes_check == True:
+                            self.elem_type1 = elemtypes['elem_type1']
+                            self.elem_type2 = elemtypes['elem_type2']
+                            self.elem_type3 = elemtypes['elem_type3']
+                            self.elem_type = [self.elem_type1, self.elem_type2, self.elem_type3]
+                    else:
+                        raise TypeError('Rotor.parameters_manual: The type of the element type variables are not suitable.')
+                else:
+                    raise ValueError('Rotor.parameters_manual: Size of the given element types are not equal to each other or not consistent with the length of the other parameters.')
+            else:
+                raise KeyError('Rotor.parameters_manual: Element types are not given correctly.')
+        else:
+            self.method = 'manual'
+
         if type(Length) == list and type(DO3) == list and type(DO2) == list and type(DO1) == list and type(DI3) == list and type(DI2) == list and type(DI1) == list: 
                 if len(Length) == len(DI1) == len(DI2)  == len(DI3) == len(DO1) == len(DO2) == len(DO3):
                     self.length = np.array(Length)
@@ -109,7 +145,20 @@ class Rotor():
 
         layers = [layer1, layer2, layer3]
 
-        if self.understandmethod == 'dictionary':
+        if self.method == 'manual':
+            assembly = cq.Assembly(name = 'Rotor')
+            color = ('red3','green4','blue3','gray50')
+            for i in range(0,len(self.length)):
+                for k in range(0,3):
+                    if layers[k][i] != 0:
+                        if 'color' in settings:
+                            assembly.add(layers[k][i], name = 'layer'+str(i+1)+'_'+str(k+1), color=cq.Color(color[k]))
+                        else:
+                            assembly.add(layers[k][i], name = 'layer'+str(i+1)+'_'+str(k+1), color=cq.Color(color[3]))
+
+            assembly.save(self.cwf  + '/STEP/Rotor.step')
+        
+        else:
             # Uniting cylinders according to their type
             for i in range(0,len(self.length)):
                 for k in range(0,3):
@@ -134,27 +183,16 @@ class Rotor():
                                 PLUG = PLUG.union(layers[k][i])
 
             if 'color' in settings:
-                assembly = cq.Assembly(ROT, name = 'Rotor', color=cq.Color('green4'))
+                assembly = cq.Assembly(name = 'Body')
+                assembly.add(ROT, name = 'Rotor', color=cq.Color('green4'))
                 assembly.add(PLUG, name = 'Plug', color=cq.Color('blue3'))
                 assembly.add(MAG, name = 'Magnet', color=cq.Color('red3'))
             else:
-                assembly = cq.Assembly(ROT, name = 'Rotor', color=cq.Color('gray50'))
+                assembly = cq.Assembly(name = 'Body')
+                assembly.add(ROT, name = 'Rotor', color=cq.Color('gray50'))
                 assembly.add(PLUG, name = 'Plug', color=cq.Color('gray50'))
                 assembly.add(MAG, name = 'Magnet', color=cq.Color('gray50'))
 
             assembly.save(self.cwf  + '/STEP/Rotor.step')
         
-        elif self.understandmethod == 'manual':
-            assembly = cq.Assembly(name = 'Rotor')
-            color = ('red3','green4','blue3','gray50')
-            for i in range(0,len(self.length)):
-                for k in range(0,3):
-                    if layers[k][i] != 0:
-                        if 'color' in settings:
-                            assembly.add(layers[k][i], name = 'layer'+str(i+1)+'_'+str(k+1), color=cq.Color(color[k]))
-                        else:
-                            assembly.add(layers[k][i], name = 'layer'+str(i+1)+'_'+str(k+1), color=cq.Color(color[3]))
-
-            assembly.save(self.cwf  + '/STEP/Rotor.step')
-
         return assembly

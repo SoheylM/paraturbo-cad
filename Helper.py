@@ -17,6 +17,6 @@ class Helper():
     def assemble(self,files,filename):
         assembly = cq.Assembly(name=filename)
         for i in range(0,len(files)):
-            assembly.add(files[i],name='Subassembly'+str(i+1))
+            assembly.add(files[i],name='Subassembly '+str(i+1))
 
         assembly.save(self.cwf  + '/STEP/' + filename + '.step')
