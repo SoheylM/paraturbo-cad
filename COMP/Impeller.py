@@ -190,12 +190,13 @@ class Impeller():
         c = r_4/phi
         e =(r_4/(phi**2))-b_6
         L_imp = r_2h+c+b_6+e
+        delta_x = b_6/3
 
         # tolerance to control the smoothness of the hub profile
         self.step_hub=100
 
         #initializing the x and y coordinate arrays
-        self.x_hub = np.linspace(0,L_imp,self.step_hub)
+        self.x_hub = np.arange(0,L_imp,delta_x)
         self.y_hub=[]
         self.y_hub.insert(0,0)
 
@@ -320,7 +321,8 @@ class Impeller():
         blade_shell = cq.Shell.makeShell([blade_face0,blade_face_last,blade_lofted]).fix()
         
         #solidifying the produced shell and rotating
-        blade_solid[0] = cq.Solid.makeSolid(blade_shell).translate((0,0,-14))
+        #blade_solid[0] = cq.Solid.makeSolid(blade_shell).translate((0,0,-14))
+        blade_solid[0] = cq.Solid.makeSolid(blade_shell).translate((-abs(self.L_imp-shift),0,0))
 
         return blade_solid
     
