@@ -247,8 +247,9 @@ class Impeller():
                 .rotate((0,0,0),(0,1,0),-90)
                 .split(keepTop=self.top_hub,keepBottom=self.bottom_hub))
     
-        assembly = cq.Assembly()
-        assembly.add(hub,color=cq.Color('red'))
+        assembly = cq.Assembly(name = 'Turboompressor Hub')
+        assembly.add(hub,color=cq.Color('red3'), name = 'Hub')
+
         return assembly
     
     # defining a method to retrieve the coordinates of the blades from the excel file
@@ -327,15 +328,16 @@ class Impeller():
         return blade_solid
     
     #defining a method to pattern the blades
-    def rotate_blade(self,blade):
+    def rotate_blade(self,blade,bladename):
 
-        assembly = cq.Assembly(blade[0],color=cq.Color('red'))
+        assembly = cq.Assembly(name = bladename)
+        assembly.add(blade[0],color=cq.Color('red3'), name = bladename + ' 1')
 
         #looping to model the blade pattern
         for i in range(0,self.N_bld-1):
         
             #rotating about the x axis by the corresponding angle
             blade[i+1] = (blade[i].transformed((0,0,360/self.N_bld)))
-            assembly.add(blade[i+1],color=cq.Color('red'))
+            assembly.add(blade[i+1],color=cq.Color('red3'), name = bladename + ' ' + str(i+2))
 
         return assembly

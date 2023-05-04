@@ -142,16 +142,16 @@ Hub = Imp.hub()
 
 Coords_mainblades = Imp.blades_excel('coordinates_blade_n200.xlsx')
 Mainblade = Imp.model_blades(Coords_mainblades)
-Mainblades = Imp.rotate_blade(Mainblade)
+Mainblades = Imp.rotate_blade(Mainblade,'Main Blade')
 
 Coords_splitterblades = Imp.blades_excel('coordinates_blade_n200.xlsx')
 Splitterblade = Imp.model_blades(Coords_splitterblades)
-Splitterblades = Imp.rotate_blade(Splitterblade)
+Splitterblades = Imp.rotate_blade(Splitterblade,'Splitter Blade')
 
-# show_object(Hub)
-# show_object(Mainblades)
-# show_object(Splitterblades)
+# show_object(Hub,name = 'Hub')
+# show_object(Mainblades, name = 'Mainblades')
+# show_object(Splitterblades, name = 'Splitterblades')
 
-DesignTurbocompressor.assemble((Rotor,SGTBs,Hub,Mainblades),'Turbocompressor')
+DesignTurbocompressor.assemble((Rotor,SGTBs,Hub,Mainblades,Splitterblades),'Turbocompressor')
 
 print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')

@@ -166,14 +166,14 @@ class SGTB():
         assembly = cq.Assembly(name='SGTB')
         if self.color == True:
             assembly.add(self.thrust_right,loc = cq.Location((0,0,self.pos_right),(1,0,0),0),
-                name='rightSGTB',color=cq.Color('magenta4'))
+                name='Right SGTB',color=cq.Color('magenta4'))
             assembly.add(self.thrust_left,loc = cq.Location((0,0,self.pos_left),(1,0,0),0),
-                name='leftSGTB',color=cq.Color('magenta4'))
+                name='Left SGTB',color=cq.Color('magenta4'))
         elif self.color == False:
             assembly.add(self.thrust_right,loc = cq.Location((0,0,self.pos_right),(1,0,0),0),
-                name='rightSGTB',color=cq.Color('gray50'))
+                name='Right SGTB',color=cq.Color('gray50'))
             assembly.add(self.thrust_left,loc = cq.Location((0,0,self.pos_left),(1,0,0),0),
-                name='leftSGTB',color=cq.Color('gray50'))
+                name='Left SGTB',color=cq.Color('gray50'))
 
         assembly.save(self.cwf  + '/STEP/SGTBs.step')
 
@@ -183,10 +183,10 @@ class SGTB():
         assembly = cq.Assembly(name='SGTB')
         if self.color == True:
             assembly.add(self.thrust_right,
-                name='rightSGTB',color=cq.Color('magenta4'))
+                name='Right SGTB',color=cq.Color('magenta4'))
         elif self.color == False:
             assembly.add(self.thrust_right,
-                name='rightSGTB',color=cq.Color('gray50'))
+                name='Right SGTB',color=cq.Color('gray50'))
 
         assembly.save(self.cwf  + '/STEP/SGTB Right.step')
 
@@ -196,10 +196,10 @@ class SGTB():
         assembly = cq.Assembly(name='SGTB')
         if self.color == True:
             assembly.add(self.thrust_left,
-                name='leftSGTB',color=cq.Color('magenta4'))
+                name='Left SGTB',color=cq.Color('magenta4'))
         elif self.color == False:
             assembly.add(self.thrust_left,
-                name='leftSGTB',color=cq.Color('gray50'))
+                name='Left SGTB',color=cq.Color('gray50'))
 
         assembly.save(self.cwf  + '/STEP/SGTB Left.step')
 

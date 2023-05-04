@@ -183,12 +183,12 @@ class Rotor():
                                 PLUG = PLUG.union(layers[k][i])
 
             if 'color' in settings:
-                assembly = cq.Assembly(name = 'Body')
+                assembly = cq.Assembly(name = 'Turbocompressor Rotor')
                 assembly.add(ROT, name = 'Rotor', color=cq.Color('green4'))
                 assembly.add(PLUG, name = 'Plug', color=cq.Color('blue3'))
                 assembly.add(MAG, name = 'Magnet', color=cq.Color('red3'))
             else:
-                assembly = cq.Assembly(name = 'Body')
+                assembly = cq.Assembly(name = 'Turbocompressor Rotor')
                 assembly.add(ROT, name = 'Rotor', color=cq.Color('gray50'))
                 assembly.add(PLUG, name = 'Plug', color=cq.Color('gray50'))
                 assembly.add(MAG, name = 'Magnet', color=cq.Color('gray50'))
