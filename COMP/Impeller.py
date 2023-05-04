@@ -235,15 +235,15 @@ class Impeller():
                     .close())
 
         # calculating the shift in the position of the true impeller model
-        shift = 0
+        self.shift = 0
         for i in range(len(self.Laenge)):
             if self.elem_type1[i]=='COMP1' or self.elem_type2[i]=='COMP1' or self.elem_type3[i]=='COMP1':
-                shift += self.Laenge[i]
+                self.shift += self.Laenge[i]
 
         #revolving the sketch about the rotation axis
         hub = (self.sketch_hub
                 .revolve(360,(0,0,0),(1,0,0))
-                .translate((-abs(self.L_imp-shift),0,0))
+                .translate((-abs(self.L_imp-self.shift),0,0))
                 .rotate((0,0,0),(0,1,0),-90)
                 .split(keepTop=self.top_hub,keepBottom=self.bottom_hub))
     
@@ -321,12 +321,8 @@ class Impeller():
         blade_shell = cq.Shell.makeShell([blade_face0,blade_face_last,blade_lofted]).fix()
         
         #solidifying the produced shell and rotating
-<<<<<<< HEAD
         #blade_solid[0] = cq.Solid.makeSolid(blade_shell).translate((0,0,-14))
-        blade_solid[0] = cq.Solid.makeSolid(blade_shell).translate((-abs(self.L_imp-shift),0,0))
-=======
-        blade_solid[0] = cq.Solid.makeSolid(blade_shell)
->>>>>>> main
+        blade_solid[0] = cq.Solid.makeSolid(blade_shell).translate((0,0,-abs(self.L_imp-self.shift)))
 
         return blade_solid
     

@@ -147,8 +147,8 @@ Splitterblades = Imp.rotate_blade(Splitterblade)
 
 show_object(Hub)
 show_object(Mainblades)
-# show_object(Splitterblades)
+show_object(Splitterblades)
 
-# DesignTurbocompressor.assemble((SGTBs,Rotor,Hub,Mainblades,Splitterblades),'Turbocompressor')
+DesignTurbocompressor.assemble((SGTBs,Rotor,Hub,Mainblades,Splitterblades),'Turbocompressor')
 
 print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')
