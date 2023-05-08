@@ -2,12 +2,13 @@ import cadquery as cq
 import numpy as np
 import time
 import os
-cwf = os.getcwd()
+cwf = os.getcwd().replace("\\", "/")
 
 import sys
 sys.path.append(cwf  + '/SGTB')
 sys.path.append(cwf  + '/ROT')
 sys.path.append(cwf  + '/COMP')
+sys.path.append(cwf  + '/HGJB')
 
 from SGTB import *
 from Rotor import *
@@ -98,13 +99,13 @@ DesignSGTB.parameters(Element)
 DesignSGTB.grooves(28)
 DesignSGTB.CAD('color')
 DesignSGTB.mirror()
-SGTBs = DesignSGTB.combined()
-# SGTB_right = DesignSGTB.right()
-# SGTB_left = DesignSGTB.left()
+SGTBs = DesignSGTB.combined('stl')
+# SGTB_right = DesignSGTB.right('stl')
+# SGTB_left = DesignSGTB.left('stl')
 
-# show_object(SGTBs, name='SGTBs')
-# show_object(SGTB_right, name='SGTB Right')
-# show_object(SGTB_left, name='SGTB Left')
+# # show_object(SGTBs, name='SGTBs')
+# # show_object(SGTB_right, name='SGTB Right')
+# # show_object(SGTB_left, name='SGTB Left')
 
 '''
 Rotor Construction
@@ -124,9 +125,9 @@ DesignRotor = Rotor()
 
 DesignRotor.parameters(Element)
 # DesignRotor.parameters_manual(Length,DI1,DI2,DI3,DO1,DO2,DO3,elem_type1=types1,elem_type2=types2,elem_type3=types3)
-Rotor = DesignRotor.CAD('color')
+Rotor = DesignRotor.CAD('color','stl')
 
-show_object(Rotor, name='Rotor')
+# show_object(Rotor, name='Rotor')
 
 '''
 joseph manual how to use methods like dog sample
@@ -139,18 +140,18 @@ Imp.manualparams_impeller(Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e
 
 Hub = Imp.hub()
 
-# Coords_mainblades = Imp.blades_excel('coordinates_blade_n200.xlsx')
-# Mainblade = Imp.model_blades(Coords_mainblades)
-# Mainblades = Imp.rotate_blade(Mainblade,'Main Blade')
+Coords_mainblades = Imp.blades_excel('coordinates_blade_n200.xlsx')
+Mainblade = Imp.model_blades(Coords_mainblades)
+Mainblades = Imp.rotate_blade(Mainblade,'Main Blade')
 
-# Coords_splitterblades = Imp.blades_excel('coordinates_blade_n200.xlsx')
-# Splitterblade = Imp.model_blades(Coords_splitterblades)
-# Splitterblades = Imp.rotate_blade(Splitterblade,'Splitter Blade')
+Coords_splitterblades = Imp.blades_excel('coordinates_blade_n200.xlsx')
+Splitterblade = Imp.model_blades(Coords_splitterblades)
+Splitterblades = Imp.rotate_blade(Splitterblade,'Splitter Blade')
 
-show_object(Hub,name = 'Hub')
-# show_object(Mainblades, name = 'Mainblades')
-# show_object(Splitterblades, name = 'Splitterblades')
+Compressor = Imp.assemble((Hub,Mainblades,Splitterblades),'stl')
 
-#DesignTurbocompressor.assemble((Rotor,SGTBs,Hub,Mainblades,Splitterblades),'Turbocompressor')
+# show_object(Compressor, name = 'Compressor')
+
+DesignTurbocompressor.assemble((Rotor,SGTBs,Hub,Mainblades,Splitterblades),'Turbocompressor')
 
 print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')

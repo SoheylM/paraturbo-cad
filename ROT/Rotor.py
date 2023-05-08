@@ -4,7 +4,7 @@ import os
 
 class Rotor():
     def __init__(self):
-        self.cwf = os.getcwd()
+        self.cwf = os.getcwd().replace("\\", "/")
         self.method = 'Joseph'
 
     def parameters(self,Element):
@@ -193,6 +193,13 @@ class Rotor():
                 assembly.add(PLUG, name = 'Plug', color=cq.Color('gray50'))
                 assembly.add(MAG, name = 'Magnet', color=cq.Color('gray50'))
 
-            assembly.save(self.cwf  + '/STEP/Rotor.step')
+        if 'stl' or 'STL' in settings:
+            cq.exporters.export(ROT, self.cwf + '/STL/Rotor.stl')
+            cq.exporters.export(PLUG, self.cwf + '/STL/Plug.stl')
+            cq.exporters.export(MAG, self.cwf + '/STL/Magnet.stl')
+            # cq.exporters.export(assembly.toCompound(), self.cwf + '/STL/Turbocompressor Rotor.stl')
         
+        cq.exporters.export(ROT, self.cwf + '/HGJB/Rotor.stp', cq.exporters.ExportTypes.STEP)
+        assembly.save(self.cwf  + '/STEP/Rotor.step')
+
         return assembly

@@ -5,7 +5,7 @@ import os
 class SGTB():
     def __init__(self):
         self.n_grooves = 28
-        self.cwf = os.getcwd()
+        self.cwf = os.getcwd().replace("\\", "/")
 
     def parameters(self,Element):
         if type(Element) == dict:
@@ -162,7 +162,7 @@ class SGTB():
     def mirror(self):
         self.thrust_left = self.thrust_right.mirror(mirrorPlane = 'XY')
 
-    def combined(self):
+    def combined(self,*settings):
         assembly = cq.Assembly(name='SGTB')
         if self.color == True:
             assembly.add(self.thrust_right,loc = cq.Location((0,0,self.pos_right),(1,0,0),0),
@@ -174,12 +174,16 @@ class SGTB():
                 name='Right SGTB',color=cq.Color('gray50'))
             assembly.add(self.thrust_left,loc = cq.Location((0,0,self.pos_left),(1,0,0),0),
                 name='Left SGTB',color=cq.Color('gray50'))
+        
+        if 'stl' or 'STL' in settings:
+            cq.exporters.export(self.thrust_right, self.cwf + '/STL/SGTB Right.stl')
+            cq.exporters.export(self.thrust_left, self.cwf + '/STL/SGTB Left.stl')
 
         assembly.save(self.cwf  + '/STEP/SGTBs.step')
 
         return assembly
 
-    def right(self):
+    def right(self,*settings):
         assembly = cq.Assembly(name='SGTB')
         if self.color == True:
             assembly.add(self.thrust_right,
@@ -187,12 +191,15 @@ class SGTB():
         elif self.color == False:
             assembly.add(self.thrust_right,
                 name='Right SGTB',color=cq.Color('gray50'))
-
+            
+        if 'stl' or 'STL' in settings:
+            cq.exporters.export(self.thrust_right, self.cwf + '/STL/SGTB Right.stl')
+        
         assembly.save(self.cwf  + '/STEP/SGTB Right.step')
 
         return assembly
     
-    def left(self):
+    def left(self,*settings):
         assembly = cq.Assembly(name='SGTB')
         if self.color == True:
             assembly.add(self.thrust_left,
@@ -200,6 +207,9 @@ class SGTB():
         elif self.color == False:
             assembly.add(self.thrust_left,
                 name='Left SGTB',color=cq.Color('gray50'))
+
+        if 'stl' or 'STL' in settings:
+            cq.exporters.export(self.thrust_left, self.cwf + '/STL/SGTB Left.stl')
 
         assembly.save(self.cwf  + '/STEP/SGTB Left.step')
 

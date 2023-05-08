@@ -15,7 +15,7 @@ class Impeller():
     #defining the class constructor
     def __init__(self):
         self.auto_Rrot = True
-        self.cwf = os.getcwd()
+        self.cwf = os.getcwd().replace("\\", "/")
 
     #defining a method to extract the impeller parameters from the pickle file in mm
     def parameters_impeller(self,Element):     
@@ -244,8 +244,7 @@ class Impeller():
                 .translate((-abs(self.L_imp-self.shift),0,0))
                 .rotate((0,0,0),(0,1,0),-90)
                 .rotate((0,0,0),(0,0,1),90))
-                
-    
+                          
         assembly = cq.Assembly(name = 'Turboompressor Hub')
         assembly.add(hub,color=cq.Color('red3'), name = 'Hub')
 
@@ -338,5 +337,17 @@ class Impeller():
             #rotating about the x axis by the corresponding angle
             blade[i+1] = (blade[i].transformed((0,0,360/self.N_bld)))
             assembly.add(blade[i+1],color=cq.Color('red3'), name = bladename + ' ' + str(i+2))
+
+        return assembly
+    
+    def assemble(self,files,*settings):
+        assembly = cq.Assembly(name='Compressor')
+        for i in range(0,len(files)):
+            assembly.add(files[i],name='Subassembly '+str(i+1))
+
+        if 'stl' or 'STL' in settings:
+            cq.exporters.export(assembly.toCompound(), self.cwf + '/STL/Compressor.stl')
+
+        assembly.save(self.cwf  + '/STEP/Compressor.step')
 
         return assembly
