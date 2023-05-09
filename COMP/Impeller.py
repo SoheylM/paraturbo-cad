@@ -259,8 +259,16 @@ class Impeller():
         
         #reading the excel file with blade points
         excelfile = self.cwf  + '/COMP/' + filename
-        #df_blade = pd.read_excel(io=excelfile,header=None)
-        df_blade = pd.read_excel(excelfile,engine='openpyxl',header=None)
+
+        split_string = excelfile.split('.')
+        last_element = split_string[-1]
+        
+        if last_element == 'xls':
+            df_blade = pd.read_excel(io=excelfile,header=None)
+        elif last_element == 'xlsx':
+            df_blade = pd.read_excel(excelfile,engine='openpyxl',header=None)
+        else:
+            raise TypeError('Impeller.blades_excel: Provide a valid excel file.')
         
         #setting index markers to indicate start and end of storing values
         start = None
