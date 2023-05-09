@@ -63,32 +63,38 @@ yp2 = -LenBetwVert*tan(Betaprime)
 xp2 = -LenBetwVert
 
 #draw first parallelogram as a 3D shape in YX plane
-parallelogram1 = (
-     cq.Workplane("YX", origin=((gap+a)/2, yp1, -2*CylRadOut))
-     #when viewed / \, y to the right and x up, z into screen
-     #origin at upper outside corner
-     #points below in standard x and y coordinates
-     .lineTo(-LenBetwVert,-gap) #upper inside corner 
-     .lineTo(-LenBetwVert,-gap-a) #lower inside corner
-     .lineTo(0,-a) #lower outside corner
-     .close()
-     .extrude(1)
-     .faces("<Z")
-     .val()
- )
-
 # parallelogram1 = (
-#      cq.Workplane("YX", origin=(10, 30, -2*CylRadOut))
+#      cq.Workplane("YX", origin=((gap+a)/2, yp1-1, -2*CylRadOut))
 #      #when viewed / \, y to the right and x up, z into screen
 #      #origin at upper outside corner
-#      .lineTo(-30,10) #upper inside corner 
-#      .lineTo(-30,0) #lower inside corner
-#      .lineTo(0,-10) #lower outside corner
+#      #points below in standard x and y coordinates
+#      .lineTo(-LenBetwVert,-gap) #upper inside corner 
+#      .lineTo(-LenBetwVert,-gap-a) #lower inside corner
+#      .lineTo(0,-a) #lower outside corner
 #      .close()
 #      .extrude(1)
 #      .faces("<Z")
 #      .val()
 #  )
+
+
+#height between outer top and inner top
+h=60
+#vertical height
+v=1
+
+parallelogram1 = (
+      cq.Workplane("YX", origin=((h+v)/2, 40, -2*CylRadOut))
+      #when viewed / \, y to the right and x up, z into screen
+      #origin at upper outside corner
+      .lineTo(-40,-h) #upper inside corner 
+      .lineTo(-40,-h-v) #lower inside corner
+      .lineTo(0,-v) #lower outside corner
+      .close()
+      .extrude(1)
+      .faces("<Z")
+      .val()
+  )
 
 #draw second parallelogram as a 3D shape in YX plane
 # parallelogram2 = (
@@ -103,14 +109,14 @@ parallelogram1 = (
 #      .faces("<Z")
 #      .val()
 #  )
-# #project first parallelogram onto cylinder
-# parallelogram1_projected = parallelogram1.projectToShape(cylinder, projection_direction)
+#project first parallelogram onto cylinder
+parallelogram1_projected = parallelogram1.projectToShape(cylinder, projection_direction)
 
-# #turn first parallelogram into 3D shape on cylinder surface
-# parallelogram1_solids = cq.Compound.makeCompound(
-#      [f.thicken(2) for f in parallelogram1_projected]
-#  )
-# parallelogram1_solids = parallelogram1_solids.cut(removalcylinder)
+#turn first parallelogram into 3D shape on cylinder surface
+parallelogram1_solids = cq.Compound.makeCompound(
+      [f.thicken(2) for f in parallelogram1_projected]
+  )
+parallelogram1_solids = parallelogram1_solids.cut(removalcylinder)
 
 # #project second parallelogram onto cylinder
 # parallelogram2_projected = parallelogram2.projectToShape(cylinder, projection_direction)
@@ -124,10 +130,10 @@ parallelogram1 = (
 
 # #removes the projected parallelogram 3D objects from the cylinder
 
-# for i in range(units):
-#     cylinder = cylinder.cut(parallelogram1_solids)
-#     cylinder = cylinder.cut(parallelogram2_solids)
-#     cylinder = cylinder.transformed(rotate=(0,sepang,0))
+for i in range(units):
+    cylinder = cylinder.cut(parallelogram1_solids)
+    #cylinder = cylinder.cut(parallelogram2_solids)
+    cylinder = cylinder.transformed(rotate=(0,sepang,0))
 
 # cylinder=cylinder.transformed(rotate=(0,0,0))
 
