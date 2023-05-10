@@ -70,8 +70,17 @@ h_rr_tot = h_rr*2 #diametral clearance given in micrometers
 dist1 = 0
 for d in range(pos_hgjb1):
     dist1=dist1+Laenge[d]
+    
+#find distance to first HGJB
+dist2 = 0
+for d in range(pos_hgjb2):
+    dist2=dist2+Laenge[d]
+    
 #find distance to center of first HGJB
 DistCenter1=dist1+L/2
+
+#find distance to center of second HGJB
+DistCenter2=dist2+L/2
 
 #define separation angle between grooves
 sepang=360/N_HG
@@ -87,31 +96,44 @@ Betaprime = abs(beta_HG) - 90
 
 gap = LenBetwVert*tan(Betaprime)
 
-#create removal cylinder
-CylLen = Laenge[pos_hgjb1]
-CylRadOut= DA3[pos_hgjb1]/2
+#create removal cylinder1
+CylLen1 = Laenge[pos_hgjb1]
+CylRadOut1= DA3[pos_hgjb1]/2
 
-#cylinder to be projected onto
-cylinder = cq.Solid.makeCylinder(
-     CylRadOut, CylLen+2, pnt=cq.Vector(0, DistCenter1+L/2+1, 0), dir=cq.Vector(0, -1, 0)
+#create removal cylinder2
+CylLen2 = Laenge[pos_hgjb2]
+CylRadOut2= DA3[pos_hgjb2]/2
+
+#first cylinder to be projected onto
+cylinder1 = cq.Solid.makeCylinder(
+     CylRadOut1, CylLen1+2, pnt=cq.Vector(0, DistCenter1+L/2+1, 0), dir=cq.Vector(0, -1, 0)
+)
+#first removal cylinder
+removalcylinder1 = cq.Solid.makeCylinder(
+      CylRadOut1*2, CylLen1, pnt=cq.Vector(0, DistCenter1+L/2, -DA3[pos_hgjb1]*0.8), dir=cq.Vector(0, -1, 0)
 )
 
-removalcylinder = cq.Solid.makeCylinder(
-      CylRadOut*2, CylLen, pnt=cq.Vector(0, DistCenter1+L/2, -DA3[pos_hgjb1]*0.8), dir=cq.Vector(0, -1, 0)
+#second cylinder to be projected onto
+cylinder2 = cq.Solid.makeCylinder(
+     CylRadOut2, CylLen2+2, pnt=cq.Vector(0, DistCenter2+L/2+1, 0), dir=cq.Vector(0, -1, 0)
+)
+#second removal cylinder
+removalcylinder2 = cq.Solid.makeCylinder(
+      CylRadOut2*2, CylLen2, pnt=cq.Vector(0, DistCenter2+L/2, -DA3[pos_hgjb1]*0.8), dir=cq.Vector(0, -1, 0)
 )
 
 #direction of projection 
 projection_direction = cq.Vector(0, 0, 1)
 
 #global coordinates of origin of parallelogram1
-yp1 = DistCenter1+L/2
+# yp1 = DistCenter1+L/2
 xp1 = LenBetwVert*tan(Betaprime)/2 
 yp2 = -LenBetwVert*tan(Betaprime)
 xp2 = -LenBetwVert
 
-#draw first parallelogram as a 3D shape in YX plane
-parallelogram1 = (
-      cq.Workplane("YX", origin=((gap+a_HG)/2, yp1, -2*CylRadOut))
+
+parallelogram1a = (
+      cq.Workplane("YX", origin=((gap+a_HG)/2, DistCenter1+L/2, -2*CylRadOut1))
       #when viewed / \, y to the right and x up, z into screen
       #origin at upper outside corner
       #points below in standard x and y coordinates
@@ -124,8 +146,8 @@ parallelogram1 = (
       .val()
   )
 
-parallelogram2 = (
-      cq.Workplane("YX", origin=((gap+a_HG)/2, DistCenter1-L/2, -2*CylRadOut))
+parallelogram2a = (
+      cq.Workplane("YX", origin=((gap+a_HG)/2, DistCenter1-L/2, -2*CylRadOut1))
       #when viewed / \, y to the right and x up, z into screen
       #origin at upper outside corner
       #points below in standard x and y coordinates
@@ -138,24 +160,72 @@ parallelogram2 = (
       .val()
   )
 
+parallelogram1b = (
+      cq.Workplane("YX", origin=((gap+a_HG)/2, DistCenter2+L/2, -2*CylRadOut2))
+      #when viewed / \, y to the right and x up, z into screen
+      #origin at upper outside corner
+      #points below in standard x and y coordinates
+      .lineTo(-LenBetwVert,-gap) #upper inside corner 
+      .lineTo(-LenBetwVert,-gap-a_HG) #lower inside corner
+      .lineTo(0,-a_HG) #lower outside corner
+      .close()
+      .extrude(1)
+      .faces("<Z")
+      .val()
+  )
+
+parallelogram2b = (
+      cq.Workplane("YX", origin=((gap+a_HG)/2, DistCenter2-L/2, -2*CylRadOut2))
+      #when viewed / \, y to the right and x up, z into screen
+      #origin at upper outside corner
+      #points below in standard x and y coordinates
+      .lineTo(LenBetwVert,-gap) #upper inside corner 
+      .lineTo(LenBetwVert,-gap-a_HG) #lower inside corner
+      .lineTo(0,-a_HG) #lower outside corner
+      .close()
+      .extrude(1)
+      .faces("<Z")
+      .val()
+  )
+
+#fist HGJB
 #project first parallelogram onto cylinder
-parallelogram1_projected = parallelogram1.projectToShape(cylinder, projection_direction)
+parallelogram1a_projected = parallelogram1a.projectToShape(cylinder1, projection_direction)
 
 #turn first parallelogram into 3D shape on cylinder surface
-parallelogram1_solids = cq.Compound.makeCompound(
-      [f.thicken(h_gr/1000) for f in parallelogram1_projected]
+parallelogram1a_solids = cq.Compound.makeCompound(
+      [f.thicken(h_gr/1000) for f in parallelogram1a_projected]
   )
-parallelogram1_solids = parallelogram1_solids.cut(removalcylinder)
+parallelogram1a_solids = parallelogram1a_solids.cut(removalcylinder1)
 
 #project second parallelogram onto cylinder
-parallelogram2_projected = parallelogram2.projectToShape(cylinder, projection_direction)
+parallelogram2a_projected = parallelogram2a.projectToShape(cylinder1, projection_direction)
 
 #turn first parallelogram into 3D shape on cylinder surface
-parallelogram2_solids = cq.Compound.makeCompound(
-      [f.thicken(h_gr/1000) for f in parallelogram2_projected]
+parallelogram2a_solids = cq.Compound.makeCompound(
+      [f.thicken(h_gr/1000) for f in parallelogram2a_projected]
   )
-parallelogram2_solids = parallelogram2_solids.cut(removalcylinder)
+parallelogram2a_solids = parallelogram2a_solids.cut(removalcylinder1)
 
+
+#second HGJB
+#project first parallelogram onto cylinder
+parallelogram1b_projected = parallelogram1b.projectToShape(cylinder2, projection_direction)
+
+#turn first parallelogram into 3D shape on cylinder surface
+parallelogram1b_solids = cq.Compound.makeCompound(
+      [f.thicken(h_gr/1000) for f in parallelogram1b_projected]
+  )
+parallelogram1b_solids = parallelogram1b_solids.cut(removalcylinder2)
+
+#project second parallelogram onto cylinder
+parallelogram2b_projected = parallelogram2b.projectToShape(cylinder2, projection_direction)
+
+#turn first parallelogram into 3D shape on cylinder surface
+parallelogram2b_solids = cq.Compound.makeCompound(
+      [f.thicken(h_gr/1000) for f in parallelogram2b_projected]
+  )
+parallelogram2b_solids = parallelogram2b_solids.cut(removalcylinder2)
 
 # for i in range(N_HG):
 #     cylinder = cylinder.cut(parallelogram1_solids)
@@ -163,14 +233,19 @@ parallelogram2_solids = parallelogram2_solids.cut(removalcylinder)
 #     cylinder = cylinder.transformed(rotate=(0,sepang,0))
 
 for i in range(N_HG):
-    Rotor = Rotor.cut(parallelogram1_solids)
-    Rotor = Rotor.cut(parallelogram2_solids)
+    Rotor = Rotor.cut(parallelogram1a_solids)
+    Rotor = Rotor.cut(parallelogram2a_solids)
+    Rotor = Rotor.cut(parallelogram1b_solids)
+    Rotor = Rotor.cut(parallelogram2b_solids)
     Rotor = Rotor.rotate((0,0,0),(0,1,0),sepang)
 
+Rotor = Rotor.rotate((0,0,0),(1,0,0),-270)
 
 show_object(Rotor)
-#show_object(removalcylinder)
+#show_object(removalcylinder1)
 #show_object(cylinder)
-show_object(parallelogram1, name="parallelogram1")
-show_object(parallelogram2, name="parallelogram2")
-#show_object(parallelogram1_solids, name="parallelogram1_solids")
+# show_object(parallelogram1a, name="parallelogram1a")
+# show_object(parallelogram2a, name="parallelogram2a")
+# show_object(parallelogram1b, name="parallelogram1b")
+# show_object(parallelogram2b, name="parallelogram2b")
+#show_object(parallelogram1a_solids, name="parallelogram1a_solids")
