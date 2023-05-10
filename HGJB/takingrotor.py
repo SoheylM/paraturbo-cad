@@ -124,7 +124,19 @@ parallelogram1 = (
       .val()
   )
 
-
+parallelogram2 = (
+      cq.Workplane("YX", origin=((gap+a_HG)/2, DistCenter1-L/2, -2*CylRadOut))
+      #when viewed / \, y to the right and x up, z into screen
+      #origin at upper outside corner
+      #points below in standard x and y coordinates
+      .lineTo(LenBetwVert,-gap) #upper inside corner 
+      .lineTo(LenBetwVert,-gap-a_HG) #lower inside corner
+      .lineTo(0,-a_HG) #lower outside corner
+      .close()
+      .extrude(1)
+      .faces("<Z")
+      .val()
+  )
 
 #project first parallelogram onto cylinder
 parallelogram1_projected = parallelogram1.projectToShape(cylinder, projection_direction)
@@ -135,14 +147,30 @@ parallelogram1_solids = cq.Compound.makeCompound(
   )
 parallelogram1_solids = parallelogram1_solids.cut(removalcylinder)
 
+#project second parallelogram onto cylinder
+parallelogram2_projected = parallelogram2.projectToShape(cylinder, projection_direction)
+
+#turn first parallelogram into 3D shape on cylinder surface
+parallelogram2_solids = cq.Compound.makeCompound(
+      [f.thicken(h_gr/1000) for f in parallelogram2_projected]
+  )
+parallelogram2_solids = parallelogram2_solids.cut(removalcylinder)
+
+
+# for i in range(N_HG):
+#     cylinder = cylinder.cut(parallelogram1_solids)
+#     #cylinder = cylinder.cut(parallelogram2_solids)
+#     cylinder = cylinder.transformed(rotate=(0,sepang,0))
+
 for i in range(N_HG):
-    cylinder = cylinder.cut(parallelogram1_solids)
-    #cylinder = cylinder.cut(parallelogram2_solids)
-    cylinder = cylinder.transformed(rotate=(0,sepang,0))
+    Rotor = Rotor.cut(parallelogram1_solids)
+    Rotor = Rotor.cut(parallelogram2_solids)
+    Rotor = Rotor.rotate((0,0,0),(0,1,0),sepang)
 
 
-#show_object(Rotor)
+show_object(Rotor)
 #show_object(removalcylinder)
-show_object(cylinder)
+#show_object(cylinder)
 show_object(parallelogram1, name="parallelogram1")
-show_object(parallelogram1_solids, name="parallelogram1_solids")
+show_object(parallelogram2, name="parallelogram2")
+#show_object(parallelogram1_solids, name="parallelogram1_solids")
