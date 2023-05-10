@@ -136,18 +136,9 @@ class Impeller():
         self.beta_2s = beta_2s 
         self.N_bld = N_bld 
 
-        
-
         if 'auto_rotor' in settings:
             #automatically defining the radius of the rotor from the pickle file
             self.R_rot = (Element['parameters']['comp1']['Rrot'])*1000
-
-            '''
-            for k in range(len(self.Laenge)):
-                if self.elem_type1[k]!='COMP1' or self.elem_type2[k]!='COMP1' or self.elem_type3[k]!='COMP1':
-                            break
-            self.R_rot = self.DA3[k]/2
-            '''
 
         if 'manual_rotor' in settings:
             self.R_rot = R_rot
@@ -156,7 +147,12 @@ class Impeller():
             self.R_rot = (Element['parameters']['comp1']['Rrot'])*1000
             
         #---------------------OR
-
+            '''
+            for k in range(len(self.Laenge)):
+                if self.elem_type1[k]!='COMP1' or self.elem_type2[k]!='COMP1' or self.elem_type3[k]!='COMP1':
+                            break
+            self.R_rot = self.DA3[k]/2
+            '''
 
         #defining calculated geometrical parameters
         self.phi = 1.618
@@ -173,6 +169,7 @@ class Impeller():
 
     # defining a method to model the hub
     def hub(self,*settings):
+
         if 'section view' in settings:
             bottom_hub = False
         else:
@@ -187,10 +184,10 @@ class Impeller():
         c = r_4/phi
         e =(r_4/(phi**2))-b_6
         L_imp = r_2h+c+b_6+e
-        delta_x = b_6/3
 
         # tolerance to control the smoothness of the hub profile
-        self.step_hub=100
+        delta_x = b_6/3
+        # self.step_hub=100
 
         #initializing the x and y coordinate arrays
         self.x_hub = np.arange(0,L_imp,delta_x)
@@ -260,6 +257,7 @@ class Impeller():
         #reading the excel file with blade points
         excelfile = self.cwf  + '/COMP/' + filename
 
+        #detects the type of spreadsheet inputted to use the correct reading command
         split_string = excelfile.split('.')
         last_element = split_string[-1]
         
@@ -348,6 +346,7 @@ class Impeller():
 
         return assembly
     
+    #defining a method to combine the impeller components in a common assembly
     def assemble(self,files,*settings):
         assembly = cq.Assembly(name='Compressor')
         for i in range(0,len(files)):

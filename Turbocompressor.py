@@ -103,9 +103,9 @@ SGTBs = DesignSGTB.combined('stl')
 # SGTB_right = DesignSGTB.right('stl')
 # SGTB_left = DesignSGTB.left('stl')
 
-# # show_object(SGTBs, name='SGTBs')
-# # show_object(SGTB_right, name='SGTB Right')
-# # show_object(SGTB_left, name='SGTB Left')
+# show_object(SGTBs, name='SGTBs')
+# show_object(SGTB_right, name='SGTB Right')
+# show_object(SGTB_left, name='SGTB Left')
 
 '''
 Rotor Construction
@@ -129,14 +129,50 @@ Rotor = DesignRotor.CAD('color','stl')
 
 # show_object(Rotor, name='Rotor')
 
+
 '''
-joseph manual how to use methods like dog sample
+Impeller Construction
+.parameters_impeller:
+    - extracts the parameters from a pickle file
+    - input Element(dictionary)
+
+.manualparams_impeller:
+    - user defines parameters manually
+    - input Element(dictionary), r_4(float), r_2s(float) ,beta_4(float) ,b_4(float) ,r_1(float), r_2h(float),
+      r_5(float), e_bld(float), e_tip(float), e_back(float), L_ind(float), beta_2(float), beta_2s(float), N_bld(integer), R_rot(float)
+    - for a custom rotor radius input 'manual_rotor' in the end
+    - for using the rotor radius from the pickle file input 'auto_rotor' in the end
+    - should not be used together with .parameters_impeller
+
+.hub:
+    - models the hub
+    - for section view input 'section view' in the end
+
+.blades_excel:
+    - retrieves the coordinates of the blades from an excel file
+    - input excel 'filename'(string)
+
+.model_blades:
+    - models the blades
+    - used after .blades_excel
+    - input result of .blades_excel
+
+.rotate_blade(self,blade,bladename):
+    - patterns the blades
+    - input result of .model_blades, 'bladename'(string)
+
+.assemble(self,files,*settings)
+    - combines the impeller components in a common assembly and exports
+    - input result of .hub, results of .rotate_blade
+    - for exporting  as an atl file input 'stl' or 'STL' in the end
+    - exports by default as step
 '''
+
 
 Imp = Impeller()
 
 #Imp.parameters_impeller(Element)
-Imp.manualparams_impeller(Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot,'sfrew')
+Imp.manualparams_impeller(Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot,'auto_rotor')
 
 Hub = Imp.hub()
 
