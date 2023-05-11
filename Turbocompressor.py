@@ -171,23 +171,24 @@ Impeller Construction
 
 Imp = Impeller()
 
-#Imp.parameters_impeller(Element)
-Imp.manualparams_impeller(Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot,'auto_rotor')
+Imp.parameters_impeller(Element)
+# Imp.manualparams_impeller(Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot,'auto_rotor')
 
 Hub = Imp.hub()
+show_object(Hub)
 
-Coords_mainblades = Imp.blades_excel('coordinates_blade_new.xlsx')
-Mainblade = Imp.model_blades(Coords_mainblades)
-Mainblades = Imp.rotate_blade(Mainblade,'Main Blade')
+# Coords_mainblades = Imp.blades_excel('coordinates_blade_new.xlsx')
+# Mainblade = Imp.model_blades(Coords_mainblades)
+# Mainblades = Imp.rotate_blade(Mainblade,'Main Blade')
 
-Coords_splitterblades = Imp.blades_excel('coordinates_splitter_new.xlsx')
-Splitterblade = Imp.model_blades(Coords_splitterblades)
-Splitterblades = Imp.rotate_blade(Splitterblade,'Splitter Blade')
+# Coords_splitterblades = Imp.blades_excel('coordinates_splitter_new.xlsx')
+# Splitterblade = Imp.model_blades(Coords_splitterblades)
+# Splitterblades = Imp.rotate_blade(Splitterblade,'Splitter Blade')
 
-Compressor = Imp.assemble((Hub,Mainblades,Splitterblades),'stl')
+# Compressor = Imp.assemble((Hub,Mainblades,Splitterblades),'stl')
 
-show_object(Compressor, name = 'Compressor')
+# show_object(Compressor, name = 'Compressor')
 
-DesignTurbocompressor.assemble((Rotor,SGTBs,Hub,Mainblades,Splitterblades),'Turbocompressor')
+# DesignTurbocompressor.assemble((Rotor,SGTBs,Hub,Mainblades,Splitterblades),'Turbocompressor')
 
 print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')

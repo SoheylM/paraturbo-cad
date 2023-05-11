@@ -178,24 +178,24 @@ class Impeller():
         r_2h = self.r_2h
         r_4 = self.r_4
         b_4 = self.b_4
+        R_rot = self.R_rot  
         
         phi = 1.618
         b_6 = b_4/phi
         c = r_4/phi
         e =(r_4/(phi**2))-b_6
         L_imp = r_2h+c+b_6+e
-
         # tolerance to control the smoothness of the hub profile
         delta_x = b_6/3
-        # self.step_hub=100
 
         #initializing the x and y coordinate arrays
-        self.x_hub = np.arange(0,L_imp,delta_x)
+        n_hub = int(np.round((L_imp+(R_rot/3))/delta_x))
+        self.x_hub = np.linspace(0,L_imp+(R_rot/3), num = n_hub)
         self.y_hub=[]
         self.y_hub.insert(0,0)
 
-        #dividing the hub into 4 parts: hub_1,hub_2,hub_3,hub_4
-        #looping over the 4 parts to update the x and y coordinates
+        #dividing the hub into 5 parts: hub_1,hub_2,hub_3,hub_4,hub_5
+        #looping over the 5 parts to update the x and y coordinates
         for i in range(0,len(self.x_hub)):
 
         #hub_1
@@ -210,13 +210,17 @@ class Impeller():
 
         #hub_3
             if (self.x_hub[i]>=r_2h+c)&(self.x_hub[i]<=r_2h+c+b_6):
-                self.y_hub[i]=r_4
+                self.y_hub[i] = r_4
                 self.y_hub.insert(i,self.y_hub[i])
 
         #hub_4
             if (self.x_hub[i]>=r_2h+c+b_6)&(self.x_hub[i]<=L_imp):
-
                 self.y_hub[i] = eval('self.r_4-((self.f**2)-((self.f/self.e)**2)*((self.x_hub[i]-self.L_imp)**2))**0.5')
+                self.y_hub.insert(i,self.y_hub[i])
+
+        #hub_5
+            if (self.x_hub[i]>=L_imp)&(self.x_hub[i]<=L_imp+(R_rot/3)):
+                self.y_hub[i] = R_rot
                 self.y_hub.insert(i,self.y_hub[i])
 
         #grouping the x and y coordinates into tuples
