@@ -99,7 +99,7 @@ cylinder1 = cq.Solid.makeCylinder(
 )
 #first removal cylinder
 removalcylinder1 = cq.Solid.makeCylinder(
-      CylRadOut1*2, CylLen1, pnt=cq.Vector(0, DistCenter1+L/2, -DA3[pos_hgjb1]*0.8), dir=cq.Vector(0, -1, 0)
+      CylRadOut1*2, CylLen1, pnt=cq.Vector(0, DistCenter1+2*L, -DA3[pos_hgjb1]*0.8), dir=cq.Vector(0, -1, 0)
 )
 
 
@@ -160,19 +160,33 @@ parallelogram1c = (
 #fist HGJB
 #project first parallelogram onto cylinder
 parallelogram1a_projected = parallelogram1a.projectToShape(cylinder1, projection_direction)
+parallelogram1b_projected = parallelogram1b.projectToShape(cylinder1, projection_direction)
+parallelogram1c_projected = parallelogram1c.projectToShape(cylinder1, projection_direction)
 
 #turn first parallelogram into 3D shape on cylinder surface
 parallelogram1a_solids = cq.Compound.makeCompound(
       [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelogram1a_projected]
   )
+
+parallelogram1b_solids = cq.Compound.makeCompound(
+      [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelogram1b_projected]
+  )
+
+parallelogram1c_solids = cq.Compound.makeCompound(
+      [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelogram1c_projected]
+  )
+
 #parallelogram1a_solids = parallelogram1a_solids.cut(removalcylinder1)
 
-
+rotang = 24.5
 cylinder1 = cylinder1.cut(parallelogram1a_solids)
-
+cylinder1 = cylinder1.rotate((0,0,0),(0,1,0),rotang)
+cylinder1 = cylinder1.cut(parallelogram1b_solids)
+cylinder1 = cylinder1.rotate((0,0,0),(0,1,0),rotang)
+cylinder1 = cylinder1.cut(parallelogram1c_solids)
 
 #show_object(removalcylinder1)
-show_object(cylinder1, options={"alpha": 0.8})
+show_object(cylinder1) #, options={"alpha": 0.8}
 show_object(parallelogram1a, name="parallelogram1a")
 show_object(parallelogram1b, name="parallelogram1b")
 show_object(parallelogram1c, name="parallelogram1c")
