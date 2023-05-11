@@ -103,7 +103,7 @@ SGTBs = DesignSGTB.combined('stl')
 # SGTB_right = DesignSGTB.right('stl')
 # SGTB_left = DesignSGTB.left('stl')
 
-# show_object(SGTBs, name='SGTBs')
+show_object(SGTBs, name='SGTBs')
 # show_object(SGTB_right, name='SGTB Right')
 # show_object(SGTB_left, name='SGTB Left')
 
@@ -127,7 +127,7 @@ DesignRotor.parameters(Element)
 # DesignRotor.parameters_manual(Length,DI1,DI2,DI3,DO1,DO2,DO3,elem_type1=types1,elem_type2=types2,elem_type3=types3)
 Rotor = DesignRotor.CAD('color','stl')
 
-# show_object(Rotor, name='Rotor')
+show_object(Rotor, name='Rotor')
 
 
 '''
@@ -176,17 +176,17 @@ Imp.manualparams_impeller(Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e
 
 Hub = Imp.hub()
 
-Coords_mainblades = Imp.blades_excel('coordinates_blade_n200.xlsx')
+Coords_mainblades = Imp.blades_excel('coordinates_blade_new.xlsx')
 Mainblade = Imp.model_blades(Coords_mainblades)
 Mainblades = Imp.rotate_blade(Mainblade,'Main Blade')
 
-Coords_splitterblades = Imp.blades_excel('coordinates_blade_n200.xlsx')
+Coords_splitterblades = Imp.blades_excel('coordinates_splitter_new.xlsx')
 Splitterblade = Imp.model_blades(Coords_splitterblades)
 Splitterblades = Imp.rotate_blade(Splitterblade,'Splitter Blade')
 
 Compressor = Imp.assemble((Hub,Mainblades,Splitterblades),'stl')
 
-# show_object(Compressor, name = 'Compressor')
+show_object(Compressor, name = 'Compressor')
 
 DesignTurbocompressor.assemble((Rotor,SGTBs,Hub,Mainblades,Splitterblades),'Turbocompressor')
 
