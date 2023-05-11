@@ -42,7 +42,7 @@ pos_hgjb2 =sys_pos['pos_hgjb2']
 #Parameters 
 N_HG = 28 #number of grooves generally between 26 - 30
 alpha_HG = 0.68 #given
-beta_HG = -135 #given 
+beta_HG = -160 #given 
 beta_HG = beta_HG*pi/180
 gamma_HG = 0.89 #given
 h_gr = 16 #groove depth given in micrometers
@@ -108,7 +108,7 @@ removalcylinder1 = cq.Solid.makeCylinder(
 
 
 #direction of projection 
-projection_direction = cq.Vector(0, 0, 1)
+projection_direction = cq.Vector(0, 0, -1)
 
 #global coordinates of origin of parallelogram1
 # yp1 = DistCenter1+L/2
@@ -138,7 +138,7 @@ parallelogram1a_projected = parallelogram1a.projectToShape(cylinder1, projection
 
 #turn first parallelogram into 3D shape on cylinder surface
 parallelogram1a_solids = cq.Compound.makeCompound(
-      [f.thicken(1) for f in parallelogram1a_projected]
+      [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelogram1a_projected]
   )
 #parallelogram1a_solids = parallelogram1a_solids.cut(removalcylinder1)
 
