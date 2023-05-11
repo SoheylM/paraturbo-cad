@@ -146,6 +146,7 @@ parallelogram1a = (
       .val()
   )
 
+      #when viewed / \, y to the right and x up, z into screen
 parallelogram2a = (
       cq.Workplane("YX", origin=((gap+a_HG)/2, DistCenter1-L/2, -2*CylRadOut1))
       #when viewed / \, y to the right and x up, z into screen
