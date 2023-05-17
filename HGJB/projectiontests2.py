@@ -117,7 +117,7 @@ xp2 = -LenBetwVert
 radang = gap/CylRadOut1
 
 #convert to degrees
-rotang = radang*180/pi
+rotang = radang*180/pi #+0.273
 
 #rotang = 24.5
 
