@@ -113,8 +113,13 @@ xp1 = LenBetwVert*tan(Betaprime)/2
 yp2 = -LenBetwVert*tan(Betaprime)
 xp2 = -LenBetwVert
 
+#calculate turn angle in radians
+radang = gap/CylRadOut1
 
-rotang = 24.5
+#convert to degrees
+rotang = radang*180/pi
+
+#rotang = 24.5
 
 parallelogram1a = (
       cq.Workplane("YX", origin=((gap+a_HG)/2, DistCenter1+L/2, 0))
