@@ -178,11 +178,11 @@ Imp.manualparams_impeller(Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e
 Hub = Imp.hub()
 show_object(Hub)
 
-Coords_mainblades = Imp.blades_excel('coordinates_blade_new.xlsx')
+Coords_mainblades = Imp.blades_excel('coordinates_blade_python.xlsx')
 Mainblade = Imp.model_blades(Coords_mainblades)
 Mainblades = Imp.rotate_blade(Mainblade,'Main Blade')
 
-Coords_splitterblades = Imp.blades_excel('coordinates_splitter_new.xlsx')
+Coords_splitterblades = Imp.blades_excel('coordinates_splitter_python.xlsx')
 Splitterblade = Imp.model_blades(Coords_splitterblades)
 Splitterblades = Imp.rotate_blade(Splitterblade,'Splitter Blade')
 
