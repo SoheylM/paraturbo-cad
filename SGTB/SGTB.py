@@ -8,8 +8,10 @@ class SGTB():
         self.cwf = os.getcwd().replace("\\", "/")
 
     def parameters(self,Element):
+        # Checks for information exist in dictionary
+        # Checks for are all needed keys are in Element, are all values have same lenght, is Element a dictionary
+        # If not raises an error
         if type(Element) == dict:
-        # Check for information exist in dictionary
             if all(x in Element.keys() for x in ['Laenge','DA3','sys_pos','parameters']) and \
                 all(x in Element['parameters'].keys() for x in ['sgtb']) and \
                     all(x in Element['parameters']['sgtb'].keys() for x in ['alpha','beta', 'hg', 'hr', 'Ri', 'Rg', 'Ro', 'gamma', 'L']):
@@ -36,6 +38,9 @@ class SGTB():
             raise TypeError('SGTB.parameters: Element type is not dictionary.')
         
     def parameters_manual(self,Length,DO3,pos_SGTB,alpha_SGTB,beta_SGTB,gamma_SGTB,hg_SGTB,hr_SGTB,Ri_SGTB,Rg_SGTB,R0_SGTB,L_SGTB):
+        # Checks for information exist in given input
+        # Checks for are all values have same lenght and type
+        # If not raises an error
         if type(Length) == list and type(DO3) == list:
                 if len(Length) == len(DO3):
                     # Taking variables from user
@@ -60,7 +65,7 @@ class SGTB():
         self.n_grooves = n_grooves
 
     def CAD(self,*settings):
-        # Parameters
+        # Parameters for constructing the SGTB
         Ri  = self.Ri                                        # on drawing - SGTB inner diameter
         R0  = self.R0                                        # on drawing - Rotor axial stop
         n_SG = self.n_grooves                                # number of grooves generally between 28 - 30
@@ -105,6 +110,7 @@ class SGTB():
         # Making list of coordinates for Cadquery spline function
         firstcurve = []; secondcurve = []; firstcircle = []; secondcircle = []
 
+        # Adding coordinates to a list
         for i in range(0,n):
             firstcurve.append((Groovy_up_x[i],Groovy_up_y[i]))
             secondcurve.append((Groovy_down_x[i],Groovy_down_y[i]))
@@ -114,11 +120,14 @@ class SGTB():
             secondcircle.append((Lower_arc_x[i], Lower_arc_y[i]))
 
         # CAD of the bearing
+        # Creating the workplane
         wp = cq.Workplane('XY')
+
         b_di = Ri*2
         b_do = np.round(R0*2*1.4,1)
         b_l = self.L
 
+        # Building the SGTB without grooves
         thrust_right = wp.cylinder(b_l,b_do/2,
         direct=(0,0,1),angle=360,centered=(True,True,False),
         combine=False,clean=True).faces('>Z').hole(b_di,depth=b_l,clean=True)
@@ -127,6 +136,9 @@ class SGTB():
         # Creating an empty curves dictionary and rotation angles
         curves = {}
 
+        if 'dramatize' in settings:
+            self.hg = self.hg * 150
+            
         # Rotating, drawing and opening the grooves
         for i in range(0,n_SG):
             wp = wp.transformed(rotate=(0,0,360/n_SG))
@@ -136,6 +148,7 @@ class SGTB():
             thrust_right = thrust_right.spline(firstcurve).spline(firstcircle)\
                 .spline(secondcurve).spline(secondcircle).close().cutBlind(self.hg,clean=True)
 
+        # Checks for section view
         if 'section view' in settings:
             thrust_right = thrust_right.rect(80,40,(-40,0)).cutThruAll()
 
@@ -160,9 +173,11 @@ class SGTB():
         self.pos_left = pos_left
 
     def mirror(self):
+        # Mirros the right SGTB to get the left SGTB
         self.thrust_left = self.thrust_right.mirror(mirrorPlane = 'XY')
 
     def combined(self,*settings):
+        # Creating an assembly file and adding SGTBs into it with or without color
         assembly = cq.Assembly(name='SGTB')
         if self.color == True:
             assembly.add(self.thrust_right,loc = cq.Location((0,0,self.pos_right),(1,0,0),0),
@@ -174,16 +189,19 @@ class SGTB():
                 name='Right SGTB',color=cq.Color('gray50'))
             assembly.add(self.thrust_left,loc = cq.Location((0,0,self.pos_left),(1,0,0),0),
                 name='Left SGTB',color=cq.Color('gray50'))
-        
+            
+        # Saves as stl if given in arguments
         if 'stl' or 'STL' in settings:
             cq.exporters.export(self.thrust_right, self.cwf + '/STL/SGTB Right.stl')
             cq.exporters.export(self.thrust_left, self.cwf + '/STL/SGTB Left.stl')
-
+        
+        # Saves as step
         assembly.save(self.cwf  + '/STEP/SGTBs.step')
 
         return assembly
 
     def right(self,*settings):
+        # Creating an assembly file and adding right SGTB into it with or without color
         assembly = cq.Assembly(name='SGTB')
         if self.color == True:
             assembly.add(self.thrust_right,
@@ -191,15 +209,18 @@ class SGTB():
         elif self.color == False:
             assembly.add(self.thrust_right,
                 name='Right SGTB',color=cq.Color('gray50'))
-            
+        
+        # Saves as stl if given in arguments
         if 'stl' or 'STL' in settings:
             cq.exporters.export(self.thrust_right, self.cwf + '/STL/SGTB Right.stl')
         
+        # Saves as step
         assembly.save(self.cwf  + '/STEP/SGTB Right.step')
 
         return assembly
     
     def left(self,*settings):
+        # Creating an assembly file and adding right SGTB into it with or without color
         assembly = cq.Assembly(name='SGTB')
         if self.color == True:
             assembly.add(self.thrust_left,
@@ -207,10 +228,12 @@ class SGTB():
         elif self.color == False:
             assembly.add(self.thrust_left,
                 name='Left SGTB',color=cq.Color('gray50'))
-
+        
+        # Saves as stl if given in arguments
         if 'stl' or 'STL' in settings:
             cq.exporters.export(self.thrust_left, self.cwf + '/STL/SGTB Left.stl')
-
+       
+        # Saves as step
         assembly.save(self.cwf  + '/STEP/SGTB Left.step')
 
         return assembly

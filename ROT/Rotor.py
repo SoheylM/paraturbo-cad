@@ -8,8 +8,10 @@ class Rotor():
         self.method = 'Joseph'
 
     def parameters(self,Element):
+        # Checks for information exist in dictionary
+        # Checks for are all needed keys are in Element, are all values have same lenght, is Element a dictionary
+        # If not raises an error
         if type(Element) == dict:
-            # Check for information exist in dictionary
             if all(x in Element.keys() for x in ['Laenge','DI1','DI2','DI3','DA1','DA2','DA3','elem_type1','elem_type2','elem_type3']):
                     if len(Element['Laenge']) == len(Element['DI1']) == len(Element['DI2'])  == len(Element['DI3']) == len(Element['DA1']) == len(Element['DA2']) == len(Element['DA3'])\
                         == len(Element['elem_type1']) == len(Element['elem_type2']) == len(Element['elem_type3']):
@@ -33,6 +35,9 @@ class Rotor():
             raise TypeError('Rotor.parameters: Element type is not dictionary.')
         
     def parameters_manual(self,Length,DI1,DI2,DI3,DO1,DO2,DO3,**elemtypes):
+        # Checks for element types if provided
+        # Checks for the length and type of the given element types and the inputs for the element types
+        # If not raises an error
         elemtypes_check = True
         if elemtypes:
             if 'elem_type1' in elemtypes and 'elem_type2' in elemtypes and 'elem_type3' in elemtypes:
@@ -70,8 +75,12 @@ class Rotor():
         else:
             self.method = 'manual'
 
+        # Checks for information exist in given input
+        # Checks for are all values have same lenght and type
+        # If not raises an error
         if type(Length) == list and type(DO3) == list and type(DO2) == list and type(DO1) == list and type(DI3) == list and type(DI2) == list and type(DI1) == list: 
                 if len(Length) == len(DI1) == len(DI2)  == len(DI3) == len(DO1) == len(DO2) == len(DO3):
+                    # Taking variables from user
                     self.length = np.array(Length)
                     self.DI1 = np.array(DI1)
                     self.DI2 = np.array(DI2)
@@ -85,7 +94,7 @@ class Rotor():
             raise TypeError('Rotor.parameters_manual: The type of the given variables are not suitable.')
         
     def CAD(self,*settings):
-        # Checking for section view
+        # Checking for section view in arguments
         if 'section view' in settings:
             sectionview = True
         else:
@@ -101,6 +110,7 @@ class Rotor():
         count_ROT = True
         count_MAG = True
 
+        # Creating the workplane
         wp = cq.Workplane('XY')
 
         for i in range(len(self.length)):
@@ -145,6 +155,7 @@ class Rotor():
 
         layers = [layer1, layer2, layer3]
 
+        # Enters if the element types are not given correctly or not given
         if self.method == 'manual':
             assembly = cq.Assembly(name = 'Rotor')
             color = ('red3','green4','blue3','gray50')
@@ -157,7 +168,11 @@ class Rotor():
                             assembly.add(layers[k][i], name = 'layer'+str(i+1)+'_'+str(k+1), color=cq.Color(color[3]))
 
             assembly.save(self.cwf  + '/STEP/Rotor.step')
-        
+
+            # Later convert this to raise Error and combine with HGJB code!!!           
+            print('Rotor.CAD: Rotor could not be provided due to missing element types.')
+
+        # Enters if the elements types are given correctly or a dictionary is used
         else:
             # Uniting cylinders according to their type
             for i in range(0,len(self.length)):
@@ -182,6 +197,7 @@ class Rotor():
                             else:
                                 PLUG = PLUG.union(layers[k][i])
 
+            # Adds parts to assembly with our without color
             if 'color' in settings:
                 assembly = cq.Assembly(name = 'Turbocompressor Rotor')
                 assembly.add(ROT, name = 'Rotor', color=cq.Color('green4'))
@@ -193,12 +209,14 @@ class Rotor():
                 assembly.add(PLUG, name = 'Plug', color=cq.Color('gray50'))
                 assembly.add(MAG, name = 'Magnet', color=cq.Color('gray50'))
 
+        # Saves as stl if given in arguments
         if 'stl' or 'STL' in settings:
             cq.exporters.export(ROT, self.cwf + '/STL/Rotor.stl')
             cq.exporters.export(PLUG, self.cwf + '/STL/Plug.stl')
             cq.exporters.export(MAG, self.cwf + '/STL/Magnet.stl')
             # cq.exporters.export(assembly.toCompound(), self.cwf + '/STL/Turbocompressor Rotor.stl')
         
+        # Saves as step
         cq.exporters.export(ROT, self.cwf + '/HGJB/Rotor.stp', cq.exporters.ExportTypes.STEP)
         assembly.save(self.cwf  + '/STEP/Rotor.step')
 

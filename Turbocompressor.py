@@ -70,22 +70,36 @@ e_back = 0.01
 SGTB Construction
 .parameters:
     input Element(dictionary)
+
 .parameters.manual:
     input Length(list), DO3(list), position(integer), alpha(float),
     beta(float), gamma(float), hg(float), hr(float), Ri(float),
     Rg(float), R0(float), L(float)
     should not be used together with .parameters
+
 .grooves:
     input number of grooves(integer)
     by defauly it is 28
+
 .CAD:
     generates the CAD of SGTB for grooves towards right
     for color input 'color' in the end
     for section view input 'section view' in the end
+    for dramatized groove depth for applications such as 3D printing input 'dramatize' in the end
+
+.mirror:
+    mirrors the right SGTB to get the left SGTB
+
 .combined:
     should be used together with .mirror
+    for saving as stl input 'stl' in the end
+
+.right:
+    for saving as stl input 'stl' in the end
+
 .left:
     should be used together with .mirror
+    for saving as stl input 'stl' in the end
 '''
 
 DesignTurbocompressor = Helper()
@@ -100,10 +114,10 @@ DesignSGTB.grooves(28)
 DesignSGTB.CAD('color')
 DesignSGTB.mirror()
 SGTBs = DesignSGTB.combined('stl')
-# SGTB_right = DesignSGTB.right('stl')
-# SGTB_left = DesignSGTB.left('stl')
+SGTB_right = DesignSGTB.right('stl')
+SGTB_left = DesignSGTB.left('stl')
 
-show_object(SGTBs, name='SGTBs')
+# show_object(SGTBs, name='SGTBs')
 # show_object(SGTB_right, name='SGTB Right')
 # show_object(SGTB_left, name='SGTB Left')
 
@@ -111,14 +125,19 @@ show_object(SGTBs, name='SGTBs')
 Rotor Construction
 .parameters:
     input Element(dictionary)
+
 .parameters.manual:
     input Length(list), DI1(list), DI2(list), DI3(list),
     DO1(list), DO2(list), DO3(list)
     should not be used together with .parameters
+    element types can be given in the end by specifying as
+    elem_type1 = (list), elem_type2 = (list), elem_type3=(list)
+
 .CAD:
     generates the CAD of rotor
     for color input 'color' in the end
     for section view input 'section view' in the end
+    for saving as stl input 'stl' in the end
 '''
 
 DesignRotor = Rotor()
@@ -127,7 +146,7 @@ DesignRotor.parameters(Element)
 # DesignRotor.parameters_manual(Length,DI1,DI2,DI3,DO1,DO2,DO3,elem_type1=types1,elem_type2=types2,elem_type3=types3)
 Rotor = DesignRotor.CAD('color','stl')
 
-show_object(Rotor, name='Rotor')
+# show_object(Rotor, name='Rotor')
 
 
 '''
@@ -176,7 +195,7 @@ Imp = Impeller()
 Imp.manualparams_impeller(Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot,'auto_rotor')
 
 Hub = Imp.hub()
-show_object(Hub)
+# show_object(Hub)
 
 Coords_mainblades = Imp.blades_excel('coordinates_blade_python.xlsx')
 Mainblade = Imp.model_blades(Coords_mainblades)
@@ -188,7 +207,7 @@ Splitterblades = Imp.rotate_blade(Splitterblade,'Splitter Blade')
 
 Compressor = Imp.assemble((Hub,Mainblades,Splitterblades),'stl')
 
-show_object(Compressor, name = 'Compressor')
+# show_object(Compressor, name = 'Compressor')
 
 # DesignTurbocompressor.assemble((Rotor,SGTBs,Hub,Mainblades,Splitterblades),'Turbocompressor')
 
