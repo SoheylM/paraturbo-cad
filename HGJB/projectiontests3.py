@@ -58,6 +58,14 @@ a_HG_plus_b_HG = a_HG/alpha_HG #mm
 h_rr_tot = h_rr*2 #diametral clearance given in micrometers
 #end code adapted from Christophe's Matlab
 
+# number of parallelograms discretized
+n_parall = 5
+
+# percentage epsilon of length to extend to avoid surfaces between parallelograms
+eps_perc = 0.001
+
+
+
 #find distance to first HGJB
 dist1 = 0
 for d in range(pos_hgjb1):
@@ -78,15 +86,16 @@ DistCenter2=dist2+L/2
 sepang=360/N_HG
 
 #length between parallelogram verticals
-LenBetwVert = L/2 - L_land/2
+LenBetwVert = (L/2 - L_land/2)/n_parall
 
 #Angle between parallelogram diagonal and reference horizontal
-Betaprime = abs(beta_HG) - 90
+Betaprime = abs(beta_HG)- pi/2# - 90
 
 #gap between horizontal leaving from parallelogram lowest 
 #corner and parallelogram vertical
 
 gap = LenBetwVert*tan(Betaprime)
+gap_spiral = (gap*Spiral_step)/LenBetwVert
 
 #create removal cylinder1
 CylLen1 = Laenge[pos_hgjb1]
@@ -103,7 +112,6 @@ removalcylinder1 = cq.Solid.makeCylinder(
 )
 
 
-
 #direction of projection 
 projection_direction = cq.Vector(0, 0, -1)
 
@@ -114,89 +122,47 @@ yp2 = -LenBetwVert*tan(Betaprime)
 xp2 = -LenBetwVert
 
 #calculate turn angle in radians
-radang = gap/CylRadOut1
+radang = (gap/CylRadOut1)#gap/CylRadOut1 #gap_spiral/(pi*D)# Betaprime #gap_spiral/pi*D #gap/CylRadOut1
 
 #convert to degrees
 rotang = radang*180/pi #+0.273
 
 #rotang = 24.5
 
-parallelogram1a = (
-      cq.Workplane("YX", origin=((gap+a_HG)/2, DistCenter1+L/2, 0))
-      #when viewed / \, y to the right and x up, z into screen
-      #origin at upper outside corner
-      #points below in standard x and y coordinates
-      .lineTo(-LenBetwVert,-gap) #upper inside corner 
-      .lineTo(-LenBetwVert,-gap-a_HG) #lower inside corner
-      .lineTo(0,-a_HG) #lower outside corner
-      .close()
-      .extrude(1)
-      .faces("<Z")
-      .val()
-  )
-
-parallelogram1b = (
-      cq.Workplane("YX", origin=((gap+a_HG)/2, DistCenter1+L/2+LenBetwVert, 0))
-      #when viewed / \, y to the right and x up, z into screen
-      #origin at upper outside corner
-      #points below in standard x and y coordinates
-      .lineTo(-LenBetwVert,-gap) #upper inside corner 
-      .lineTo(-LenBetwVert,-gap-a_HG) #lower inside corner
-      .lineTo(0,-a_HG) #lower outside corner
-      .close()
-      .extrude(1)
-      .faces("<Z")
-      .val()
-  )
-
-parallelogram1c = (
-      cq.Workplane("YX", origin=((gap+a_HG)/2, DistCenter1+L/2+2*LenBetwVert, 0))
-      #when viewed / \, y to the right and x up, z into screen
-      #origin at upper outside corner
-      #points below in standard x and y coordinates
-      .lineTo(-LenBetwVert,-gap) #upper inside corner 
-      .lineTo(-LenBetwVert,-gap-a_HG) #lower inside corner
-      .lineTo(0,-a_HG) #lower outside corner
-      .close()
-      .extrude(1)
-      .faces("<Z")
-      .val()
-  )
-
-
-#fist HGJB
-#project first parallelogram onto cylinder
-cylinder1 = cylinder1.rotate((0,0,0),(0,1,0),rotang)
-parallelogram1a_projected = parallelogram1a.projectToShape(cylinder1, projection_direction)
-parallelogram1b_projected = parallelogram1b.projectToShape(cylinder1, projection_direction)
-parallelogram1c_projected = parallelogram1c.projectToShape(cylinder1, projection_direction)
-
-
-
-parallelogram1a_solids = cq.Compound.makeCompound(
-      [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelogram1a_projected]
-  )
-cylinder1 = cylinder1.cut(parallelogram1a_solids)
-cylinder1 = cylinder1.rotate((0,0,0),(0,1,0),rotang)
-
-
-parallelogram1b_solids = cq.Compound.makeCompound(
-      [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelogram1b_projected]
-  )
-
-
-
-#turn first parallelogram into 3D shape on cylinder surface
-cylinder1 = cylinder1.cut(parallelogram1b_solids)
-cylinder1 = cylinder1.rotate((0,0,0),(0,1,0),rotang)
-
-parallelogram1c_solids = cq.Compound.makeCompound(
-      [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelogram1c_projected]
-  )
-
-#parallelogram1a_solids = parallelogram1a_solids.cut(removalcylinder1)
-
-cylinder1 = cylinder1.cut(parallelogram1c_solids)
+parallelograms = []
+parallelograms_projected = []
+for i in range(n_parall):
+    print('i=', i)
+    parallelogram = (
+          cq.Workplane("YX", origin=((gap+a_HG)/2, DistCenter1+L/2+i*LenBetwVert, 0))
+          #when viewed / \, y to the right and x up, z into screen
+          #origin at upper outside corner
+          #points below in standard x and y coordinates
+          .lineTo(-(LenBetwVert)*(1+eps_perc),-gap) #upper inside corner 
+          .lineTo(-(LenBetwVert)*(1+eps_perc),-gap-a_HG) #lower inside corner
+          .lineTo(0,-a_HG) #lower outside corner
+          .close()
+          .extrude(1)
+          .faces("<Z")
+          .val()
+      )
+    parallelograms.append(parallelogram)
+    
+for i in range(n_parall):
+    if i == 0:
+        cylinder1 = cylinder1.rotate((0,0,0),(0,1,0),rotang)
+    parallelogram_projected = parallelograms[i].projectToShape(cylinder1, projection_direction)
+    parallelograms_projected.append(parallelogram_projected)
+        
+for i in range(n_parall):        
+    parallelogram_solids = cq.Compound.makeCompound(
+        [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i]]
+    )
+    cylinder1 = cylinder1.cut(parallelogram_solids)
+    if i == n_parall-1:
+        pass
+    else:
+        cylinder1 = cylinder1.rotate((0,0,0),(0,1,0),rotang)
 
 #show_object(removalcylinder1)
 show_object(cylinder1) #, options={"alpha": 0.8}
