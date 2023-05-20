@@ -292,7 +292,7 @@ class Impeller():
                     points_blade[len(points_blade)] = df_blade.iloc[start:end,:]
                 start = None
                 end = None
-        
+
         #grouping the curve x,y,z coordinates in tuples
         for i in range(len(points_blade)):
             coords_blade[i] = list(zip(points_blade[i].iloc[:,0].astype(float),\
@@ -305,8 +305,8 @@ class Impeller():
     def model_blades(self,coords):
                 
         #Adding the first point of the curve to the end of its point array to close it
-        coords[0].append(coords[0][0])
-        coords[len(coords)-1].append(coords[len(coords)-1][0])
+            # coords[0].append(coords[0][0])
+            # coords[len(coords)-1].append(coords[len(coords)-1][0])
         
         #initializing lists to store the solids
         blade_solid={}
@@ -362,3 +362,49 @@ class Impeller():
         assembly.save(self.cwf  + '/STEP/Compressor.step')
 
         return assembly
+    
+
+######################################################################################################
+######################################################################################################
+######################################################################################################
+######################################################################################################
+
+    # defining a method to extract coordinates of the blades from a pickle file
+    def blades_coords(self,Element):
+
+            # x,y,z coordinates for the main blade first curve
+            self.x_first_curve_bld = Element['parameters']['comp1']['x_first_curve_bld']
+            self.y_first_curve_bld = Element['parameters']['comp1']['y_first_curve_bld']
+            self.z_first_curve_bld = Element['parameters']['comp1']['z_first_curve_bld']
+
+            # x,y,z coordinates for the main blade first curve
+            self.x_second_curve_bld = Element['parameters']['comp1']['x_second_curve_bld']
+            self.y_second_curve_bld = Element['parameters']['comp1']['y_second_curve_bld']
+            self.z_second_curve_bld = Element['parameters']['comp1']['z_second_curve_bld']
+
+            # x,y,z coordinates for the splitter blade first curve
+            self.x_first_curve_split = Element['parameters']['comp1']['x_first_curve_split']
+            self.y_first_curve_split = Element['parameters']['comp1']['y_first_curve_split']
+            self.z_first_curve_split = Element['parameters']['comp1']['z_first_curve_split']
+
+            # x,y,z coordinates for the splitter blade second curve
+            self.x_second_curve_split = Element['parameters']['comp1']['x_second_curve_split']
+            self.y_second_curve_split = Element['parameters']['comp1']['y_second_curve_split']
+            self.z_second_curve_split = Element['parameters']['comp1']['z_second_curve_split']
+
+            #storing lists of non-planar blade curves
+            
+            curve_first_bld = list(zip(self.x_first_curve_bld,self.y_first_curve_bld,self.z_first_curve_bld))
+            curve_second_bld = list(zip(self.x_second_curve_bld,self.y_second_curve_bld,self.z_second_curve_bld))
+            
+            curve_first_split = list(zip(self.x_first_curve_split,self.y_first_curve_split,self.z_first_curve_split))
+            curve_second_split = list(zip(self.x_second_curve_split,self.y_second_curve_split,self.z_second_curve_split))
+
+            #grouping the curve x,y,z coordinates in tuples   
+                 
+            curve_bld = [curve_first_bld,curve_second_bld]
+            curve_split = [curve_first_split,curve_second_split]
+
+            return curve_bld, curve_split
+
+ 
