@@ -59,7 +59,7 @@ h_rr_tot = h_rr*2 #diametral clearance given in micrometers
 #end code adapted from Christophe's Matlab
 
 # number of parallelograms discretized
-n_parall = 5
+n_parall = 15
 
 # percentage epsilon of length to extend to avoid surfaces between parallelograms
 eps_perc = 0.001
