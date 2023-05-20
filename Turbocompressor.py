@@ -2,6 +2,7 @@ import cadquery as cq
 import numpy as np
 import time
 import os
+
 cwf = os.getcwd().replace("\\", "/")
 
 import sys
@@ -10,8 +11,13 @@ sys.path.append(cwf  + '/ROT')
 sys.path.append(cwf  + '/COMP')
 sys.path.append(cwf  + '/HGJB')
 
-from SGTB import *
+import Rotor
+import SGTB
+import Impeller
+import Helper
+
 from Rotor import *
+from SGTB import *
 from Impeller import *
 from Helper import *
 
@@ -104,7 +110,7 @@ SGTB Construction
 
 DesignTurbocompressor = Helper()
 
-Element = DesignTurbocompressor.importpickle('Element_23_05_03')
+Element = DesignTurbocompressor.importpickle('Element_23_08_19')
 
 DesignSGTB = SGTB()
 
@@ -170,6 +176,12 @@ Impeller Construction
 .blades_excel:
     - retrieves the coordinates of the blades from an excel file
     - input excel 'filename'(string)
+    - should not be used together with .blades_coords
+
+.blades_coords:
+    - extracts the coordinates of the blade curves from a pickle file
+    - input Element(dictionary)
+    - should not be used together with .blades_excel
 
 .model_blades:
     - models the blades
@@ -187,28 +199,30 @@ Impeller Construction
     - exports by default as step
 '''
 
-
 Imp = Impeller()
-# Imp.parameters_impeller(Element)
+Imp.parameters_impeller(Element)
 
 #to be used to only model the impeller independently
-Imp.manualparams_impeller(Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot,'auto_rotor')
+# Imp.manualparams_impeller(Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot,'auto_rotor')
 
 Hub = Imp.hub()
 # show_object(Hub)
 
-Coords_mainblades = Imp.blades_excel('coordinates_blade_python.xlsx')
+# Coords_mainblades = Imp.blades_excel('coordinates_blade_python.xlsx')
+# Coords_splitterblades = Imp.blades_excel('coordinates_splitter_python.xlsx')
+
+Coords_mainblades, Coords_splitterblades = Imp.blades_coords(Element)
+
 Mainblade = Imp.model_blades(Coords_mainblades)
 Mainblades = Imp.rotate_blade(Mainblade,'Main Blade')
 
-Coords_splitterblades = Imp.blades_excel('coordinates_splitter_python.xlsx')
 Splitterblade = Imp.model_blades(Coords_splitterblades)
 Splitterblades = Imp.rotate_blade(Splitterblade,'Splitter Blade')
 
-Compressor = Imp.assemble((Hub,Mainblades,Splitterblades),'stl')
+Compressor = Imp.assemble((Hub,Mainblades,Splitterblades))
 
 # show_object(Compressor, name = 'Compressor')
 
-# DesignTurbocompressor.assemble((Rotor,SGTBs,Hub,Mainblades,Splitterblades),'Turbocompressor')
+DesignTurbocompressor.assemble((Rotor,SGTBs,Hub,Mainblades,Splitterblades),'Turbocompressor')
 
 print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')
