@@ -3,7 +3,6 @@ import numpy as np
 import time
 import os
 
-from SGTB import SGTB
 cwf = os.getcwd().replace("\\", "/")
 
 import sys
@@ -12,8 +11,13 @@ sys.path.append(cwf  + '/ROT')
 sys.path.append(cwf  + '/COMP')
 sys.path.append(cwf  + '/HGJB')
 
-from SGTB import *
+import Rotor
+import SGTB
+import Impeller
+import Helper
+
 from Rotor import *
+from SGTB import *
 from Impeller import *
 from Helper import *
 
@@ -119,7 +123,7 @@ SGTBs = DesignSGTB.combined('stl')
 SGTB_right = DesignSGTB.right('stl')
 SGTB_left = DesignSGTB.left('stl')
 
-show_object(SGTBs, name='SGTBs')
+# show_object(SGTBs, name='SGTBs')
 # show_object(SGTB_right, name='SGTB Right')
 # show_object(SGTB_left, name='SGTB Left')
 
@@ -148,7 +152,7 @@ DesignRotor.parameters(Element)
 # DesignRotor.parameters_manual(Length,DI1,DI2,DI3,DO1,DO2,DO3,elem_type1=types1,elem_type2=types2,elem_type3=types3)
 Rotor = DesignRotor.CAD('color','stl')
 
-show_object(Rotor, name='Rotor')
+# show_object(Rotor, name='Rotor')
 
 
 '''
@@ -217,7 +221,7 @@ Splitterblades = Imp.rotate_blade(Splitterblade,'Splitter Blade')
 
 Compressor = Imp.assemble((Hub,Mainblades,Splitterblades))
 
-show_object(Compressor, name = 'Compressor')
+# show_object(Compressor, name = 'Compressor')
 
 DesignTurbocompressor.assemble((Rotor,SGTBs,Hub,Mainblades,Splitterblades),'Turbocompressor')
 
