@@ -150,7 +150,7 @@ DesignRotor = Rotor()
 
 DesignRotor.parameters(Element)
 # DesignRotor.parameters_manual(Length,DI1,DI2,DI3,DO1,DO2,DO3,elem_type1=types1,elem_type2=types2,elem_type3=types3)
-Rotor = DesignRotor.CAD('color','stl')
+Rot = DesignRotor.CAD('color','stl')
 
 # show_object(Rotor, name='Rotor')
 
@@ -202,7 +202,7 @@ Impeller Construction
 Imp = Impeller()
 Imp.parameters_impeller(Element)
 
-#to be used to only model the impeller independently
+# to be used to only model the impeller independently
 # Imp.manualparams_impeller(Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot,'auto_rotor')
 
 Hub = Imp.hub()
@@ -223,6 +223,6 @@ Compressor = Imp.assemble((Hub,Mainblades,Splitterblades))
 
 # show_object(Compressor, name = 'Compressor')
 
-DesignTurbocompressor.assemble((Rotor,SGTBs,Hub,Mainblades,Splitterblades),'Turbocompressor')
+DesignTurbocompressor.assemble((Rot,SGTBs,Hub,Mainblades,Splitterblades),'Turbocompressor')
 
 print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')
