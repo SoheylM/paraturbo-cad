@@ -8,7 +8,7 @@ from enum import Enum, auto
 import cq_warehouse.extensions
 
 #open file
-file = open('Element_23_05_03.pickle', 'rb')
+file = open('Element_23_08_19.pickle', 'rb')
 
 # dump info to that file
 Element = pickle.load(file)
