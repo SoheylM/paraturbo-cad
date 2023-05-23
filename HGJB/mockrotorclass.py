@@ -8,36 +8,37 @@ from enum import Enum, auto
 import cq_warehouse.extensions
 
 
-#open file
-file = open('Element_23_05_03.pickle', 'rb')
 
-# dump info to that file
-Element = pickle.load(file)
-
-#close file
-file.close()
-
-Laenge = Element['Laenge']
-#change list into numpy array
-Laenge = np.array(Laenge)
-#change units from m to mm to avoid hollow visual effect
-
-Laenge = 1000*Laenge 
-#multiplying Laenge streeeetches the part out, so don't
-DI1 = 1000*np.array(Element['DI1'])
-DI2 = 1000*np.array(Element['DI2'])
-DI3 = 1000*np.array(Element['DI3'])
-DA1 = 1000*np.array(Element['DA1'])
-DA2 = 1000*np.array(Element['DA2'])
-DA3 = 1000*np.array(Element['DA3'])
-#print('type DI1', type(DI1))
-
-sys_pos = Element['sys_pos']
-pos_hgjb1 = sys_pos['pos_hgjb1']
-pos_hgjb2 =sys_pos['pos_hgjb2']
 
 class Rotor():
     def __init__(self):
+        #open file
+        self.file = open('Element_23_05_03.pickle', 'rb')
+
+        # dump info to that file
+        self.Element = pickle.load(self.file)
+
+        #close file
+        self.file.close()
+
+        self.Laenge = self.Element['Laenge']
+        #change list into numpy array
+        self.Laenge = np.array(self.Laenge)
+        #change units from m to mm to avoid hollow visual effect
+
+        self.Laenge = 1000*self.Laenge 
+        #multiplying Laenge streeeetches the part out, so don't
+        self.DI1 = 1000*np.array(self.Element['DI1'])
+        self.DI2 = 1000*np.array(self.Element['DI2'])
+        self.DI3 = 1000*np.array(self.Element['DI3'])
+        self.DA1 = 1000*np.array(self.Element['DA1'])
+        self.DA2 = 1000*np.array(self.Element['DA2'])
+        self.DA3 = 1000*np.array(self.Element['DA3'])
+        #print('type DI1', type(DI1))
+
+        self.sys_pos = self.Element['sys_pos']
+        self.pos_hgjb1 = self.sys_pos['pos_hgjb1']
+        self.pos_hgjb2 =self.sys_pos['pos_hgjb2']
         self.cwf = os.getcwd().replace("\\", "/")
         #Begin code adapted from Christophe's Matlab
         #Parameters 
@@ -49,7 +50,7 @@ class Rotor():
         self.h_gr = 16 #groove depth given in micrometers
         self.h_rr = 9 #clearance on radiu given in micrometers
         self.D = 16 #on drawing [mm]
-        self.L = Laenge[pos_hgjb1]#28 #length of HGJB on drawing [mm]
+        self.L = self.Laenge[self.pos_hgjb1]#28 #length of HGJB on drawing [mm]
         self.L_land=self.L-(self.gamma_HG*self.L) #Value for CAD
         self.L=self.L+0.8 #oversized length for safety generally between 0.6 - 1
         self.Spiral_step = pi*self.D*tan(self.beta_HG)
@@ -60,13 +61,13 @@ class Rotor():
         #end code adapted from Christophe's Matlab
         
         self.dist1 = 0
-        for d in range(pos_hgjb1):
-            self.dist1=self.dist1+Laenge[d]
+        for d in range(self.pos_hgjb1):
+            self.dist1=self.dist1+self.Laenge[d]
             
         #find distance to first HGJB
         self.dist2 = 0
-        for d in range(pos_hgjb2):
-            self.dist2=self.dist2+Laenge[d]
+        for d in range(self.pos_hgjb2):
+            self.dist2=self.dist2+self.Laenge[d]
             
         #find distance to center of first HGJB
         self.DistCenter1=self.dist1+self.L/2
@@ -89,17 +90,17 @@ class Rotor():
         self.gap = self.LenBetwVert*tan(self.Betaprime)
 
         #create removal cylinder1
-        self.CylLen1 = Laenge[pos_hgjb1]
-        self.CylRadOut1= DA3[pos_hgjb1]/2
+        self.CylLen1 = self.Laenge[self.pos_hgjb1]
+        self.CylRadOut1= self.DA3[self.pos_hgjb1]/2
 
         #create removal cylinder2
-        self.CylLen2 = Laenge[pos_hgjb2]
-        self.CylRadOut2= DA3[pos_hgjb2]/2
-        
+        self.CylLen2 = self.Laenge[self.pos_hgjb2]
+        self.CylRadOut2= self.DA3[self.pos_hgjb2]/2
+        self.rot = cq.importers.importStep(self.cwf + '/Rotor.stp')
         
     def create_HGJB(self): 
-        rot = cq.importers.importStep(self.cwf + '/Rotor.stp')
-        rot = rot.rotate((0,0,0),(1,0,0),270)
+        
+        self.rot = self.rot.rotate((0,0,0),(1,0,0),270)
         #find distance to first HGJB
         
 
@@ -109,7 +110,7 @@ class Rotor():
         )
         #first removal cylinder
         removalcylinder1 = cq.Solid.makeCylinder(
-              self.CylRadOut1*2, self.CylLen1, pnt=cq.Vector(0, self.DistCenter1+self.L/2, -DA3[pos_hgjb1]*0.8), dir=cq.Vector(0, -1, 0)
+              self.CylRadOut1*2, self.CylLen1, pnt=cq.Vector(0, self.DistCenter1+self.L/2, -self.DA3[self.pos_hgjb1]*0.8), dir=cq.Vector(0, -1, 0)
         )
 
         #second cylinder to be projected onto
@@ -118,7 +119,7 @@ class Rotor():
         )
         #second removal cylinder
         removalcylinder2 = cq.Solid.makeCylinder(
-              self.CylRadOut2*2, self.CylLen2, pnt=cq.Vector(0, self.DistCenter2+self.L/2, -DA3[pos_hgjb1]*0.8), dir=cq.Vector(0, -1, 0)
+              self.CylRadOut2*2, self.CylLen2, pnt=cq.Vector(0, self.DistCenter2+self.L/2, -self.DA3[self.pos_hgjb1]*0.8), dir=cq.Vector(0, -1, 0)
         )
 
         #direction of projection 
@@ -232,17 +233,17 @@ class Rotor():
         #     cylinder = cylinder.transformed(rotate=(0,sepang,0))
 
         for i in range(self.N_HG):
-            rot = rot.cut(parallelogram1a_solids)
-            rot = rot.cut(parallelogram2a_solids)
-            rot = rot.cut(parallelogram1b_solids)
-            rot = rot.cut(parallelogram2b_solids)
-            rot = rot.rotate((0,0,0),(0,1,0),self.sepang)
+            self.rot = self.rot.cut(parallelogram1a_solids)
+            self.rot = self.rot.cut(parallelogram2a_solids)
+            self.rot = self.rot.cut(parallelogram1b_solids)
+            self.rot = self.rot.cut(parallelogram2b_solids)
+            self.rot = self.rot.rotate((0,0,0),(0,1,0),self.sepang)
 
-        rot = rot.rotate((0,0,0),(1,0,0),-270)
+        self.rot = self.rot.rotate((0,0,0),(1,0,0),-270)
         
         
         
-        return rot
+        return self.rot
         
         
 
