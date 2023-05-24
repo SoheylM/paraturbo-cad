@@ -27,22 +27,29 @@ t0 = time.time()
 Example data for manual construction
 '''
 
-Length = [4.0, 3.0, 4.7, 6.0, 2.0, 8.011738903547421, 2.0049720014074204, 2.0079282926578075, 11.610315613390416, 33.74846795856666, 11.610315613390416, 2.005566980991642, 5.026995483891631, 16.0, 3.0]
-DI1 = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 9.0, 13.0, 0.0, 0.0]
-DI2 = [11.0, 5.0, 5.0, 5.0, 13.0, 8.0, 0.0, 0.0, 0.0, 0.0, 0.0, 9.0, 13.0, 13.0, 13.0]
-DI3 = [11.0, 5.0, 5.0, 5.0, 13.0, 13.0, 27.5, 13.0, 14.0, 14.0, 14.0, 13.899999999999999, 13.899999999999999, 13.899999999999999, 13.899999999999999]
-DO1 = [11.0, 5.0, 5.0, 5.0, 13.0, 8.0, 0.0, 0.0, 0.0, 0.0, 0.0, 9.0, 13.0, 13.0, 13.0]
-DO2 = [11.0, 5.0, 5.0, 5.0, 13.0, 13.0, 27.5, 13.0, 14.0, 14.0, 14.0, 13.899999999999999, 13.899999999999999, 13.899999999999999, 13.899999999999999]
-DO3 = [11.0, 11.0, 15.6, 25.0, 13.0, 13.0, 27.5, 13.0, 14.0, 14.0, 14.0, 13.899999999999999, 13.899999999999999, 13.899999999999999, 13.899999999999999]
-types1 = ['COMP1','COMP1','COMP1','COMP1','PLUG','PLUG','ROT','ROT','ROT','ROT','ROT','ROT','ROT','MAG','MAG']
-types2 = ['COMP1','COMP1','COMP1','COMP1','PLUG','ROT','ROT','ROT','ROT','ROT','ROT','ROT','ROT','ROT','ROT']
-types3 = ['COMP1','COMP1','COMP1','COMP1','PLUG','ROT','ROT','ROT','ROT','ROT','ROT','ROT','ROT','ROT','ROT']
-pos = 6
-alpha = 0.53
-beta = -2.72
-gamma = 0.74
-hg = 0.024
-hr = 0.019
+Length = [1.33373498, 1.33373498, 1.33373498, 1.33373498, 1.33373498, 1.33373498,  1.33373498, 1.33373498, 1.33373498, 2.26216371, 2.26216371, 12.22484027, 3.55328257, 4.05213368, 18.13412215, 39.15096023, 18.13412215, 14.33896901, 24.13178693]
+DI1 = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,0.0, 0.0, 0.0, 0.0, 7.37090243, 7.37090243, 7.37090243, 7.37090243, 7.37090243, 7.37090243, 0.0]
+DI2 = [4.57184857, 5.25196219, 5.60449431, 6.66769992, 8.61739416,11.98803844, 21.42243553, 16.09357927, 14.12109218, 13.57298226, 13.57298226, 12.22484027, 7.37090243, 7.37090243, 7.37090243, 7.37090243, 7.37090243, 7.37090243, 12.12462737]
+DI3 = [4.57184857, 10.38005986, 10.68632443, 11.62252172, 13.40640487, 16.95932086, 21.42243553, 16.09357927, 14.12109218, 13.57298226, 13.57298226, 13.57298226, 31.22649767, 13.57298226, 13.57298226, 13.57298226, 13.57298226, 13.57298226, 13.57298226]
+DO1 = [4.57184857, 5.25196219, 5.60449431, 6.66769992, 8.61739416, 11.98803844, 21.42243553, 16.09357927, 14.12109218, 13.57298226, 13.57298226, 12.22484027, 7.37090243, 7.37090243, 7.37090243, 7.37090243, 7.37090243, 7.37090243, 12.12462737]
+DO2 = [4.57184857, 10.38005986, 10.68632443, 11.62252172, 13.40640487, 16.95932086, 21.42243553, 16.09357927, 14.12109218, 13.57298226, 13.57298226, 13.57298226, 31.22649767, 13.57298226, 13.57298226, 13.57298226, 13.57298226, 13.57298226, 13.57298226]
+DO3 = [4.57184857, 10.38005986, 10.68632443, 11.62252172, 13.40640487, 16.95932086, 21.42243553, 16.09357927, 14.12109218, 13.57298226, 13.57298226, 13.57298226, 31.22649767, 13.57298226, 13.57298226, 13.57298226, 13.57298226, 13.57298226, 13.57298226]
+types1 = ['COMP1', 'COMP1', 'COMP1', 'COMP1', 'COMP1', 'COMP1', 'COMP1', 'COMP1', 'COMP1', 'COMP1', 'PLUG', 'PLUG', 'ROT', 'ROT', 'ROT', 'ROT', 'ROT', 'ROT', 'MAG']
+types2 = ['COMP1', 'COMP1', 'COMP1', 'COMP1', 'COMP1', 'COMP1', 'COMP1', 'COMP1', 'COMP1', 'COMP1', 'PLUG', 'ROT', 'ROT', 'ROT', 'ROT', 'ROT', 'ROT', 'ROT', 'ROT']
+types3 = ['COMP1', 'COMP1', 'COMP1', 'COMP1', 'COMP1', 'COMP1', 'COMP1', 'COMP1', 'COMP1', 'COMP1', 'PLUG', 'ROT', 'ROT', 'ROT', 'ROT', 'ROT', 'ROT', 'ROT', 'ROT']
+pos_SGTB = 12
+alpha_SGTB = 0.53
+beta_SGTB = -2.72
+gamma_SGTB = 0.74
+hg_SGTB = 0.024
+hr_SGTB = 0.019
+pos_HGJB1 = 14
+pos_HGJB2 = 16
+alpha_HGJB = 0.68
+beta_HGJB = -2.36
+gamma_HGJB = 0.89
+hg_HGJB = 0.016
+hr_HGJB = 0.009
 
 Phi = 1.618
 r_4 = 10
@@ -112,18 +119,18 @@ DesignTurbocompressor = Helper()
 
 Element = DesignTurbocompressor.importpickle('Element_23_08_19')
 
-# DesignSGTB = SGTB()
+DesignSGTB = SGTB()
 
-# DesignSGTB.parameters(Element)
-# # DesignSGTB.parameters_manual(Length,DO3,pos,alpha,beta,gamma,hg,hr)
-# DesignSGTB.grooves(28)
-# DesignSGTB.CAD('color')
-# DesignSGTB.mirror()
-# SGTBs = DesignSGTB.combined('stl')
-# SGTB_right = DesignSGTB.right('stl')
-# SGTB_left = DesignSGTB.left('stl')
+DesignSGTB.parameters(Element)
+# DesignSGTB.parameters_manual(Length,DO3,pos_SGTB,alpha_SGTB,beta_SGTB,gamma_SGTB,hg_SGTB,hr_SGTB)
+DesignSGTB.grooves(28)
+DesignSGTB.CAD('color')
+DesignSGTB.mirror()
+SGTBs = DesignSGTB.combined('stl')
+SGTB_right = DesignSGTB.right('stl')
+SGTB_left = DesignSGTB.left('stl')
 
-# show_object(SGTBs, name='SGTBs')
+show_object(SGTBs, name='SGTBs')
 # show_object(SGTB_right, name='SGTB Right')
 # show_object(SGTB_left, name='SGTB Left')
 
@@ -141,22 +148,23 @@ Rotor Construction
 
 .CAD:
     generates the CAD of rotor
-    for color input 'color' in the end
     for section view input 'section view' in the end
+
+.assemble
+    for color input 'color' in the end
     for saving as stl input 'stl' in the end
 '''
 
 DesignRotor = Rotor()
 
 DesignRotor.parameters(Element)
-# DesignRotor.parameters_manual(Length,DI1,DI2,DI3,DO1,DO2,DO3,elem_type1=types1,elem_type2=types2,elem_type3=types3)
-Rot, test = DesignRotor.CAD('color','stl')
-DesignRotor.HGJB(test)
-HGJB = DesignRotor.HGJB_CAD()
+# DesignRotor.parameters_manual(Length,DI1,DI2,DI3,DO1,DO2,DO3,pos_HGJB1,pos_HGJB2,alpha_HGJB,beta_HGJB,gamma_HGJB,hg_HGJB,hr_HGJB,elem_type1=types1,elem_type2=types2,elem_type3=types3)
+ROT = DesignRotor.CAD()
+DesignRotor.HGJB()
+DesignRotor.HGJB_CAD(ROT)
+Rot = DesignRotor.assemble('color','stl')
 
-show_object(HGJB)
-# show_object(Rot, name='Rotor')
-
+show_object(Rot, name='Rotor')
 
 '''
 Impeller Construction
@@ -202,30 +210,29 @@ Impeller Construction
     - exports by default as step
 '''
 
-# Imp = Impeller()
-# Imp.parameters_impeller(Element)
+Imp = Impeller()
+Imp.parameters_impeller(Element)
 
-# # to be used to only model the impeller independently
-# # Imp.manualparams_impeller(Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot,'auto_rotor')
+# to be used to only model the impeller independently
+# Imp.manualparams_impeller(Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot,'auto_rotor')
 
-# Hub = Imp.hub()
-# # show_object(Hub)
+Hub = Imp.hub()
 
-# # Coords_mainblades = Imp.blades_excel('coordinates_blade_python.xlsx')
-# # Coords_splitterblades = Imp.blades_excel('coordinates_splitter_python.xlsx')
+# Coords_mainblades = Imp.blades_excel('coordinates_blade_python.xlsx')
+# Coords_splitterblades = Imp.blades_excel('coordinates_splitter_python.xlsx')
 
-# Coords_mainblades, Coords_splitterblades = Imp.blades_coords(Element)
+Coords_mainblades, Coords_splitterblades = Imp.blades_coords(Element)
 
-# Mainblade = Imp.model_blades(Coords_mainblades)
-# Mainblades = Imp.rotate_blade(Mainblade,'Main Blade')
+Mainblade = Imp.model_blades(Coords_mainblades)
+Mainblades = Imp.rotate_blade(Mainblade,'Main Blade')
 
-# Splitterblade = Imp.model_blades(Coords_splitterblades)
-# Splitterblades = Imp.rotate_blade(Splitterblade,'Splitter Blade')
+Splitterblade = Imp.model_blades(Coords_splitterblades)
+Splitterblades = Imp.rotate_blade(Splitterblade,'Splitter Blade')
 
-# Compressor = Imp.assemble((Hub,Mainblades,Splitterblades))
+Compressor = Imp.assemble((Hub,Mainblades,Splitterblades))
 
-# # show_object(Compressor, name = 'Compressor')
+show_object(Compressor, name = 'Compressor')
 
-# DesignTurbocompressor.assemble((Rot,SGTBs,Hub,Mainblades,Splitterblades),'Turbocompressor')
+DesignTurbocompressor.assemble((Rot,SGTBs,Hub,Mainblades,Splitterblades),'Turbocompressor')
 
 print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')

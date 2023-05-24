@@ -30,7 +30,7 @@ class Rotor():
                         self.elem_type = [self.elem_type1, self.elem_type2, self.elem_type3]
                         # Taking variables for HGJB
                         self.pos_hgjb1 = Element['sys_pos']['pos_hgjb1']
-                        self.pos_hgjb2 =Element['sys_pos']['pos_hgjb2']
+                        self.pos_hgjb2 = Element['sys_pos']['pos_hgjb2']
                         self.alpha_HG = [0.68]
                         self.beta_HG = -135
                         self.beta_HG = [(self.beta_HG*np.pi)/180]
@@ -51,7 +51,7 @@ class Rotor():
         else:
             raise TypeError('Rotor.parameters: Element type is not dictionary.')
         
-    def parameters_manual(self,Length,DI1,DI2,DI3,DO1,DO2,DO3,**elemtypes):
+    def parameters_manual(self,Length,DI1,DI2,DI3,DO1,DO2,DO3,pos_HGJB1,pos_HGJB2,alpha_HGJB,beta_HGJB,gamma_HGJB,hg_HGJB,hr_HGJB,**elemtypes):
         # Checks for element types if provided
         # Checks for the length and type of the given element types and the inputs for the element types
         # If not raises an error
@@ -105,6 +105,13 @@ class Rotor():
                     self.DO1 = np.array(DO1)
                     self.DO2 = np.array(DO2)
                     self.DO3 = np.array(DO3)
+                    self.pos_hgjb1 = np.int64(pos_HGJB1)
+                    self.pos_hgjb2 = np.int64(pos_HGJB2)
+                    self.alpha_HG = [np.float64(alpha_HGJB)]
+                    self.beta_HG = [np.float64(beta_HGJB)]
+                    self.gamma_HG = [np.float64(gamma_HGJB)]
+                    self.h_gr = [np.float64(hg_HGJB)]
+                    self.h_rr = [np.float64(hr_HGJB)]
                 else:
                     raise ValueError('Rotor.parameters_manual: Size of the given lists are not equal.')
         else:
@@ -170,76 +177,50 @@ class Rotor():
             else:
                 wp = layer3[i].faces('>Z').workplane().center(0,0)
 
-        layers = [layer1, layer2, layer3]
+        self.layers = [layer1, layer2, layer3]
 
         # Enters if the element types are not given correctly or not given
         if self.method == 'manual':
-            assembly = cq.Assembly(name = 'Rotor')
-            color = ('red3','green4','blue3','gray50')
             for i in range(0,len(self.length)):
                 for k in range(0,3):
-                    if layers[k][i] != 0:
-                        if 'color' in settings:
-                            assembly.add(layers[k][i], name = 'layer'+str(i+1)+'_'+str(k+1), color=cq.Color(color[k]))
+                    if self.layers[k][i] != 0:
+                        if count_ROT == True:
+                            ROT = self.layers[k][i]
+                            count_ROT = False
                         else:
-                            assembly.add(layers[k][i], name = 'layer'+str(i+1)+'_'+str(k+1), color=cq.Color(color[3]))
-
-            assembly.save(self.cwf  + '/STEP/Rotor.step')
-
-            # Later convert this to raise Error and combine with HGJB code!!!           
-            print('Rotor.CAD: Rotor could not be provided due to missing element types.')
+                            ROT = ROT.union(self.layers[k][i])
 
         # Enters if the elements types are given correctly or a dictionary is used
         else:
             # Uniting cylinders according to their type
             for i in range(0,len(self.length)):
                 for k in range(0,3):
-                    if layers[k][i] != 0:
+                    if self.layers[k][i] != 0:
                         if self.elem_type[k][i] == 'MAG':
                             if count_MAG == True:
-                                MAG = layers[k][i]
+                                MAG = self.layers[k][i]
                                 count_MAG = False
                             else:
-                                MAG = MAG.union(layers[k][i])
+                                MAG = MAG.union(self.layers[k][i])
                         if self.elem_type[k][i] == 'ROT':
                             if count_ROT == True:
-                                ROT = layers[k][i]
+                                ROT = self.layers[k][i]
                                 count_ROT = False
                             else:
-                                ROT = ROT.union(layers[k][i])
+                                ROT = ROT.union(self.layers[k][i])
                         if self.elem_type[k][i] == 'PLUG':
                             if count_PLUG == True:
-                                PLUG = layers[k][i]
+                                PLUG = self.layers[k][i]
                                 count_PLUG = False
                             else:
-                                PLUG = PLUG.union(layers[k][i])
+                                PLUG = PLUG.union(self.layers[k][i])
 
-            # Adds parts to assembly with our without color
-            if 'color' in settings:
-                assembly = cq.Assembly(name = 'Turbocompressor Rotor')
-                assembly.add(ROT, name = 'Rotor', color=cq.Color('green4'))
-                assembly.add(PLUG, name = 'Plug', color=cq.Color('blue3'))
-                assembly.add(MAG, name = 'Magnet', color=cq.Color('red3'))
-            else:
-                assembly = cq.Assembly(name = 'Turbocompressor Rotor')
-                assembly.add(ROT, name = 'Rotor', color=cq.Color('gray50'))
-                assembly.add(PLUG, name = 'Plug', color=cq.Color('gray50'))
-                assembly.add(MAG, name = 'Magnet', color=cq.Color('gray50'))
+            self.PLUG = PLUG
+            self.MAG = MAG
 
-        # Saves as stl if given in arguments
-        if 'stl' or 'STL' in settings:
-            cq.exporters.export(ROT, self.cwf + '/STL/Rotor.stl')
-            cq.exporters.export(PLUG, self.cwf + '/STL/Plug.stl')
-            cq.exporters.export(MAG, self.cwf + '/STL/Magnet.stl')
-            # cq.exporters.export(assembly.toCompound(), self.cwf + '/STL/Turbocompressor Rotor.stl')
-        
-        # Saves as step
-        # cq.exporters.export(ROT, self.cwf + '/HGJB/Rotor.stp', cq.exporters.ExportTypes.STEP)
-        assembly.save(self.cwf  + '/STEP/Rotor.step')
-
-        return assembly, ROT
+        return ROT
     
-    def HGJB(self,rotor):
+    def HGJB(self):
         self.N_HG = 28 #number of grooves generally between 26 - 30
         self.D = 16 #on drawing [mm]
         self.L = self.length[self.pos_hgjb1]#28 #length of HGJB on drawing [mm]
@@ -288,10 +269,9 @@ class Rotor():
         #create removal cylinder2
         self.CylLen2 = self.length[self.pos_hgjb2]
         self.CylRadOut2= self.DO3[self.pos_hgjb2]/2
-        self.rot = rotor
 
-    def HGJB_CAD(self):
-        self.rot = self.rot.rotate((0,0,0),(1,0,0),270)
+    def HGJB_CAD(self,rotor):
+        rotor = rotor.rotate((0,0,0),(1,0,0),270)
         #find distance to first HGJB
         
         #first cylinder to be projected onto
@@ -418,12 +398,46 @@ class Rotor():
         parallelogram2b_solids = parallelogram2b_solids.cut(removalcylinder2)
 
         for i in range(self.N_HG):
-            self.rot = self.rot.cut(parallelogram1a_solids)
-            self.rot = self.rot.cut(parallelogram2a_solids)
-            self.rot = self.rot.cut(parallelogram1b_solids)
-            self.rot = self.rot.cut(parallelogram2b_solids)
-            self.rot = self.rot.rotate((0,0,0),(0,1,0),self.sepang)
+            rotor = rotor.cut(parallelogram1a_solids)
+            rotor = rotor.cut(parallelogram2a_solids)
+            rotor = rotor.cut(parallelogram1b_solids)
+            rotor = rotor.cut(parallelogram2b_solids)
+            rotor = rotor.rotate((0,0,0),(0,1,0),self.sepang)
 
-        self.rot = self.rot.rotate((0,0,0),(1,0,0),-270)
+        rotor = rotor.rotate((0,0,0),(1,0,0),-270)
         
-        return self.rot
+        self.ROT_AFTER = rotor
+        
+    def assemble(self,*settings):
+       # Enters if the element types are not given correctly or not given
+        if self.method == 'manual':
+            ROT = self.ROT_AFTER
+            assembly = cq.Assembly(name = 'Turbocompressor Rotor')
+            assembly.add(ROT, name = 'Rotor', color=cq.Color('gray50')) 
+
+        else:
+            PLUG = self.PLUG
+            ROT = self.ROT_AFTER
+            MAG = self.MAG
+            # Adds parts to assembly with our without color
+            if 'color' in settings:
+                assembly = cq.Assembly(name = 'Turbocompressor Rotor')
+                assembly.add(ROT, name = 'Rotor', color=cq.Color('green4'))
+                assembly.add(PLUG, name = 'Plug', color=cq.Color('blue3'))
+                assembly.add(MAG, name = 'Magnet', color=cq.Color('red3'))
+            else:
+                assembly = cq.Assembly(name = 'Turbocompressor Rotor')
+                assembly.add(ROT, name = 'Rotor', color=cq.Color('gray50'))
+                assembly.add(PLUG, name = 'Plug', color=cq.Color('gray50'))
+                assembly.add(MAG, name = 'Magnet', color=cq.Color('gray50'))
+
+            # Saves as stl if given in arguments
+            if 'stl' or 'STL' in settings:
+                cq.exporters.export(ROT, self.cwf + '/STL/Rotor.stl')
+                cq.exporters.export(PLUG, self.cwf + '/STL/Plug.stl')
+                cq.exporters.export(MAG, self.cwf + '/STL/Magnet.stl')
+        
+        # Saves as step
+        assembly.save(self.cwf  + '/STEP/Rotor.step')
+
+        return assembly
