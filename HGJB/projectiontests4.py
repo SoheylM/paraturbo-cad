@@ -127,6 +127,7 @@ rotang = radang*180/pi #+0.273
 
 parallelograms = []
 parallelograms_projected = []
+parallelograms_solids = []
 for i in range(n_parall):
     print('i=', i)
     parallelogram = (
@@ -151,15 +152,11 @@ for i in range(n_parall):
     parallelograms_projected.append(parallelogram_projected)
         
 for i in range(n_parall):        
-    if i == 0:
-        parallelogram_solids = cq.Compound.makeCompound(
-            [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i]]
-            )
-    else:
-        para_solid_temp = parallelogram_solids = cq.Compound.makeCompound(
-            [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i]]
-            )
-        parallelogram_solids = parallelogram_solids.union(para_solid_temp)
+    parallelogram_solids = cq.Compound.makeCompound(
+        [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i]]
+        )
+    parallelograms_solids=parallelograms_solids.append(parallelogram_solids)
+    
     #cuts rotates the cylinder all the way around and cuts
     # for j in range(N_HG):
     #     cylinder1 = cylinder1.cut(parallelogram_solids)
