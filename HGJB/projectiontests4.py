@@ -127,7 +127,9 @@ rotang = radang*180/pi #+0.273
 
 parallelograms = []
 parallelograms_projected = []
-parallelograms_solids = []
+curve = cq.Assembly()
+
+
 for i in range(n_parall):
     print('i=', i)
     parallelogram = (
@@ -155,7 +157,7 @@ for i in range(n_parall):
     parallelogram_solids = cq.Compound.makeCompound(
         [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i]]
         )
-    parallelograms_solids=parallelograms_solids.append(parallelogram_solids)
+    curve.add(parallelogram_solids)
     
     #cuts rotates the cylinder all the way around and cuts
     # for j in range(N_HG):
@@ -187,3 +189,4 @@ for i in range(n_parall):
 show_object(cylinder1) #, options={"alpha": 0.8}
 # show_object(parallelograms_projected[0])
 show_object(parallelogram_solids)
+show_object(curve)
