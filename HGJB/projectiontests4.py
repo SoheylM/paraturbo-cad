@@ -151,19 +151,35 @@ for i in range(n_parall):
     parallelograms_projected.append(parallelogram_projected)
         
 for i in range(n_parall):        
-    parallelogram_solids = cq.Compound.makeCompound(
-        [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i]]
-    )
-    for j in range(N_HG):
-        cylinder1 = cylinder1.cut(parallelogram_solids)
-        cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-1*sepang)
+    if i == 0:
+        parallelogram_solids = cq.Compound.makeCompound(
+            [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i]]
+            )
+    else:
+        para_solid_temp = parallelogram_solids = cq.Compound.makeCompound(
+            [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i]]
+            )
+        parallelogram_solids = parallelogram_solids.union(para_solid_temp)
+    #cuts rotates the cylinder all the way around and cuts
+    # for j in range(N_HG):
+    #     cylinder1 = cylinder1.cut(parallelogram_solids)
+    #     cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-1*sepang)
+    
+    
+    cylinder1 = cylinder1.cut(parallelogram_solids)
+    
+    #rotates, cuts a second groove, rotates back
+    # cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-1*sepang)
+    # cylinder1 = cylinder1.cut(parallelogram_solids)
+    # cylinder1=cylinder1.rotate((0,0,0),(0,1,0),1*sepang)
+    
     if i == n_parall-1:
         pass
     else:
         cylinder1 = cylinder1.rotate((0,0,0),(0,1,0),rotang)
         
-cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-rotang*(n_parall-1))
-cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-1*sepang)
+# cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-rotang*(n_parall-1))
+# cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-1*sepang)
 
 
 
@@ -172,5 +188,5 @@ cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-1*sepang)
 
 #show_object(removalcylinder1)
 show_object(cylinder1) #, options={"alpha": 0.8}
-show_object(parallelograms_projected[0])
+# show_object(parallelograms_projected[0])
 show_object(parallelogram_solids)
