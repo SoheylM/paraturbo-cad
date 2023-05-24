@@ -152,7 +152,7 @@ for i in range(n_parall):
         
 for i in range(n_parall):        
     parallelogram_solids = cq.Compound.makeCompound(
-        [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i]]
+        [f.thicken(h_gr/1000, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i]]
     )
     cylinder1 = cylinder1.cut(parallelogram_solids)
     if i == n_parall-1:
@@ -160,11 +160,11 @@ for i in range(n_parall):
     else:
         cylinder1 = cylinder1.rotate((0,0,0),(0,1,0),rotang)
         
-cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-rotang*n_parall)
-cylinder1=cylinder1.rotate((0,0,0),(0,1,0),2*sepang)
+cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-rotang*(n_parall-1))
+cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-1.4*sepang)
 
-parallelograms2 = []
-parallelograms_projected2 = []
+parallelograms = []
+parallelograms_projected = []
 for i in range(n_parall):
     print('i=', i)
     parallelogram = (
@@ -180,17 +180,17 @@ for i in range(n_parall):
           .faces("<Z")
           .val()
       )
-    parallelograms2.append(parallelogram)
+    parallelograms.append(parallelogram)
     
 for i in range(n_parall):
     if i == 0:
         cylinder1 = cylinder1.rotate((0,0,0),(0,1,0),rotang)
-    parallelogram_projected = parallelograms2[i].projectToShape(cylinder1, projection_direction)
-    parallelograms_projected2.append(parallelogram_projected)
+    parallelogram_projected = parallelograms[i].projectToShape(cylinder1, projection_direction)
+    parallelograms_projected.append(parallelogram_projected)
         
 for i in range(n_parall):        
     parallelogram_solids = cq.Compound.makeCompound(
-        [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i]]
+        [f.thicken(h_gr/1000, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i]]
     )
     cylinder1 = cylinder1.cut(parallelogram_solids)
     if i == n_parall-1:
@@ -203,6 +203,7 @@ for i in range(n_parall):
 
 #show_object(removalcylinder1)
 show_object(cylinder1) #, options={"alpha": 0.8}
+show_object(parallelograms_projected[0])
 # show_object(parallelogram1a, name="parallelogram1a")
 # show_object(parallelogram1b, name="parallelogram1b")
 # show_object(parallelogram1c, name="parallelogram1c")
