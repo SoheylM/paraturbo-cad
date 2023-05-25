@@ -157,16 +157,12 @@ for i in range(n_parall):
     parallelogram_solids = cq.Compound.makeCompound(
         [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i]]
         )
-    if i == 1:
-        curve.add(
-            parallelogram_solids,
-            loc=cq.Location((0, 0, 0), (0, 1, 0), -rotang),
-            )
-    else:
-        curve.add(
-            parallelogram_solids,
-            loc=cq.Location((0, 0, 0), (1, 0, 0), 0),
-            )
+    
+    curve.add(
+        parallelogram_solids,
+        loc=cq.Location((0, 0, 0), (0, 1, 0), -i*rotang),
+        )
+
 
     
     #cuts rotates the cylinder all the way around and cuts
@@ -198,7 +194,7 @@ for i in range(n_parall):
 #     color=cq.Color("green"),
 #     )
 
-
+cylinder1 = cylinder1.cut(curve)
 
 
 #show_object(removalcylinder1)
