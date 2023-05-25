@@ -133,12 +133,9 @@ curve = cq.Assembly()
 for i in range(n_parall):
     print('i=', i)
     parallelogram = (
-          cq.Workplane("YX", origin=((gap+a_HG)/2, DistCenter1+L/2+2*LenBetwVert, 0))
+          cq.Workplane("YX", origin=((gap+a_HG)/2, DistCenter1+L/2+i*LenBetwVert, 0))
           #when viewed / \, y to the right and x up, z into screen
           #origin at upper outside corner
-          .transformed(rotate=(0,i*sepang,0))
-          .workplane(offset = 2*D)
-          
           #points below in standard x and y coordinates
           .lineTo(-(LenBetwVert)*(1+eps_perc),-gap) #upper inside corner 
           .lineTo(-(LenBetwVert)*(1+eps_perc),-gap-a_HG) #lower inside corner
@@ -148,28 +145,64 @@ for i in range(n_parall):
           .faces("<Z")
           .val()
       )
-
+    parallelograms.append(parallelogram)
     
-# for i in range(n_parall):
-#     if i == 0:
-#         cylinder1 = cylinder1.rotate((0,0,0),(0,1,0),rotang)
-#     parallelogram_projected = parallelograms[i].projectToShape(cylinder1, projection_direction)
-#     parallelograms_projected.append(parallelogram_projected)
+for i in range(n_parall):
+    if i == 0:
+        cylinder1 = cylinder1.rotate((0,0,0),(0,1,0),rotang)
+    parallelogram_projected = parallelograms[i].projectToShape(cylinder1, projection_direction)
+    parallelograms_projected.append(parallelogram_projected)
         
-# for i in range(n_parall):        
-#     parallelogram_solids = cq.Compound.makeCompound(
-#         [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i]]
-#         )
-    
-#     cylinder1 = cylinder1.cut(parallelogram_solids)
-    
+for i in range(n_parall):        
+    parallelogram_solids = cq.Compound.makeCompound(
+        [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i]]
+        )
+    if i == 1:
+        curve.add(
+            parallelogram_solids,
+            loc=cq.Location((0, 0, 0), (0, 1, 0), -rotang),
+            )
+    else:
+        curve.add(
+            parallelogram_solids,
+            loc=cq.Location((0, 0, 0), (1, 0, 0), 0),
+            )
 
     
-#     if i == n_parall-1:
-#         pass
-#     else:
-#         cylinder1 = cylinder1.rotate((0,0,0),(0,1,0),rotang)
+    #cuts rotates the cylinder all the way around and cuts
+    # for j in range(N_HG):
+    #     cylinder1 = cylinder1.cut(parallelogram_solids)
+    #     cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-1*sepang)
+    
+    
+    cylinder1 = cylinder1.cut(parallelogram_solids)
+    
+    #rotates, cuts a second groove, rotates back
+    # cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-1*sepang)
+    # cylinder1 = cylinder1.cut(parallelogram_solids)
+    # cylinder1=cylinder1.rotate((0,0,0),(0,1,0),1*sepang)
+    
+    if i == n_parall-1:
+        pass
+    else:
+        cylinder1 = cylinder1.rotate((0,0,0),(0,1,0),rotang)
         
+# cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-rotang*(n_parall-1))
+# cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-1*sepang)
 
+
+# curve.add(
+#     parallelogram_solids,
+#     loc=cq.Location((0, 0, 0), (1, 0, 0), 180),
+#     name = "para2",
+#     color=cq.Color("green"),
+#     )
+
+
+
+
+#show_object(removalcylinder1)
 show_object(cylinder1) #, options={"alpha": 0.8}
-show_object(parallelogram)
+# show_object(parallelograms_projected[0])
+#show_object(parallelogram_solids)
+show_object(curve)
