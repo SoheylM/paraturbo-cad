@@ -168,9 +168,17 @@ for i in range(n_parall):
     cylinder1 = cylinder1.cut(parallelogram_solids)
     
     #rotates, cuts a second groove, rotates back
-    # cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-1*sepang)
-    # cylinder1 = cylinder1.cut(parallelogram_solids)
-    # cylinder1=cylinder1.rotate((0,0,0),(0,1,0),1*sepang)
+    cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-1*sepang)
+    cylinder1 = cylinder1.cut(parallelogram_solids)
+    cylinder1=cylinder1.rotate((0,0,0),(0,1,0),1*sepang)
+    
+    cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-2*sepang)
+    cylinder1 = cylinder1.cut(parallelogram_solids)
+    cylinder1=cylinder1.rotate((0,0,0),(0,1,0),2*sepang)
+    
+    cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-3*sepang)
+    cylinder1 = cylinder1.cut(parallelogram_solids)
+    cylinder1=cylinder1.rotate((0,0,0),(0,1,0),3*sepang)
     
     if i == n_parall-1:
         pass
