@@ -128,7 +128,7 @@ rotang = radang*180/pi #+0.273
 parallelograms = []
 parallelograms_projected = []
 curve = cq.Assembly()
-
+para_list = []
 
 for i in range(n_parall):
     print('i=', i)
@@ -157,12 +157,12 @@ for i in range(n_parall):
     parallelogram_solids = cq.Compound.makeCompound(
         [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i]]
         )
-    
+    # para_list = para_list.append(parallelogram_solids)
     curve.add(
         parallelogram_solids,
         loc=cq.Location((0, 0, 0), (0, 1, 0), -i*rotang),
         )
-
+    
 
     
     #cuts rotates the cylinder all the way around and cuts
@@ -183,18 +183,9 @@ for i in range(n_parall):
     else:
         cylinder1 = cylinder1.rotate((0,0,0),(0,1,0),rotang)
         
-# cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-rotang*(n_parall-1))
-# cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-1*sepang)
+cq.exporters.export(curve, "/path/to/step/curve.step")
 
-
-# curve.add(
-#     parallelogram_solids,
-#     loc=cq.Location((0, 0, 0), (1, 0, 0), 180),
-#     name = "para2",
-#     color=cq.Color("green"),
-#     )
-
-cylinder1 = cylinder1.cut(curve)
+#cylinder1 = cylinder1.cut(curve)
 
 
 #show_object(removalcylinder1)
