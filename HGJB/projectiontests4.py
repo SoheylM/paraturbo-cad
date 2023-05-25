@@ -10,7 +10,7 @@ from enum import Enum, auto
 import cq_warehouse.extensions
 
 #open file
-file = open('Element_23_05_03.pickle', 'rb')
+file = open('Element_23_08_19.pickle', 'rb')
 
 # dump info to that file
 Element = pickle.load(file)
@@ -41,11 +41,11 @@ pos_hgjb2 =sys_pos['pos_hgjb2']
 #Begin code adapted from Christophe's Matlab
 #Parameters 
 N_HG = 28 #number of grooves generally between 26 - 30
-alpha_HG = 0.68 #given
-beta_HG = -135 #given 
+alpha_HG = Element['parameters']['hgjb1']['alpha'] #0.68 #given
+beta_HG = Element['parameters']['hgjb1']['beta'] #-135 #given 
 beta_HG = beta_HG*pi/180
-gamma_HG = 0.89 #given
-h_gr = 16 #groove depth given in micrometers
+gamma_HG = Element['parameters']['hgjb1']['gamma'] #0.89 #given
+h_gr = Element['parameters']['hgjb1']['hg'] #16 #groove depth given in micrometers
 h_rr = 9 #clearance on radiu given in micrometers
 D = 16 #on drawing [mm]
 L = Laenge[pos_hgjb1]#28 #length of HGJB on drawing [mm]
@@ -59,7 +59,7 @@ h_rr_tot = h_rr*2 #diametral clearance given in micrometers
 #end code adapted from Christophe's Matlab
 
 # number of parallelograms discretized
-n_parall = 10
+n_parall = 15
 
 # percentage epsilon of length to extend to avoid surfaces between parallelograms
 eps_perc = 0.005
@@ -188,4 +188,4 @@ for i in range(n_parall):
 #show_object(removalcylinder1)
 show_object(cylinder1) #, options={"alpha": 0.8}
 # show_object(parallelograms_projected[0])
-show_object(parallelogram_solids)
+#show_object(parallelogram_solids)
