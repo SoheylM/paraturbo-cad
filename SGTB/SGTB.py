@@ -28,7 +28,7 @@ class SGTB():
                         self.hr = 1000*np.float64(Element['parameters']['sgtb']['hr'])
                         self.Ri= 1000*np.float64(Element['parameters']['sgtb']['Ri'])
                         self.Rg = 1000*np.float64(Element['parameters']['sgtb']['Rg'])
-                        self.R0 = 1000*np.float64(Element['parameters']['sgtb']['Ro'])
+                        self.Ro = 1000*np.float64(Element['parameters']['sgtb']['Ro'])
                         self.L = 1000*np.float64(Element['parameters']['sgtb']['L'])                 
                     else:
                         raise ValueError('SGTB.parameters: Size of the needed dictionary values are not equal.')
@@ -37,7 +37,7 @@ class SGTB():
         else:
             raise TypeError('SGTB.parameters: Element type is not dictionary.')
         
-    def parameters_manual(self,Length,DO3,pos_SGTB,alpha_SGTB,beta_SGTB,gamma_SGTB,hg_SGTB,hr_SGTB,Ri_SGTB,Rg_SGTB,R0_SGTB,L_SGTB):
+    def parameters_manual(self,Length,DO3,pos_SGTB,alpha_SGTB,beta_SGTB,gamma_SGTB,hg_SGTB,hr_SGTB,Ri_SGTB,Rg_SGTB,Ro_SGTB,L_SGTB):
         # Checks for information exist in given input
         # Checks for are all values have same lenght and type
         # If not raises an error
@@ -49,12 +49,13 @@ class SGTB():
                     self.pos = np.int64(pos_SGTB)
                     self.alpha = np.float64(alpha_SGTB)
                     self.beta = np.float64(beta_SGTB)
+                    self.beta = (np.pi*self.beta)/180
                     self.gamma = np.float64(gamma_SGTB)
                     self.hg = np.float64(hg_SGTB)
                     self.hr = np.float64(hr_SGTB)
                     self.Ri = np.float64(Ri_SGTB)
                     self.Rg = np.float64(Rg_SGTB)
-                    self.R0 = np.float64(R0_SGTB)
+                    self.Ro = np.float64(Ro_SGTB)
                     self.L = np.float64(L_SGTB)
                 else:
                     raise ValueError('SGTB.parameters_manual: Size of the given lists are not equal.')
@@ -64,20 +65,20 @@ class SGTB():
     def grooves(self,n_grooves):
         self.n_grooves = n_grooves
 
-    def CAD(self,*settings):
+    def CAD(self,*settings,**times):
         # Parameters for constructing the SGTB
-        Ri  = self.Ri                                        # on drawing - SGTB inner diameter
-        R0  = self.R0                                        # on drawing - Rotor axial stop
-        n_SG = self.n_grooves                                # number of grooves generally between 28 - 30
+        Ri  = self.Ri                                        # On drawing - SGTB inner diameter
+        Ro  = self.Ro                                        # On drawing - Rotor axial stop
+        n_SG = self.n_grooves                                # Number of grooves generally between 28 - 30
         Rg = self.Rg  
         a_SG = (2*np.pi*Rg*self.alpha)/n_SG 
         phi_lag_SG = a_SG/Rg
 
         # Building the grooves
-        R0 = R0 + 0.3                                        # oversized radius for safety between 0.3 - 0.5
-        n = 10                                               # nb of points for each log spiral splines
+        Ro = Ro + 0.3                                        # Oversized radius for safety between 0.3 - 0.5
+        n = 10                                               # Number of points for each log spiral splines
         alpha = np.linspace(-0.2, 1, num=n)
-        alpha = np.linspace(0, np.log(R0/Rg)/np.tan(self.beta), num=n)
+        alpha = np.linspace(0, np.log(Ro/Rg)/np.tan(self.beta), num=n)
         
         # Generating the spiral
         r_SGTB = Rg * np.exp(np.tan(self.beta)*alpha)
@@ -94,12 +95,12 @@ class SGTB():
         Groovy_down_y = np.flip(Groovy_down_y)
 
         # Creating arcs for the sketch
-        n_circle = 5                                        # nb of points for each arc
+        n_circle = 5                                        # Number of points for each arc
         angle1 = np.arctan(Groovy_up_y[-1]/Groovy_up_x[-1])
         angle2 = np.arctan(Groovy_down_y[0]/Groovy_down_x[0])
         circle1angles = np.linspace(angle1,angle2, num=n_circle)
-        Upper_arc_x = R0*np.cos(circle1angles)
-        Upper_arc_y = R0*np.sin(circle1angles)
+        Upper_arc_x = Ro*np.cos(circle1angles)
+        Upper_arc_y = Ro*np.sin(circle1angles)
 
         angle3 = np.arctan(Groovy_down_y[-1]/Groovy_down_x[-1])
         angle4 = np.arctan(Groovy_up_y[0]/Groovy_up_x[0])
@@ -124,7 +125,7 @@ class SGTB():
         wp = cq.Workplane('XY')
 
         b_di = Ri*2
-        b_do = np.round(R0*2*1.4,1)
+        b_do = np.round(Ro*2*1.4,1)
         b_l = self.L
 
         # Building the SGTB without grooves
@@ -137,7 +138,11 @@ class SGTB():
         curves = {}
 
         if 'dramatize' in settings:
-            self.hg = self.hg * 150
+            if 'd' in times:
+                multiplier = times['d']
+                self.hg = self.hg * multiplier
+            else:
+                raise ValueError('SGTB.CAD: Multiplier is not specified correctly.')
             
         # Rotating, drawing and opening the grooves
         for i in range(0,n_SG):

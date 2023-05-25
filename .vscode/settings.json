@@ -1,7 +1,0 @@
-{
-    "python.analysis.extraPaths": [
-        "./COMP",
-        "./ROT",
-        "./ROT"
-    ]
-}
