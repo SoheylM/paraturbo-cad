@@ -157,7 +157,7 @@ for i in range(n_parall):
     parallelogram_solids = cq.Compound.makeCompound(
         [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i]]
         )
-    # para_list = para_list.append(parallelogram_solids)
+    
     curve.add(
         parallelogram_solids,
         loc=cq.Location((0, 0, 0), (0, 1, 0), -i*rotang),
@@ -183,13 +183,44 @@ for i in range(n_parall):
     else:
         cylinder1 = cylinder1.rotate((0,0,0),(0,1,0),rotang)
         
-cq.exporters.export(curve, "/path/to/step/curve.step")
 
+for i in range(n_parall):
+    if i ==0:
+        para_solid = cq.Compound.makeCompound(
+            [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i]]
+            )
+    else: 
+        para_solid_temp = cq.Compound.makeCompound(
+            [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i]]
+            )
+        para_solid_temp = para_solid_temp.transformed((0, -i*rotang, 0), (0, LenBetwVert, 0))
+        para_solid = para_solid.fuse(para_solid_temp)
+
+show_object(para_solid)
+
+# para_solid1 = cq.Compound.makeCompound(
+#     [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[0]]
+#     )
+
+# para_solid1 = para_solid1.transformed((0, 0, 0), (0, 0, 0))
+
+# para_solid2 = cq.Compound.makeCompound(
+#     [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[0]]
+#     )
+# para_solid2 = para_solid2.transformed((0, -rotang, 0), (0, LenBetwVert, 0))
+
+# show_object(para_solid1)
+# show_object(para_solid2)
+
+# para_solid1 = para_solid1.fuse(para_solid2)
+
+# show_object(para_solid1)
+# cylinder1 = cylinder1.cut(para_solid1)
 #cylinder1 = cylinder1.cut(curve)
 
 
 #show_object(removalcylinder1)
 show_object(cylinder1) #, options={"alpha": 0.8}
 # show_object(parallelograms_projected[0])
-#show_object(parallelogram_solids)
-show_object(curve)
+show_object(parallelogram_solids)
+#show_object(curve)
