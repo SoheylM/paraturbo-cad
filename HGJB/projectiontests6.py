@@ -112,7 +112,7 @@ CylRadOut1= DA3[pos_hgjb1]/2
 
 #first cylinder to be projected onto
 cylinder1 = cq.Solid.makeCylinder(
-     CylRadOut1, 2*CylLen1+2, pnt=cq.Vector(0, DistCenter1+2*L+1, 0), dir=cq.Vector(0, -1, 0)
+     CylRadOut1, 3*CylLen1+2, pnt=cq.Vector(0, DistCenter1+2*L+1, 0), dir=cq.Vector(0, -1, 0)
 )
 #first removal cylinder
 removalcylinder1 = cq.Solid.makeCylinder(
