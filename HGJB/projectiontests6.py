@@ -53,7 +53,7 @@ h_rr = 9 #clearance on radiu given in micrometers
 D = 16 #on drawing [mm]
 
 Dia = DA3[pos_hgjb1]
-LoD = 2 # 1, 1.5, 2
+LoD = 1.5 # 1, 1.5, 2
 
 L = Dia*LoD
 #L = Laenge[pos_hgjb1]#28 #length of HGJB on drawing [mm]
@@ -167,13 +167,19 @@ for i in range(n_parall):
         )
 
     
+    # #cuts rotates the cylinder all the way around and cuts
+    # for j in range(N_HG):
+    #     cylinder1 = cylinder1.cut(parallelogram_solids)
+    #     cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-1*sepang)
+        
     #cuts rotates the cylinder all the way around and cuts
     for j in range(N_HG):
+        cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-j*sepang)
         cylinder1 = cylinder1.cut(parallelogram_solids)
-        cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-1*sepang)
+        cylinder1=cylinder1.rotate((0,0,0),(0,1,0),j*sepang)
     
     
-    cylinder1 = cylinder1.cut(parallelogram_solids)
+    #cylinder1 = cylinder1.cut(parallelogram_solids)
     
     # #rotates, cuts a second groove, rotates back
     # cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-1*sepang)
