@@ -44,7 +44,7 @@ N_HG = 28 #number of grooves generally between 26 - 30
 alpha_HG = Element['parameters']['hgjb1']['alpha'] #0.68 #given
 #beta_HG = Element['parameters']['hgjb1']['beta'] #-135 #given 
 
-beta_HG = -165 # -135, -150, -165
+beta_HG = -150 # -135, -150, -165
 
 beta_HG = beta_HG*pi/180
 gamma_HG = Element['parameters']['hgjb1']['gamma'] #0.89 #given
@@ -53,7 +53,7 @@ h_rr = 9 #clearance on radiu given in micrometers
 D = 16 #on drawing [mm]
 
 Dia = DA3[pos_hgjb1]
-LoD = 1.7 # 1, 1.5, 2
+LoD = 2 # 1, 1.5, 2
 
 L = Dia*LoD
 #L = Laenge[pos_hgjb1]#28 #length of HGJB on drawing [mm]
@@ -168,9 +168,9 @@ for i in range(n_parall):
 
     
     #cuts rotates the cylinder all the way around and cuts
-    # for j in range(N_HG):
-    #     cylinder1 = cylinder1.cut(parallelogram_solids)
-    #     cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-1*sepang)
+    for j in range(N_HG):
+        cylinder1 = cylinder1.cut(parallelogram_solids)
+        cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-1*sepang)
     
     
     cylinder1 = cylinder1.cut(parallelogram_solids)
