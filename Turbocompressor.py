@@ -42,7 +42,7 @@ SGTB Construction
     - input Element(dictionary)
 
 .parameters.manual:
-    - input Length(list), DO3(list), position(integer), alpha(float),
+    - input Length(list), position(integer), alpha(float),
       beta(float), gamma(float), hg(float), hr(float), Ri(float),
       Rg(float), R0(float), L(float)
     - should not be used together with .parameters
@@ -80,9 +80,9 @@ Element = DesignTurbocompressor.importpickle('Element_23_08_19')
 DesignSGTB = SGTB()
 
 DesignSGTB.parameters(Element)
-# DesignSGTB.parameters_manual(Length,DO3,pos_SGTB,alpha_SGTB,beta_SGTB,gamma_SGTB,hg_SGTB,hr_SGTB,Ri_SGTB,Rg_SGTB,Ro_SGTB,L_SGTB)
+# DesignSGTB.parameters_manual(Length,pos_SGTB,alpha_SGTB,beta_SGTB,gamma_SGTB,hg_SGTB,hr_SGTB,Ri_SGTB,Rg_SGTB,Ro_SGTB,L_SGTB)
 DesignSGTB.grooves(28)
-DesignSGTB.CAD('color','dramatize',d = 100)
+DesignSGTB.CAD('color')
 DesignSGTB.mirror()
 SGTBs = DesignSGTB.combined('stl')
 SGTB_right = DesignSGTB.right('stl')
@@ -126,8 +126,8 @@ DesignRotor = ROTOR()
 DesignRotor.parameters(Element)
 # DesignRotor.parameters_manual(Length,DI1,DI2,DI3,DO1,DO2,DO3,pos_HGJB1,pos_HGJB2,alpha_HGJB,beta_HGJB,gamma_HGJB,hg_HGJB,hr_HGJB,elem_type1=types1,elem_type2=types2,elem_type3=types3)
 ROT = DesignRotor.CAD()
-# DesignRotor.HGJB()
-# DesignRotor.HGJB_CAD(ROT)
+DesignRotor.HGJB()
+DesignRotor.HGJB_CAD(ROT)
 Rot = DesignRotor.assemble('color','stl')
 
 # show_object(Rot, name='Rotor')

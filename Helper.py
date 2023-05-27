@@ -11,7 +11,6 @@ class HELPER():
         # Importing pickle file and closing the file
         file = open(self.cwf  + '/ELEMENT/' + filename + '.pickle', 'rb')
         Element = pickle.load(file)
-        print(Element)
         file.close
 
         return Element

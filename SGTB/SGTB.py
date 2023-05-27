@@ -12,53 +12,45 @@ class SGTB():
         # Checks for are all needed keys are in Element, are all values have same lenght, is Element a dictionary
         # If not raises an error
         if type(Element) == dict:
-            if all(x in Element.keys() for x in ['Laenge','DA3','sys_pos','parameters']) and \
+            if all(x in Element.keys() for x in ['Laenge','sys_pos','parameters']) and \
                 all(x in Element['parameters'].keys() for x in ['sgtb']) and \
                     all(x in Element['parameters']['sgtb'].keys() for x in ['alpha','beta', 'hg', 'hr', 'Ri', 'Rg', 'Ro', 'gamma', 'L']):
-                    if len(Element['Laenge']) == len(Element['DA3']):
-                        # Taking variables from Element
-                        self.length = 1000*np.array(Element['Laenge'])
-                        self.DO3 = 1000*np.array(Element['DA3'])
-                        self.pos = np.int64(Element['sys_pos']['pos_sgtb'])
-                        self.alpha = np.float64(Element['parameters']['sgtb']['alpha'])
-                        self.beta = np.float64(Element['parameters']['sgtb']['beta'])
-                        self.beta = (np.pi*self.beta)/180 
-                        self.gamma = np.float64(Element['parameters']['sgtb']['gamma'])
-                        self.hg = 1000*np.float64(Element['parameters']['sgtb']['hg'])
-                        self.hr = 1000*np.float64(Element['parameters']['sgtb']['hr'])
-                        self.Ri= 1000*np.float64(Element['parameters']['sgtb']['Ri'])
-                        self.Rg = 1000*np.float64(Element['parameters']['sgtb']['Rg'])
-                        self.Ro = 1000*np.float64(Element['parameters']['sgtb']['Ro'])
-                        self.L = 1000*np.float64(Element['parameters']['sgtb']['L'])                 
-                    else:
-                        raise ValueError('SGTB.parameters: Size of the needed dictionary values are not equal.')
+                    # Taking variables from Element
+                    self.length = 1000*np.array(Element['Laenge'])
+                    self.pos = np.int64(Element['sys_pos']['pos_sgtb'])
+                    self.alpha = np.float64(Element['parameters']['sgtb']['alpha'])
+                    self.beta = np.float64(Element['parameters']['sgtb']['beta'])
+                    self.beta = (np.pi*self.beta)/180 
+                    self.gamma = np.float64(Element['parameters']['sgtb']['gamma'])
+                    self.hg = 1000*np.float64(Element['parameters']['sgtb']['hg'])
+                    self.hr = 1000*np.float64(Element['parameters']['sgtb']['hr'])
+                    self.Ri= 1000*np.float64(Element['parameters']['sgtb']['Ri'])
+                    self.Rg = 1000*np.float64(Element['parameters']['sgtb']['Rg'])
+                    self.Ro = 1000*np.float64(Element['parameters']['sgtb']['Ro'])
+                    self.L = 1000*np.float64(Element['parameters']['sgtb']['L'])                 
             else:
                 raise KeyError('SGTB.parameters: Element dictionary does not include all the needed keys.')
         else:
             raise TypeError('SGTB.parameters: Element type is not dictionary.')
         
-    def parameters_manual(self,Length,DO3,pos_SGTB,alpha_SGTB,beta_SGTB,gamma_SGTB,hg_SGTB,hr_SGTB,Ri_SGTB,Rg_SGTB,Ro_SGTB,L_SGTB):
+    def parameters_manual(self,Length,pos_SGTB,alpha_SGTB,beta_SGTB,gamma_SGTB,hg_SGTB,hr_SGTB,Ri_SGTB,Rg_SGTB,Ro_SGTB,L_SGTB):
         # Checks for information exist in given input
         # Checks for are all values have same lenght and type
         # If not raises an error
-        if type(Length) == list and type(DO3) == list:
-                if len(Length) == len(DO3):
-                    # Taking variables from user
-                    self.length = np.array(Length)
-                    self.DO3 = np.array(DO3)
-                    self.pos = np.int64(pos_SGTB)
-                    self.alpha = np.float64(alpha_SGTB)
-                    self.beta = np.float64(beta_SGTB)
-                    self.beta = (np.pi*self.beta)/180
-                    self.gamma = np.float64(gamma_SGTB)
-                    self.hg = np.float64(hg_SGTB)
-                    self.hr = np.float64(hr_SGTB)
-                    self.Ri = np.float64(Ri_SGTB)
-                    self.Rg = np.float64(Rg_SGTB)
-                    self.Ro = np.float64(Ro_SGTB)
-                    self.L = np.float64(L_SGTB)
-                else:
-                    raise ValueError('SGTB.parameters_manual: Size of the given lists are not equal.')
+        if type(Length) == list:
+                # Taking variables from user
+                self.length = np.array(Length)
+                self.pos = np.int64(pos_SGTB)
+                self.alpha = np.float64(alpha_SGTB)
+                self.beta = np.float64(beta_SGTB)
+                self.beta = (np.pi*self.beta)/180
+                self.gamma = np.float64(gamma_SGTB)
+                self.hg = np.float64(hg_SGTB)
+                self.hr = np.float64(hr_SGTB)
+                self.Ri = np.float64(Ri_SGTB)
+                self.Rg = np.float64(Rg_SGTB)
+                self.Ro = np.float64(Ro_SGTB)
+                self.L = np.float64(L_SGTB)
         else:
             raise TypeError('SGTB.parameters_manual: The type of the given variables are not suitable.')
         
