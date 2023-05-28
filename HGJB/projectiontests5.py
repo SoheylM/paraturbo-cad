@@ -127,14 +127,11 @@ projection_direction = cq.Vector(0, 0, -1)
 radang = (gap/CylRadOut1)#gap/CylRadOut1 #gap_spiral/(pi*D)# Betaprime #gap_spiral/pi*D #gap/CylRadOut1
 
 #convert to degrees
-rotang = radang*180/pi #+0.273
+rotang = radang*180/pi 
 
-#rotang = 24.5
 
 parallelograms = []
 parallelograms_projected = []
-# curve = cq.Assembly()
-# para_list = []
 
 for i in range(n_parall):
     print('i=', i)
@@ -158,104 +155,101 @@ for i in range(n_parall):
         cylinder1 = cylinder1.rotate((0,0,0),(0,1,0),rotang)
     parallelogram_projected = parallelograms[i].projectToShape(cylinder1, projection_direction)
     parallelograms_projected.append(parallelogram_projected)
-        
-# for i in range(n_parall):        
-#     parallelogram_solids = cq.Compound.makeCompound(
-#         [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i]]
-#         )
-    
-#     curve.add(
-#         parallelogram_solids,
-#         loc=cq.Location((0, 0, 0), (0, 1, 0), -i*rotang),
-#         )
-    
-
-    
-    #cuts rotates the cylinder all the way around and cuts
-    # for j in range(N_HG):
-    #     cylinder1 = cylinder1.cut(parallelogram_solids)
-    #     cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-1*sepang)
-    
-    
-    #cylinder1 = cylinder1.cut(parallelogram_solids)
-    
-    #rotates, cuts a second groove, rotates back
-    # cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-1*sepang)
-    # cylinder1 = cylinder1.cut(parallelogram_solids)
-    # cylinder1=cylinder1.rotate((0,0,0),(0,1,0),1*sepang)
     
     if i == n_parall-1:
         pass
     else:
         cylinder1 = cylinder1.rotate((0,0,0),(0,1,0),rotang)
         
+#creating the single unit groove object
+# for i in range(n_parall):
+#     if i ==0:
+#         para_solid = cq.Compound.makeCompound(
+#             [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i]]
+#             )
+#     else: 
+#         para_solid_temp = cq.Compound.makeCompound(
+#             [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i]]
+#             )
+#         para_solid_temp = para_solid_temp.transformed((0, -i*rotang, 0), (0, LenBetwVert, 0))
+#         para_solid = para_solid.fuse(para_solid_temp)
+        
+para_init = cq.Compound.makeCompound(
+    [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[0]]
+    )
 
-for i in range(n_parall):
-    if i ==0:
-        para_solid = cq.Compound.makeCompound(
-            [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i]]
-            )
-    else: 
-        para_solid_temp = cq.Compound.makeCompound(
-            [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i]]
-            )
-        para_solid_temp = para_solid_temp.transformed((0, -i*rotang, 0), (0, LenBetwVert, 0))
-        para_solid = para_solid.fuse(para_solid_temp)
+para_seg = cq.Compound.makeCompound(
+    [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[0]]
+    )
+
+para_seg_tr = para_seg.transformed((0, -1*rotang, 0), (0, LenBetwVert, 0))
+para_solid2 = para_init.fuse(para_seg_tr)
+
+para_solid4 = para_solid2.transformed((0, -2*rotang, 0), (0, 2*LenBetwVert, 0))
+para_solid4 = para_solid2.fuse(para_solid4)
+
+para_solid8 = para_solid4.transformed((0, -4*rotang, 0), (0, 4*LenBetwVert, 0))
+para_solid8 = para_solid4.fuse(para_solid8)
+
+para_solid = para_solid2.transformed((0, -8*rotang, 0), (0, 8*LenBetwVert, 0))
+para_solid = para_solid8.fuse(para_solid)
+
+show_object(para_solid)
+
+# for i in range(n_parall):
+#         para_seg = cq.Compound.makeCompound(
+#             [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i+1]]
+#             )
+#         para_seg = para_seg.transformed((0, -i*rotang, 0), (0, LenBetwVert, 0))
+#         para_solid = para_solid.fuse(para_seg)
         
         
+# cylinder2 = cylinder2.cut(para_solid4)
 
-#rotate copy of single object by one sepang
-para_solid2 = para_solid.rotate((0,0,0),(0,1,0), sepang)
-#fuse rotated object with first object to create double object
-para_solid2 = para_solid2.fuse(para_solid)
-#rotate copy of double object by 2x sepang
-para_solid4 = para_solid2.rotate((0,0,0),(0,1,0), 2*sepang)
-#fuse rotated double object with first double object
-para_solid4 = para_solid4.fuse(para_solid2)
+# show_object(cylinder2)
 
-para_solid6 = para_solid2.rotate((0,0,0),(0,1,0), 4*sepang)
+# #rotate copy of single object by one sepang
+# para_solid2 = para_solid.rotate((0,0,0),(0,1,0), sepang)
+# #fuse rotated object with first object to create double object
+# para_solid2 = para_solid2.fuse(para_solid)
+# #rotate copy of double object by 2x sepang
+# para_solid4 = para_solid2.rotate((0,0,0),(0,1,0), 2*sepang)
+# #fuse rotated double object with first double object
+# para_solid4 = para_solid4.fuse(para_solid2)
 
-para_solid6 = para_solid4.fuse(para_solid6)
+# para_solid6 = para_solid2.rotate((0,0,0),(0,1,0), 4*sepang)
 
-para_solid7 = para_solid.rotate((0,0,0),(0,1,0), 6*sepang)
+# para_solid6 = para_solid4.fuse(para_solid6)
 
-para_solid7 = para_solid6.fuse(para_solid7)
+# para_solid7 = para_solid.rotate((0,0,0),(0,1,0), 6*sepang)
 
-#para_solid7_m = para_solid7.mirror('XZ')
+# para_solid7 = para_solid6.fuse(para_solid7)
 
-para_solid7_1 = para_solid7.rotate((0,0,0),(0,1,0), 7*sepang)
+# #para_solid7_m = para_solid7.mirror('XZ')
 
-para_solid7_2 = para_solid7.rotate((0,0,0),(0,1,0), 14*sepang)
+# para_solid7_1 = para_solid7.rotate((0,0,0),(0,1,0), 7*sepang)
 
-para_solid7_3 = para_solid7.rotate((0,0,0),(0,1,0), 21*sepang)
+# para_solid7_2 = para_solid7.rotate((0,0,0),(0,1,0), 14*sepang)
 
-cylinder2 = cylinder2.rotate((0,0,0),(0,1,0), 90)
+# para_solid7_3 = para_solid7.rotate((0,0,0),(0,1,0), 21*sepang)
 
-halfbearing = para_solid7
-halfbearing = para_solid7.fuse(para_solid7_1)
-halfbearing = halfbearing.fuse(para_solid7_2)
-halfbearing = halfbearing.fuse(para_solid7_3)
+# cylinder2 = cylinder2.rotate((0,0,0),(0,1,0), 90)
 
-halfbearing_m = halfbearing.mirror('XZ')
-halfbearing_m = halfbearing_m.transformed((0,0, 0), (0, 125, 0))
+# halfbearing = para_solid7
+# halfbearing = para_solid7.fuse(para_solid7_1)
+# halfbearing = halfbearing.fuse(para_solid7_2)
+# halfbearing = halfbearing.fuse(para_solid7_3)
 
-cylinder2 = cylinder2.cut(halfbearing)
-cylinder2 = cylinder2.cut(halfbearing_m)
+# halfbearing_m = halfbearing.mirror('XZ')
+# halfbearing_m = halfbearing_m.transformed((0,0, 0), (0, 125, 0))
 
-#cylinder2 = cylinder2.cut(para_solid7)
-# cylinder2 = cylinder2.cut(para_solid7_1)
-# cylinder2 = cylinder2.cut(para_solid7_2)
-# cylinder2 = cylinder2.cut(para_solid7_3)
+# cylinder2 = cylinder2.cut(halfbearing)
+# cylinder2 = cylinder2.cut(halfbearing_m)
 
 #show_object(cylinder1)
-show_object(cylinder2)
-show_object(halfbearing)
-#show_object(para_solid7_m)
-# show_object(para_solid7_1)
-# show_object(para_solid7_2)
-# show_object(para_solid7_3)
+# show_object(cylinder2)
+# show_object(halfbearing)
 
-# para_solid7_m = para_solid7_m.transformed((0,0, 0), (0, 125, 0))
-# para_solid7 = para_solid7.fuse(para_solid7_m)
+
 
 
