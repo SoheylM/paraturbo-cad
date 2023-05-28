@@ -196,10 +196,36 @@ for i in range(n_parall):
         para_solid_temp = para_solid_temp.transformed((0, -i*rotang, 0), (0, LenBetwVert, 0))
         para_solid = para_solid.fuse(para_solid_temp)
 
-para_solid2 = para_solid.rotate((0,0,0),(0,1,0), 90)
+#rotate copy of single object by one sepang
+para_solid2 = para_solid.rotate((0,0,0),(0,1,0), sepang)
+#fuse rotated object with first object to create double object
+para_solid2 = para_solid2.fuse(para_solid)
+#rotate copy of double object by 2x sepang
+para_solid4 = para_solid2.rotate((0,0,0),(0,1,0), 2*sepang)
+#fuse rotated double object with first double object
+para_solid4 = para_solid4.fuse(para_solid2)
+
+para_solid8 = para_solid4.rotate((0,0,0),(0,1,0), 4*sepang)
+
+para_solid8 = para_solid8.fuse(para_solid4)
+
+para_solid16 = para_solid8.rotate((0,0,0),(0,1,0), 8*sepang)
+
+para_solid16 = para_solid16.fuse(para_solid8)
+
+para_solid24 = para_solid8.rotate((0,0,0),(0,1,0), 16*sepang)
+
+para_solid24 = para_solid16.fuse(para_solid24)
+
+para_solid28 = para_solid4.rotate((0,0,0),(0,1,0), -4*sepang)
+
+para_solid28 = para_solid24.fuse(para_solid28)
+
+# para_solid8rotback = para_solid8.rotate((0,0,0),(0,1,0), -8*sepang)
+
 #show_object(para_solid)
 
-cylinder1 = cylinder1.cut(para_solid)
+#cylinder1 = cylinder1.cut(para_solid)
 
 # para_solid1 = cq.Compound.makeCompound(
 #     [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[0]]
@@ -223,8 +249,10 @@ cylinder1 = cylinder1.cut(para_solid)
 
 
 #show_object(removalcylinder1)
-show_object(cylinder1) #, options={"alpha": 0.8}
+#show_object(cylinder1) #, options={"alpha": 0.8}
 # show_object(parallelograms_projected[0])
 #show_object(parallelogram_solids)
-show_object(para_solid)
-show_object(para_solid2)
+#show_object(para_solid)
+show_object(para_solid28)
+# show_object(para_solid8rotback)
+
