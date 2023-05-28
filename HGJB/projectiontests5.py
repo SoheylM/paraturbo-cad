@@ -204,9 +204,6 @@ for i in range(n_parall):
         
         
 
-para_solid_turned = para_solid.transformed((180, 180, 0), (0, 140, 0))
-para_solid = para_solid.fuse(para_solid_turned)
-
 #rotate copy of single object by one sepang
 para_solid2 = para_solid.rotate((0,0,0),(0,1,0), sepang)
 #fuse rotated object with first object to create double object
@@ -224,22 +221,41 @@ para_solid7 = para_solid.rotate((0,0,0),(0,1,0), 6*sepang)
 
 para_solid7 = para_solid6.fuse(para_solid7)
 
+para_solid7_m = para_solid7.mirror('XZ')
+para_solid7_m = para_solid7_m.transformed((0,0, 0), (0, 125, 0))
+para_solid7 = para_solid7.fuse(para_solid7_m)
+
 para_solid7_1 = para_solid7.rotate((0,0,0),(0,1,0), 7*sepang)
+
+para_solid7_1_m = para_solid7_1.mirror('XZ')
+para_solid7_1_m = para_solid7_1_m.transformed((0,0, 0), (0, 125, 0))
+para_solid7_1 = para_solid7_1.fuse(para_solid7_1_m)
 
 para_solid7_2 = para_solid7.rotate((0,0,0),(0,1,0), 14*sepang)
 
+para_solid7_2_m = para_solid7_2.mirror('XZ')
+para_solid7_2_m = para_solid7_2_m.transformed((0,0, 0), (0, 125, 0))
+para_solid7_2 = para_solid7_2.fuse(para_solid7_2_m)
+
 para_solid7_3 = para_solid7.rotate((0,0,0),(0,1,0), 21*sepang)
 
+para_solid7_3_m = para_solid7_3.mirror('XZ')
+para_solid7_3_m = para_solid7_3_m.transformed((0,0, 0), (0, 125, 0))
+para_solid7_3 = para_solid7_2.fuse(para_solid7_3_m)
+
 cylinder2 = cylinder2.rotate((0,0,0),(0,1,0), 90)
+
+
 
 cylinder2 = cylinder2.cut(para_solid7)
 cylinder2 = cylinder2.cut(para_solid7_1)
 cylinder2 = cylinder2.cut(para_solid7_2)
 cylinder2 = cylinder2.cut(para_solid7_3)
 
-show_object(cylinder1)
+#show_object(cylinder1)
 show_object(cylinder2)
 show_object(para_solid7)
+#show_object(para_solid7_m)
 show_object(para_solid7_1)
 show_object(para_solid7_2)
 show_object(para_solid7_3)
