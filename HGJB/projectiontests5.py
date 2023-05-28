@@ -196,6 +196,7 @@ for i in range(n_parall):
         para_solid_temp = para_solid_temp.transformed((0, -i*rotang, 0), (0, LenBetwVert, 0))
         para_solid = para_solid.fuse(para_solid_temp)
 
+para_solid2 = para_solid.rotate((0,0,0),(0,1,0), 90)
 #show_object(para_solid)
 
 cylinder1 = cylinder1.cut(para_solid)
@@ -225,4 +226,5 @@ cylinder1 = cylinder1.cut(para_solid)
 show_object(cylinder1) #, options={"alpha": 0.8}
 # show_object(parallelograms_projected[0])
 #show_object(parallelogram_solids)
-#show_object(curve)
+show_object(para_solid)
+show_object(para_solid2)

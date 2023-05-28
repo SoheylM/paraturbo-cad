@@ -172,14 +172,14 @@ for i in range(n_parall):
     #     cylinder1 = cylinder1.cut(parallelogram_solids)
     #     cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-1*sepang)
         
-    #cuts rotates the cylinder all the way around and cuts
-    for j in range(N_HG):
-        cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-j*sepang)
-        cylinder1 = cylinder1.cut(parallelogram_solids)
-        cylinder1=cylinder1.rotate((0,0,0),(0,1,0),j*sepang)
+    # #cuts rotates the cylinder all the way around and cuts
+    # for j in range(N_HG):
+    #     cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-j*sepang)
+    #     cylinder1 = cylinder1.cut(parallelogram_solids)
+    #     cylinder1=cylinder1.rotate((0,0,0),(0,1,0),j*sepang)
     
     
-    #cylinder1 = cylinder1.cut(parallelogram_solids)
+    cylinder1 = cylinder1.cut(parallelogram_solids)
     
     # #rotates, cuts a second groove, rotates back
     # cylinder1=cylinder1.rotate((0,0,0),(0,1,0),-1*sepang)
