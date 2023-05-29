@@ -10,7 +10,7 @@ from enum import Enum, auto
 import cq_warehouse.extensions
 
 #open file
-file = open('Element_23_05_03.pickle', 'rb')
+file = open('Element_23_08_19.pickle', 'rb')
 
 # dump info to that file
 Element = pickle.load(file)
@@ -175,57 +175,58 @@ for i in range(n_parall):
 #         para_solid = para_solid.fuse(para_solid_temp)        
 # show_object(para_solid)
 
-
-# para_solid = cq.Compound.makeCompound(
-#       [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[0]]
-#       )
-
-# para_seg = para_solid
-
-# for j in range(n_parall-1):
-#     para_seg_tr = para_seg.transformed((0, -(i+1)*rotang, 0), (0, (i+1)*LenBetwVert, 0))
-#     para_solid = para_solid.fuse(para_seg_tr)
-
-# show_object(para_solid)
-# show_object(para_seg_tr)
-
-
-#almost parametrized but doen't work in for loop?
+#for loop that don't work
 para_solid = cq.Compound.makeCompound(
       [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[0]]
       )
 
 para_seg = para_solid
 
-para_seg_tr = para_seg.transformed((0, -1*rotang, 0), (0, 1*LenBetwVert, 0))
-para_solid = para_solid.fuse(para_seg_tr)
+for j in range(n_parall-1):
+    para_seg_tr = para_seg.transformed((0, -(j+1)*rotang, 0), (0, (j+1)*LenBetwVert, 0))
+    para_solid = para_solid.fuse(para_seg_tr)
+    
 
-para_seg_tr = para_seg.transformed((0, -2*rotang, 0), (0, 2*LenBetwVert, 0))
-para_solid = para_solid.fuse(para_seg_tr)
+show_object(para_solid)
+show_object(para_seg_tr)
 
-para_seg_tr = para_seg.transformed((0, -3*rotang, 0), (0, 3*LenBetwVert, 0))
-para_solid = para_solid.fuse(para_seg_tr)
 
-para_seg_tr = para_seg.transformed((0, -4*rotang, 0), (0, 4*LenBetwVert, 0))
-para_solid = para_solid.fuse(para_seg_tr)
+# #almost parametrized but doen't work in for loop?
+# para_solid = cq.Compound.makeCompound(
+#       [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[0]]
+#       )
 
-para_seg_tr = para_seg.transformed((0, -5*rotang, 0), (0, 5*LenBetwVert, 0))
-para_solid = para_solid.fuse(para_seg_tr)
+# para_seg = para_solid
 
-para_seg_tr = para_seg.transformed((0, -6*rotang, 0), (0, 6*LenBetwVert, 0))
-para_solid = para_solid.fuse(para_seg_tr)
+# para_seg_tr = para_seg.transformed((0, -1*rotang, 0), (0, 1*LenBetwVert, 0))
+# para_solid = para_solid.fuse(para_seg_tr)
 
-para_seg_tr = para_seg.transformed((0, -7*rotang, 0), (0, 7*LenBetwVert, 0))
-para_solid = para_solid.fuse(para_seg_tr)
+# para_seg_tr = para_seg.transformed((0, -2*rotang, 0), (0, 2*LenBetwVert, 0))
+# para_solid = para_solid.fuse(para_seg_tr)
 
-para_seg_tr = para_seg.transformed((0, -8*rotang, 0), (0, 8*LenBetwVert, 0))
-para_solid = para_solid.fuse(para_seg_tr)
+# para_seg_tr = para_seg.transformed((0, -3*rotang, 0), (0, 3*LenBetwVert, 0))
+# para_solid = para_solid.fuse(para_seg_tr)
 
-para_seg_tr = para_seg.transformed((0, -9*rotang, 0), (0, 9*LenBetwVert, 0))
-para_solid = para_solid.fuse(para_seg_tr)
+# para_seg_tr = para_seg.transformed((0, -4*rotang, 0), (0, 4*LenBetwVert, 0))
+# para_solid = para_solid.fuse(para_seg_tr)
 
-# show_object(para_solid)
-# show_object(para_seg_tr)
+# para_seg_tr = para_seg.transformed((0, -5*rotang, 0), (0, 5*LenBetwVert, 0))
+# para_solid = para_solid.fuse(para_seg_tr)
+
+# para_seg_tr = para_seg.transformed((0, -6*rotang, 0), (0, 6*LenBetwVert, 0))
+# para_solid = para_solid.fuse(para_seg_tr)
+
+# para_seg_tr = para_seg.transformed((0, -7*rotang, 0), (0, 7*LenBetwVert, 0))
+# para_solid = para_solid.fuse(para_seg_tr)
+
+# para_seg_tr = para_seg.transformed((0, -8*rotang, 0), (0, 8*LenBetwVert, 0))
+# para_solid = para_solid.fuse(para_seg_tr)
+
+# para_seg_tr = para_seg.transformed((0, -9*rotang, 0), (0, 9*LenBetwVert, 0))
+# para_solid = para_solid.fuse(para_seg_tr)
+
+show_object(para_solid)
+show_object(para_seg_tr)
 
 # #creates 10 segments manually
 # para_seg = cq.Compound.makeCompound(
@@ -257,47 +258,47 @@ para_solid = para_solid.fuse(para_seg_tr)
 
 
 
-#rotate copy of single object by one sepang
-para_solid2 = para_solid.rotate((0,0,0),(0,1,0), sepang)
-#fuse rotated object with first object to create double object
-para_solid2 = para_solid2.fuse(para_solid)
-#rotate copy of double object by 2x sepang
-para_solid4 = para_solid2.rotate((0,0,0),(0,1,0), 2*sepang)
-#fuse rotated double object with first double object
-para_solid4 = para_solid4.fuse(para_solid2)
+# #rotate copy of single object by one sepang
+# para_solid2 = para_solid.rotate((0,0,0),(0,1,0), sepang)
+# #fuse rotated object with first object to create double object
+# para_solid2 = para_solid2.fuse(para_solid)
+# #rotate copy of double object by 2x sepang
+# para_solid4 = para_solid2.rotate((0,0,0),(0,1,0), 2*sepang)
+# #fuse rotated double object with first double object
+# para_solid4 = para_solid4.fuse(para_solid2)
 
-para_solid6 = para_solid2.rotate((0,0,0),(0,1,0), 4*sepang)
+# para_solid6 = para_solid2.rotate((0,0,0),(0,1,0), 4*sepang)
 
-para_solid6 = para_solid4.fuse(para_solid6)
+# para_solid6 = para_solid4.fuse(para_solid6)
 
-para_solid7 = para_solid.rotate((0,0,0),(0,1,0), 6*sepang)
+# para_solid7 = para_solid.rotate((0,0,0),(0,1,0), 6*sepang)
 
-para_solid7 = para_solid6.fuse(para_solid7)
+# para_solid7 = para_solid6.fuse(para_solid7)
 
-#para_solid7_m = para_solid7.mirror('XZ')
+# #para_solid7_m = para_solid7.mirror('XZ')
 
-para_solid7_1 = para_solid7.rotate((0,0,0),(0,1,0), 7*sepang)
+# para_solid7_1 = para_solid7.rotate((0,0,0),(0,1,0), 7*sepang)
 
-para_solid7_2 = para_solid7.rotate((0,0,0),(0,1,0), 14*sepang)
+# para_solid7_2 = para_solid7.rotate((0,0,0),(0,1,0), 14*sepang)
 
-para_solid7_3 = para_solid7.rotate((0,0,0),(0,1,0), 21*sepang)
+# para_solid7_3 = para_solid7.rotate((0,0,0),(0,1,0), 21*sepang)
 
-cylinder2 = cylinder2.rotate((0,0,0),(0,1,0), 90)
+# cylinder2 = cylinder2.rotate((0,0,0),(0,1,0), 90)
 
-halfbearing = para_solid7
-halfbearing = para_solid7.fuse(para_solid7_1)
-halfbearing = halfbearing.fuse(para_solid7_2)
-halfbearing = halfbearing.fuse(para_solid7_3)
+# halfbearing = para_solid7
+# halfbearing = para_solid7.fuse(para_solid7_1)
+# halfbearing = halfbearing.fuse(para_solid7_2)
+# halfbearing = halfbearing.fuse(para_solid7_3)
 
-halfbearing_m = halfbearing.mirror('XZ')
-halfbearing_m = halfbearing_m.transformed((0,0, 0), (0, 125, 0))
+# halfbearing_m = halfbearing.mirror('XZ')
+# halfbearing_m = halfbearing_m.transformed((0,0, 0), (0, 125, 0))
 
-cylinder2 = cylinder2.cut(halfbearing)
-cylinder2 = cylinder2.cut(halfbearing_m)
+# cylinder2 = cylinder2.cut(halfbearing)
+# cylinder2 = cylinder2.cut(halfbearing_m)
 
-show_object(cylinder1)
-show_object(cylinder2)
-show_object(halfbearing)
+# show_object(cylinder1)
+# show_object(cylinder2)
+# show_object(halfbearing)
 
 
 
