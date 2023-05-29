@@ -99,7 +99,7 @@ gap_spiral = (gap*Spiral_step)/LenBetwVert
 
 #create removal cylinder1
 CylLen1 = Laenge[pos_hgjb1]
-CylRadOut1= DA3[pos_hgjb1]/2
+CylRadOut1= 1.1*DA3[pos_hgjb1]/2
 
 
 #first cylinder to be projected onto
@@ -175,7 +175,7 @@ for i in range(n_parall):
 #         para_solid = para_solid.fuse(para_solid_temp)        
 # show_object(para_solid)
 
-#for loop that don't work
+#for loop that now works
 para_solid = cq.Compound.makeCompound(
       [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[0]]
       )
@@ -184,77 +184,52 @@ para_seg = para_solid
 
 for j in range(n_parall-1):
     para_seg_tr = para_seg.transformed((0, -(j+1)*rotang, 0), (0, (j+1)*LenBetwVert, 0))
-    para_solid = para_solid.fuse(para_seg_tr)
+    para_solid = para_solid.fuse(para_seg_tr).fix()
     
-
-show_object(para_solid)
-show_object(para_seg_tr)
-
-
-# #almost parametrized but doen't work in for loop?
-# para_solid = cq.Compound.makeCompound(
-#       [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[0]]
-#       )
-
-# para_seg = para_solid
-
-# para_seg_tr = para_seg.transformed((0, -1*rotang, 0), (0, 1*LenBetwVert, 0))
-# para_solid = para_solid.fuse(para_seg_tr)
-
-# para_seg_tr = para_seg.transformed((0, -2*rotang, 0), (0, 2*LenBetwVert, 0))
-# para_solid = para_solid.fuse(para_seg_tr)
-
-# para_seg_tr = para_seg.transformed((0, -3*rotang, 0), (0, 3*LenBetwVert, 0))
-# para_solid = para_solid.fuse(para_seg_tr)
-
-# para_seg_tr = para_seg.transformed((0, -4*rotang, 0), (0, 4*LenBetwVert, 0))
-# para_solid = para_solid.fuse(para_seg_tr)
-
-# para_seg_tr = para_seg.transformed((0, -5*rotang, 0), (0, 5*LenBetwVert, 0))
-# para_solid = para_solid.fuse(para_seg_tr)
-
-# para_seg_tr = para_seg.transformed((0, -6*rotang, 0), (0, 6*LenBetwVert, 0))
-# para_solid = para_solid.fuse(para_seg_tr)
-
-# para_seg_tr = para_seg.transformed((0, -7*rotang, 0), (0, 7*LenBetwVert, 0))
-# para_solid = para_solid.fuse(para_seg_tr)
-
-# para_seg_tr = para_seg.transformed((0, -8*rotang, 0), (0, 8*LenBetwVert, 0))
-# para_solid = para_solid.fuse(para_seg_tr)
-
-# para_seg_tr = para_seg.transformed((0, -9*rotang, 0), (0, 9*LenBetwVert, 0))
-# para_solid = para_solid.fuse(para_seg_tr)
-
-show_object(para_solid)
-show_object(para_seg_tr)
-
-# #creates 10 segments manually
-# para_seg = cq.Compound.makeCompound(
-#     [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[0]]
-#     )
-
-# para_seg_tr = para_seg.transformed((0, -1*rotang, 0), (0, LenBetwVert, 0))
-# para_solid2 = para_seg.fuse(para_seg_tr)
-
-# para_solid4 = para_solid2.transformed((0, -2*rotang, 0), (0, 2*LenBetwVert, 0))
-# para_solid4 = para_solid2.fuse(para_solid4)
-
-# para_solid8 = para_solid4.transformed((0, -4*rotang, 0), (0, 4*LenBetwVert, 0))
-# para_solid8 = para_solid4.fuse(para_solid8)
-
-# para_solid = para_solid2.transformed((0, -8*rotang, 0), (0, 8*LenBetwVert, 0))
-# para_solid = para_solid8.fuse(para_solid)
-
+    # .fix().clean()
+    
+# #this assembly works to create the 28 groove objects
+# solid_1 = {}
+# solid_1[0] =  para_solid
 # show_object(para_solid)
+# #show_object(para_seg_tr)
 
-# for i in range(n_parall):
-#         para_seg = cq.Compound.makeCompound(
-#             [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i+1]]
-#             )
-#         para_seg = para_seg.transformed((0, -i*rotang, 0), (0, LenBetwVert, 0))
-#         para_solid = para_solid.fuse(para_seg)
-        
-        
+# assembly = cq.Assembly()
+# assembly.add(solid_1[0])
+# for i in range(0 , 27):
+#     solid_1[i+1] = solid_1[i].transformed ((0 ,sepang ,0))
+#     assembly.add( solid_1[i+1])
+    
+# show_object(assembly)
+
+solid_1 = {}
+solid_1[0] =  para_solid
+# show_object(para_solid)
+# show_object(para_seg_tr)
+
+# assembly = cq.Assembly()
+# assembly.add(solid_1[0])
+for i in range(0,12):
+    solid_1[i+1] = solid_1[i].transformed ((0 ,sepang ,0))
+    #assembly.add( solid_1[i+1])
+    cylinder1 = cylinder1.cut(solid_1[i+1])
+    # show_object(cylinder1)
+    #show_object(solid_1[i+1])
+    
+# show_object(assembly)
+
+# cylinder1 = cylinder1.cut(para_solid)
+show_object(cylinder1)
+
+
+
+
+
+
+
+
+
+
 
 
 
