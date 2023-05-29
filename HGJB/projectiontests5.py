@@ -8,6 +8,7 @@ from math import sin, cos, pi, tan
 import timeit
 from enum import Enum, auto
 import cq_warehouse.extensions
+from cadquery import exporters
 
 #open file
 file = open('Element_23_08_19.pickle', 'rb')
@@ -184,7 +185,7 @@ para_seg = para_solid
 
 for j in range(n_parall-1):
     para_seg_tr = para_seg.transformed((0, -(j+1)*rotang, 0), (0, (j+1)*LenBetwVert, 0))
-    para_solid = para_solid.fuse(para_seg_tr).fix()
+    para_solid = para_solid.fuse(para_seg_tr)
     
     # .fix().clean()
     
@@ -202,17 +203,33 @@ for j in range(n_parall-1):
     
 # show_object(assembly)
 
+
+# halfbearing_m = halfbearing.mirror('XZ')
+# halfbearing_m = halfbearing_m.transformed((0,0, 0), (0, 125, 0))
+para_solid_m = para_solid.mirror('XZ')
+para_solid_m = para_solid_m.transformed((0,0, 0), (0, 127, 0))
+# para_solid = para_solid.fuse(para_solid_m)
+# show_object(para_solid_m)
+
 solid_1 = {}
 solid_1[0] =  para_solid
+
+solid_1m = {}
+solid_1m[0] =  para_solid_m
+
 # show_object(para_solid)
 # show_object(para_seg_tr)
 
 # assembly = cq.Assembly()
 # assembly.add(solid_1[0])
-for i in range(0,12):
+for i in range(0,28):
     solid_1[i+1] = solid_1[i].transformed ((0 ,sepang ,0))
     #assembly.add( solid_1[i+1])
     cylinder1 = cylinder1.cut(solid_1[i+1])
+    
+    solid_1m[i+1] = solid_1m[i].transformed ((0 ,sepang ,0))
+    #assembly.add( solid_1[i+1])
+    cylinder1 = cylinder1.cut(solid_1m[i+1])
     # show_object(cylinder1)
     #show_object(solid_1[i+1])
     
@@ -221,7 +238,7 @@ for i in range(0,12):
 # cylinder1 = cylinder1.cut(para_solid)
 show_object(cylinder1)
 
-
+cq.exporters.export(cylinder1, "tim.step")
 
 
 
