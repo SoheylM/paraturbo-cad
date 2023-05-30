@@ -100,7 +100,7 @@ gap_spiral = (gap*Spiral_step)/LenBetwVert
 
 #create removal cylinder1
 CylLen1 = Laenge[pos_hgjb1]
-CylRadOut1= 1.1*DA3[pos_hgjb1]/2
+CylRadOut1= 1.01*DA3[pos_hgjb1]/2
 
 
 #first cylinder to be projected onto
@@ -135,7 +135,7 @@ parallelograms = []
 parallelograms_projected = []
 
 for i in range(n_parall):
-    print('i=', i)
+    #print('i=', i)
     parallelogram = (
           cq.Workplane("YX", origin=((gap+a_HG)/2, DistCenter1+L/2+i*LenBetwVert, 0))
           #when viewed / \, y to the right and x up, z into screen
@@ -162,19 +162,7 @@ for i in range(n_parall):
     else:
         cylinder1 = cylinder1.rotate((0,0,0),(0,1,0),rotang)
         
-#creating the single unit groove object (with annoying gap)
-# for i in range(n_parall):
-#     if i ==0:
-#         para_solid = cq.Compound.makeCompound(
-#             [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i]]
-#             )
-#     else: 
-#         para_solid_temp = cq.Compound.makeCompound(
-#             [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[i]]
-#             )
-#         para_solid_temp = para_solid_temp.transformed((0, -i*rotang, 0), (0, LenBetwVert, 0))
-#         para_solid = para_solid.fuse(para_solid_temp)        
-# show_object(para_solid)
+
 
 #for loop that now works
 para_solid = cq.Compound.makeCompound(
@@ -182,6 +170,7 @@ para_solid = cq.Compound.makeCompound(
       )
 
 para_seg = para_solid
+para_init =  para_solid
 
 for j in range(n_parall-1):
     para_seg_tr = para_seg.transformed((0, -(j+1)*rotang, 0), (0, (j+1)*LenBetwVert, 0))
@@ -189,26 +178,11 @@ for j in range(n_parall-1):
     
     # .fix().clean()
     
-# #this assembly works to create the 28 groove objects
-# solid_1 = {}
-# solid_1[0] =  para_solid
-# show_object(para_solid)
-# #show_object(para_seg_tr)
-
-# assembly = cq.Assembly()
-# assembly.add(solid_1[0])
-# for i in range(0 , 27):
-#     solid_1[i+1] = solid_1[i].transformed ((0 ,sepang ,0))
-#     assembly.add( solid_1[i+1])
-    
-# show_object(assembly)
 
 
-# halfbearing_m = halfbearing.mirror('XZ')
-# halfbearing_m = halfbearing_m.transformed((0,0, 0), (0, 125, 0))
+
 para_solid_m = para_solid.mirror('XZ')
 para_solid_m = para_solid_m.transformed((0,0, 0), (0, 127, 0))
-# para_solid = para_solid.fuse(para_solid_m)
 # show_object(para_solid_m)
 
 solid_1 = {}
@@ -217,12 +191,9 @@ solid_1[0] =  para_solid
 solid_1m = {}
 solid_1m[0] =  para_solid_m
 
-# show_object(para_solid)
-# show_object(para_seg_tr)
 
-# assembly = cq.Assembly()
-# assembly.add(solid_1[0])
-for i in range(0,28):
+
+for i in range(0,2):
     solid_1[i+1] = solid_1[i].transformed ((0 ,sepang ,0))
     #assembly.add( solid_1[i+1])
     cylinder1 = cylinder1.cut(solid_1[i+1])
@@ -233,12 +204,16 @@ for i in range(0,28):
     # show_object(cylinder1)
     #show_object(solid_1[i+1])
     
-# show_object(assembly)
 
-# cylinder1 = cylinder1.cut(para_solid)
+show_object(parallelograms[i])
+show_object(cylinder2, options={"alpha": 0.8})
+show_object(parallelograms_projected[i])
+show_object(para_init)
+show_object(para_solid)
 show_object(cylinder1)
 
-cq.exporters.export(cylinder1, "tim.step")
+
+#cq.exporters.export(cylinder1, "beta165mult1.step")
 
 
 
