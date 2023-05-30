@@ -104,7 +104,7 @@ CylRadOut1= 1.01*DA3[pos_hgjb1]/2
 
 #first cylinder 
 cylinder1 = cq.Solid.makeCylinder(
-     CylRadOut1, 2*CylLen1+2, pnt=cq.Vector(0, DistCenter1+2*L+1, 0), dir=cq.Vector(0, -1, 0)
+     CylRadOut1, 2*CylLen1+2, pnt=cq.Vector(0, 1*L, 0), dir=cq.Vector(0, -1, 0)
 )
 
 #second cylinder 
@@ -128,7 +128,7 @@ parallelograms_projected = []
 for i in range(n_parall):
     #print('i=', i)
     parallelogram = (
-          cq.Workplane("YX", origin=((gap+a_HG)/2, DistCenter1+L/2+i*LenBetwVert, 0))
+          cq.Workplane("YX", origin=((gap+a_HG)/2, -L/2+LenBetwVert+i*LenBetwVert, 0))
           #when viewed / \, y to the right and x up, z into screen
           #origin at upper outside corner
           #points below in standard x and y coordinates
@@ -169,7 +169,7 @@ for j in range(n_parall-1):
     
 
 para_solid_m = para_solid.mirror('XZ')
-para_solid_m = para_solid_m.transformed((0,0, 0), (0, 127, 0))
+#para_solid_m = para_solid_m.transformed((0,0, 0), (0, 127, 0))
 # show_object(para_solid_m)
 
 solid_1 = {}
@@ -187,7 +187,7 @@ for i in range(0,2):
 
 # show_object(parallelograms[i])
 # show_object(cylinder2, options={"alpha": 0.8})
-show_object(parallelograms_projected[i])
+show_object(parallelograms_projected[0])
 show_object(para_init)
 #show_object(para_solid)
 show_object(cylinder1)
