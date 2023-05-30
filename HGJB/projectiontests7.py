@@ -34,6 +34,7 @@ DA2 = 1000*np.array(Element['DA2'])
 DA3 = 1000*np.array(Element['DA3'])
 #print('type DI1', type(DI1))
 
+#find position of HGJBs
 sys_pos = Element['sys_pos']
 pos_hgjb1 = sys_pos['pos_hgjb1']
 pos_hgjb2 =sys_pos['pos_hgjb2']
@@ -64,8 +65,6 @@ n_parall = 10
 
 # percentage epsilon of length to extend to avoid surfaces between parallelograms
 eps_perc = 0.005
-
-
 
 #find distance to first HGJB
 dist1 = 0
@@ -98,17 +97,17 @@ Betaprime = abs(beta_HG)- pi/2# - 90
 gap = LenBetwVert*tan(Betaprime)
 gap_spiral = (gap*Spiral_step)/LenBetwVert
 
-#create removal cylinder1
+#create cylinder parameters
 CylLen1 = Laenge[pos_hgjb1]
 CylRadOut1= 1.01*DA3[pos_hgjb1]/2
 
 
-#first cylinder to be projected onto
+#first cylinder 
 cylinder1 = cq.Solid.makeCylinder(
      CylRadOut1, 2*CylLen1+2, pnt=cq.Vector(0, DistCenter1+2*L+1, 0), dir=cq.Vector(0, -1, 0)
 )
 
-#second cylinder to cut from
+#second cylinder 
 cylinder2 = cq.Solid.makeCylinder(
      CylRadOut1, 2*CylLen1+2, pnt=cq.Vector(0, DistCenter1+2*L+1, 0), dir=cq.Vector(0, -1, 0)
 )
@@ -176,10 +175,6 @@ for j in range(n_parall-1):
     para_seg_tr = para_seg.transformed((0, -(j+1)*rotang, 0), (0, (j+1)*LenBetwVert, 0))
     para_solid = para_solid.fuse(para_seg_tr)
     
-    # .fix().clean()
-    
-
-
 
 para_solid_m = para_solid.mirror('XZ')
 para_solid_m = para_solid_m.transformed((0,0, 0), (0, 127, 0))
@@ -191,19 +186,12 @@ solid_1[0] =  para_solid
 solid_1m = {}
 solid_1m[0] =  para_solid_m
 
-
-
 for i in range(0,2):
     solid_1[i+1] = solid_1[i].transformed ((0 ,sepang ,0))
-    #assembly.add( solid_1[i+1])
     cylinder1 = cylinder1.cut(solid_1[i+1])
     
     solid_1m[i+1] = solid_1m[i].transformed ((0 ,sepang ,0))
-    #assembly.add( solid_1[i+1])
     cylinder1 = cylinder1.cut(solid_1m[i+1])
-    # show_object(cylinder1)
-    #show_object(solid_1[i+1])
-    
 
 # show_object(parallelograms[i])
 # show_object(cylinder2, options={"alpha": 0.8})
@@ -212,60 +200,9 @@ for i in range(0,2):
 # show_object(para_solid)
 show_object(cylinder1)
 
-
 #cq.exporters.export(cylinder1, "beta165mult1.step")
 
 
-
-
-
-
-
-
-
-
-
-# #rotate copy of single object by one sepang
-# para_solid2 = para_solid.rotate((0,0,0),(0,1,0), sepang)
-# #fuse rotated object with first object to create double object
-# para_solid2 = para_solid2.fuse(para_solid)
-# #rotate copy of double object by 2x sepang
-# para_solid4 = para_solid2.rotate((0,0,0),(0,1,0), 2*sepang)
-# #fuse rotated double object with first double object
-# para_solid4 = para_solid4.fuse(para_solid2)
-
-# para_solid6 = para_solid2.rotate((0,0,0),(0,1,0), 4*sepang)
-
-# para_solid6 = para_solid4.fuse(para_solid6)
-
-# para_solid7 = para_solid.rotate((0,0,0),(0,1,0), 6*sepang)
-
-# para_solid7 = para_solid6.fuse(para_solid7)
-
-# #para_solid7_m = para_solid7.mirror('XZ')
-
-# para_solid7_1 = para_solid7.rotate((0,0,0),(0,1,0), 7*sepang)
-
-# para_solid7_2 = para_solid7.rotate((0,0,0),(0,1,0), 14*sepang)
-
-# para_solid7_3 = para_solid7.rotate((0,0,0),(0,1,0), 21*sepang)
-
-# cylinder2 = cylinder2.rotate((0,0,0),(0,1,0), 90)
-
-# halfbearing = para_solid7
-# halfbearing = para_solid7.fuse(para_solid7_1)
-# halfbearing = halfbearing.fuse(para_solid7_2)
-# halfbearing = halfbearing.fuse(para_solid7_3)
-
-# halfbearing_m = halfbearing.mirror('XZ')
-# halfbearing_m = halfbearing_m.transformed((0,0, 0), (0, 125, 0))
-
-# cylinder2 = cylinder2.cut(halfbearing)
-# cylinder2 = cylinder2.cut(halfbearing_m)
-
-# show_object(cylinder1)
-# show_object(cylinder2)
-# show_object(halfbearing)
 
 
 
