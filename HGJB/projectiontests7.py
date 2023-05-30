@@ -166,7 +166,7 @@ for i in range(n_parall):
 
 #for loop that now works
 para_solid = cq.Compound.makeCompound(
-      [f.thicken(1, cq.Vector(0, 0, 1)) for f in parallelograms_projected[0]]
+      [f.thicken(h_gr*1000, cq.Vector(0, 0, 1)) for f in parallelograms_projected[0]]
       )
 
 para_seg = para_solid
