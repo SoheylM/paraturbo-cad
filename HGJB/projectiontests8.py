@@ -19,6 +19,17 @@ Element = pickle.load(file)
 #close file
 file.close()
 
+cwf = os.getcwd().replace("\\", "/")
+
+# Use this in CQ-Editor
+Rotor = cq.importers.importStep(cwf + '/Rotor.stp')
+
+# Use this in VS Code
+# Rotor = cq.importers.importStep(cwf + '/HGJB/Rotor.stp')
+
+
+Rotor = Rotor.rotate((0,0,0),(1,0,0),270)
+
 Laenge = Element['Laenge']
 #change list into numpy array
 Laenge = np.array(Laenge)
@@ -157,7 +168,7 @@ for i in range(n_parall):
 
 #for loop that now works
 para_solid = cq.Compound.makeCompound(
-      [f.thicken(h_gr*1000, cq.Vector(0, 0, 1)) for f in parallelograms_projected[0]]
+      [f.thicken(h_gr*1000*9, cq.Vector(0, 0, 1)) for f in parallelograms_projected[0]]
       )
 
 para_seg = para_solid
@@ -172,11 +183,27 @@ para_solid_m = para_solid.mirror('XZ')
 #para_solid_m = para_solid_m.transformed((0,0, 0), (0, 127, 0))
 # show_object(para_solid_m)
 
+#creating actual HGJB1 and HGJB2 grooves, near is closer to impeller than far 
+groove1near = {}
+groove1near[0] = para_solid.transformed((0,0, 0), (0, DistCenter1, 0))
+
+groove1far = {}
+groove1far[0] = para_solid_m.transformed((0,0, 0), (0, DistCenter1, 0))
+
+groove2near = {}
+groove2near[0] = para_solid.transformed((0,0, 0), (0, DistCenter2, 0))
+
+groove2far = {}
+groove2far[0] = para_solid_m.transformed((0,0, 0), (0, DistCenter2, 0))
+
+
 solid_1 = {}
 solid_1[0] =  para_solid
 
 solid_1m = {}
 solid_1m[0] =  para_solid_m
+
+
 
 for i in range(0,2):
     solid_1[i+1] = solid_1[i].transformed ((0 ,sepang ,0))
@@ -184,16 +211,28 @@ for i in range(0,2):
     
     solid_1m[i+1] = solid_1m[i].transformed ((0 ,sepang ,0))
     cylinder1 = cylinder1.cut(solid_1m[i+1])
+    
+    groove1near[i+1] = groove1near[i].transformed ((0 ,sepang ,0))
+    Rotor = Rotor.cut(groove1near[i+1])
+    
+    groove1far[i+1] = groove1far[i].transformed ((0 ,sepang ,0))
+    Rotor = Rotor.cut(groove1far[i+1])
+    
+    groove2near[i+1] = groove2near[i].transformed ((0 ,sepang ,0))
+    Rotor = Rotor.cut(groove2near[i+1])
+    
+    groove2far[i+1] = groove2far[i].transformed ((0 ,sepang ,0))
+    Rotor = Rotor.cut(groove2far[i+1])
 
 # show_object(parallelograms[i])
 # show_object(cylinder2, options={"alpha": 0.8})
-show_object(parallelograms_projected[0])
-show_object(para_init)
-#show_object(para_solid)
-show_object(cylinder1)
+# show_object(parallelograms_projected[0])
+# show_object(para_init)
+# #show_object(para_solid)
+# show_object(cylinder1)
+show_object(Rotor)
 
-
-#cq.exporters.export(cylinder1, "beta165mult1.step")
+#cq.exporters.export(cylinder1, "HGJBonRotor_Element_23_08_19.step")
 
 
 
