@@ -43,11 +43,11 @@ class Rotor():
         #Begin code adapted from Christophe's Matlab
         #Parameters 
         self.N_HG = 28 #number of grooves generally between 26 - 30
-        self.alpha_HG = Element['parameters']['hgjb1']['alpha']#0.68 #given
-        self.beta_HG = Element['parameters']['hgjb1']['beta'] #-135 #given 
+        self.alpha_HG = self.Element['parameters']['hgjb1']['alpha']#0.68 #given
+        self.beta_HG = self.Element['parameters']['hgjb1']['beta'] #-135 #given 
         self.beta_HG = self.beta_HG*pi/180
-        self.gamma_HG = Element['parameters']['hgjb1']['gamma'] #0.89 #given
-        self.h_gr = Element['parameters']['hgjb1']['hg'] #16 #groove depth given in micrometers
+        self.gamma_HG = self.Element['parameters']['hgjb1']['gamma'] #0.89 #given
+        self.h_gr = self.Element['parameters']['hgjb1']['hg'] #16 #groove depth given in micrometers
         self.h_rr = 9 #clearance on radiu given in micrometers
         self.D = 16 #on drawing [mm]
         self.L = self.Laenge[self.pos_hgjb1]#28 #length of HGJB on drawing [mm]
@@ -82,12 +82,13 @@ class Rotor():
         self.LenBetwVert = self.L/2 - self.L_land/2
 
         #Angle between parallelogram diagonal and reference horizontal
-        self.Betaprime = abs(self.beta_HG) - 90
+        self.Betaprime = abs(self.beta_HG) - pi/2
 
         #gap between horizontal leaving from parallelogram lowest 
         #corner and parallelogram vertical
 
         self.gap = self.LenBetwVert*tan(self.Betaprime)
+        self.gap_spiral = (self.gap*self.Spiral_step)/self.LenBetwVert
 
         #create removal cylinder1
         self.CylLen1 = self.Laenge[self.pos_hgjb1]
@@ -96,6 +97,12 @@ class Rotor():
         #create removal cylinder2
         self.CylLen2 = self.Laenge[self.pos_hgjb2]
         self.CylRadOut2= self.DA3[self.pos_hgjb2]/2
+        
+        #adding discretization
+        self.n_parall = 10
+        self.eps_perc = 0.005
+        
+        
         self.rot = cq.importers.importStep(self.cwf + '/Rotor.stp')
         
     def create_HGJB(self): 
@@ -104,140 +111,7 @@ class Rotor():
         #find distance to first HGJB
         
 
-        #first cylinder to be projected onto
-        cylinder1 = cq.Solid.makeCylinder(
-             self.CylRadOut1, self.CylLen1+2, pnt=cq.Vector(0, self.DistCenter1+self.L/2+1, 0), dir=cq.Vector(0, -1, 0)
-        )
-        #first removal cylinder
-        removalcylinder1 = cq.Solid.makeCylinder(
-              self.CylRadOut1*2, self.CylLen1, pnt=cq.Vector(0, self.DistCenter1+self.L/2, -self.DA3[self.pos_hgjb1]*0.8), dir=cq.Vector(0, -1, 0)
-        )
-
-        #second cylinder to be projected onto
-        cylinder2 = cq.Solid.makeCylinder(
-             self.CylRadOut2, self.CylLen2+2, pnt=cq.Vector(0, self.DistCenter2+self.L/2+1, 0), dir=cq.Vector(0, -1, 0)
-        )
-        #second removal cylinder
-        removalcylinder2 = cq.Solid.makeCylinder(
-              self.CylRadOut2*2, self.CylLen2, pnt=cq.Vector(0, self.DistCenter2+self.L/2, -self.DA3[self.pos_hgjb1]*0.8), dir=cq.Vector(0, -1, 0)
-        )
-
-        #direction of projection 
-        projection_direction = cq.Vector(0, 0, 1)
-
-        #global coordinates of origin of parallelogram1
-        # yp1 = DistCenter1+L/2
-        xp1 = self.LenBetwVert*tan(self.Betaprime)/2 
-        yp2 = -self.LenBetwVert*tan(self.Betaprime)
-        xp2 = -self.LenBetwVert
-
-
-        parallelogram1a = (
-              cq.Workplane("YX", origin=((self.gap+self.a_HG)/2, self.DistCenter1+self.L/2, -2*self.CylRadOut1))
-              #when viewed / \, y to the right and x up, z into screen
-              #origin at upper outside corner
-              #points below in standard x and y coordinates
-              .lineTo(-self.LenBetwVert,-self.gap) #upper inside corner 
-              .lineTo(-self.LenBetwVert,-self.gap-self.a_HG) #lower inside corner
-              .lineTo(0,-self.a_HG) #lower outside corner
-              .close()
-              .extrude(1)
-              .faces("<Z")
-              .val()
-          )
-
-        parallelogram2a = (
-              cq.Workplane("YX", origin=((self.gap+self.a_HG)/2, self.DistCenter1-self.L/2, -2*self.CylRadOut1))
-              #when viewed / \, y to the right and x up, z into screen
-              #origin at upper outside corner
-              #points below in standard x and y coordinates
-              .lineTo(self.LenBetwVert,-self.gap) #upper inside corner 
-              .lineTo(self.LenBetwVert,-self.gap-self.a_HG) #lower inside corner
-              .lineTo(0,-self.a_HG) #lower outside corner
-              .close()
-              .extrude(1)
-              .faces("<Z")
-              .val()
-          )
-
-        parallelogram1b = (
-              cq.Workplane("YX", origin=((self.gap+self.a_HG)/2, self.DistCenter2+self.L/2, -2*self.CylRadOut2))
-              #when viewed / \, y to the right and x up, z into screen
-              #origin at upper outside corner
-              #points below in standard x and y coordinates
-              .lineTo(-self.LenBetwVert,-self.gap) #upper inside corner 
-              .lineTo(-self.LenBetwVert,-self.gap-self.a_HG) #lower inside corner
-              .lineTo(0,-self.a_HG) #lower outside corner
-              .close()
-              .extrude(1)
-              .faces("<Z")
-              .val()
-          )
-
-        parallelogram2b = (
-              cq.Workplane("YX", origin=((self.gap+self.a_HG)/2, self.DistCenter2-self.L/2, -2*self.CylRadOut2))
-              #when viewed / \, y to the right and x up, z into screen
-              #origin at upper outside corner
-              #points below in standard x and y coordinates
-              .lineTo(self.LenBetwVert,-self.gap) #upper inside corner 
-              .lineTo(self.LenBetwVert,-self.gap-self.a_HG) #lower inside corner
-              .lineTo(0,-self.a_HG) #lower outside corner
-              .close()
-              .extrude(1)
-              .faces("<Z")
-              .val()
-          )
-
-        #fist HGJB
-        #project first parallelogram onto cylinder
-        parallelogram1a_projected = parallelogram1a.projectToShape(cylinder1, projection_direction)
-
-        #turn first parallelogram into 3D shape on cylinder surface
-        parallelogram1a_solids = cq.Compound.makeCompound(
-              [f.thicken(self.h_gr/1000) for f in parallelogram1a_projected]
-          )
-        parallelogram1a_solids = parallelogram1a_solids.cut(removalcylinder1)
-
-        #project second parallelogram onto cylinder
-        parallelogram2a_projected = parallelogram2a.projectToShape(cylinder1, projection_direction)
-
-        #turn first parallelogram into 3D shape on cylinder surface
-        parallelogram2a_solids = cq.Compound.makeCompound(
-              [f.thicken(self.h_gr/1000) for f in parallelogram2a_projected]
-          )
-        parallelogram2a_solids = parallelogram2a_solids.cut(removalcylinder1)
-
-
-        #second HGJB
-        #project first parallelogram onto cylinder
-        parallelogram1b_projected = parallelogram1b.projectToShape(cylinder2, projection_direction)
-
-        #turn first parallelogram into 3D shape on cylinder surface
-        parallelogram1b_solids = cq.Compound.makeCompound(
-              [f.thicken(self.h_gr/1000) for f in parallelogram1b_projected]
-          )
-        parallelogram1b_solids = parallelogram1b_solids.cut(removalcylinder2)
-
-        #project second parallelogram onto cylinder
-        parallelogram2b_projected = parallelogram2b.projectToShape(cylinder2, projection_direction)
-
-        #turn first parallelogram into 3D shape on cylinder surface
-        parallelogram2b_solids = cq.Compound.makeCompound(
-              [f.thicken(self.h_gr/1000) for f in parallelogram2b_projected]
-          )
-        parallelogram2b_solids = parallelogram2b_solids.cut(removalcylinder2)
-
-        # for i in range(N_HG):
-        #     cylinder = cylinder.cut(parallelogram1_solids)
-        #     #cylinder = cylinder.cut(parallelogram2_solids)
-        #     cylinder = cylinder.transformed(rotate=(0,sepang,0))
-
-        for i in range(self.N_HG):
-            self.rot = self.rot.cut(parallelogram1a_solids)
-            self.rot = self.rot.cut(parallelogram2a_solids)
-            self.rot = self.rot.cut(parallelogram1b_solids)
-            self.rot = self.rot.cut(parallelogram2b_solids)
-            self.rot = self.rot.rotate((0,0,0),(0,1,0),self.sepang)
+        
 
         self.rot = self.rot.rotate((0,0,0),(1,0,0),-270)
         
