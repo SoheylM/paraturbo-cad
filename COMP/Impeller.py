@@ -2,7 +2,6 @@
 import cadquery as cq
 import numpy as np
 import pandas as pd
-from cadquery.selectors import AreaNthSelector
 from cadquery import *
 from cq_warehouse import *
 from cq_warehouse.extensions import *
@@ -102,8 +101,7 @@ class IMPELLER():
         self.f = self.r_4-self.R_rot
         self.L_imp = self.r_2h+self.c+self.b_6+self.e
 
-        # Components positions
-        self.pos_comp1 = Element['sys_pos']['pos_comp1']
+        return
 
     # Defining a method to manually define impeller variables (in mm) by the user
     def manualparams_impeller(self,Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot,*settings):
