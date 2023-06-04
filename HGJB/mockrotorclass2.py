@@ -78,8 +78,12 @@ class Rotor():
         #define separation angle between grooves
         self.sepang=360/self.N_HG
 
+        #adding discretization
+        self.n_parall = 10
+        self.eps_perc = 0.005
+
         #length between parallelogram verticals
-        self.LenBetwVert = self.L/2 - self.L_land/2
+        self.LenBetwVert = (self.L/2 - self.L_land/2)/self.n_parall
 
         #Angle between parallelogram diagonal and reference horizontal
         self.Betaprime = abs(self.beta_HG) - pi/2
@@ -98,9 +102,7 @@ class Rotor():
         self.CylLen2 = self.Laenge[self.pos_hgjb2]
         self.CylRadOut2= self.DA3[self.pos_hgjb2]/2
         
-        #adding discretization
-        self.n_parall = 10
-        self.eps_perc = 0.005
+        
         
         
         self.rot = cq.importers.importStep(self.cwf + '/Rotor.stp')
@@ -110,28 +112,28 @@ class Rotor():
         self.rot = self.rot.rotate((0,0,0),(1,0,0),270)
         
         #create cylinder parameters
-        self.CylLen1=self.Laenge[pos_hgjb1]
-        self.CylRadOut1 = 1.01*self.DA3[pos_hgjb1]/2
+        self.CylLen1=self.Laenge[self.pos_hgjb1]
+        self.CylRadOut1 = 1.01*self.DA3[self.pos_hgjb1]/2
         
         #projection cylinder
-        cylinder1 = cq.Solid.makeCylinder(
+        self.cylinder1 = cq.Solid.makeCylinder(
             self.CylRadOut1, 2*self.CylLen1+2, pnt=cq.Vector(0,1*self.L,0), dir=cq.Vector(0,-1,0)
             )
         
         #direction of projection
-        projection_direction = cq.Vector(0,0,-1)
+        self.projection_direction = cq.Vector(0,0,-1)
         
         #calculate turn angle in radians
-        radang = self.gap/self.CylRadOut1
+        self.radang = self.gap/self.CylRadOut1
         #convert to degrees
-        rotang = radang*180/pi
+        self.rotang = self.radang*180/pi
         
-        parallelograms = []
-        parallelograms_projected = []
+        self.parallelograms = []
+        self.parallelograms_projected = []
         
         for i in range(self.n_parall):
-            parallelogram = (
-                cq.Workplane("YX", origin = ((self.gap+self.a_HG)/2, -self.L/2+self.LenBetwVert +i*sefl.LenBetwVert,0))
+            self.parallelogram = (
+                cq.Workplane("YX", origin = ((self.gap+self.a_HG)/2, -self.L/2+self.LenBetwVert +i*self.LenBetwVert,0))
                 #drawing parallelogram in local coordinates
                 .lineTo(-(self.LenBetwVert)*(1+self.eps_perc),-self.gap)
                 .lineTo(-(self.LenBetwVert)*(1+self.eps_perc),-self.gap-self.a_HG)
@@ -141,70 +143,69 @@ class Rotor():
                 .faces("<Z")
                 .val()
                 )
-            parallelograms.append(parallelogram)
+            self.parallelograms.append(self.parallelogram)
             
         #project onto cylinder
         for i in range(self.n_parall):
             if i == 0:
-                cylinder1 = cylinder1.rotate((0,0,0), (0,1,0),rotang)
-            parallelogram_projected = parallelograms[i].projectToShape(cylinder1, projection_direction)
-            parallelograms_projected.append(parallelogram_projected)
+                self.cylinder1 = self.cylinder1.rotate((0,0,0), (0,1,0),self.rotang)
+            self.parallelogram_projected = self.parallelograms[i].projectToShape(self.cylinder1, self.projection_direction)
+            self.parallelograms_projected.append(self.parallelogram_projected)
             
             if i == self.n_parall-1:
                 pass
             else:
-                cylinder1 = cylinder1.rotate((0,0,0), (0,1,0), rotang)
+                self.cylinder1 = self.cylinder1.rotate((0,0,0), (0,1,0), self.rotang)
         
         #for loop that now works
-        para_solid = cq.Compound.makeCompound(
-            [f.thicken(self.h_gr*1000*9, cq.Vector(0,0,1)) for f in parallelograms_projected[0]]
+        self.para_solid = cq.Compound.makeCompound(
+            [f.thicken(self.h_gr*1000*9, cq.Vector(0,0,1)) for f in self.parallelograms_projected[0]]
             )
         
-        para_seg = para_solid
-        para_init = para_solid
+        self.para_seg = self.para_solid
+        self.para_init = self.para_solid
         
         for j in range(self.n_parall-1):
-            para_seg_tr = para_seg.transformed((0, -(j+1)*rotang, 0), (0, (j+1)*self.LenBetwVert,0))
-            para_solid = para_solid.fuse(para_seg_tr)
+            self.para_seg_tr = self.para_seg.transformed((0, -(j+1)*self.rotang, 0), (0, (j+1)*self.LenBetwVert,0))
+            self.para_solid = self.para_solid.fuse(self.para_seg_tr)
             
             
         #mirror about the origin plane
-        para_solid_m = para_solid.mirror('XZ')
+        self.para_solid_m = self.para_solid.mirror('XZ')
         
         #creating actual HGJB1 and HGJB2 groove objects, near is closer to impeller than far
-        groove1near = {}
-        groove1near[0] = para_solid.transformed((0,0, 0), (0, self.DistCenter1, 0))
+        self.groove1near = {}
+        self.groove1near[0] = self.para_solid.transformed((0,0, 0), (0, self.DistCenter1, 0))
 
-        groove1far = {}
-            groove1far[0] = para_solid_m.transformed((0,0, 0), (0, self.DistCenter1, 0))
+        self.groove1far = {}
+        self.groove1far[0] = self.para_solid_m.transformed((0,0, 0), (0, self.DistCenter1, 0))
 
-        groove2near = {}
-        groove2near[0] = para_solid.transformed((0,0, 0), (0, self.DistCenter2, 0))
+        self.groove2near = {}
+        self.groove2near[0] = self.para_solid.transformed((0,0, 0), (0, self.DistCenter2, 0))
 
-        groove2far = {}
-        groove2far[0] = para_solid_m.transformed((0,0, 0), (0, self.DistCenter2, 0))
+        self.groove2far = {}
+        self.groove2far[0] = self.para_solid_m.transformed((0,0, 0), (0, self.DistCenter2, 0))
         
         #actually cutting the rotor
-        for i in range(0,2):
-            groove1near[i+1] = groove1near[i].transformed ((0 ,self.sepang ,0))
-            rot = rot.cut(groove1near[i+1])
+        for i in range(0,10):
+            self.groove1near[i+1] = self.groove1near[i].transformed ((0 ,self.sepang ,0))
+            self.rot = self.rot.cut(self.groove1near[i+1])
     
-            groove1far[i+1] = groove1far[i].transformed ((0 ,self.sepang ,0))
-            rot = rot.cut(groove1far[i+1])
+            self.groove1far[i+1] = self.groove1far[i].transformed ((0 ,self.sepang ,0))
+            self.rot = self.rot.cut(self.groove1far[i+1])
     
-            groove2near[i+1] = groove2near[i].transformed ((0 ,self.sepang ,0))
-            rot = rot.cut(groove2near[i+1])
+            self.groove2near[i+1] = self.groove2near[i].transformed ((0 ,self.sepang ,0))
+            self.rot = self.rot.cut(self.groove2near[i+1])
     
-            groove2far[i+1] = groove2far[i].transformed ((0 ,self.sepang ,0))
-            rot = rot.cut(groove2far[i+1])
+            self.groove2far[i+1] = self.groove2far[i].transformed ((0 ,self.sepang ,0))
+            self.rot = self.rot.cut(self.groove2far[i+1])
             
-        # show_object(parallelograms[i])
-        # show_object(cylinder2, options={"alpha": 0.8})
-        # show_object(parallelograms_projected[0])
-        # show_object(para_init)
-        # #show_object(para_solid)
-        # show_object(cylinder1)
-        #show_object(Rotor)
+        #show_object(self.parallelograms[i])
+        #show_object(self.parallelograms_projected[0])
+        #show_object(self.para_init)
+        #show_object(self.para_solid)
+        #show_object(self.cylinder1, options = {"alpha":0.8})
+        
         
         self.rot = self.rot.rotate((0,0,0),(1,0,0),-270)
         
