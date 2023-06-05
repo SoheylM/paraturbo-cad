@@ -187,7 +187,7 @@ class Rotor():
         self.groove2far[0] = self.para_solid_m.transformed((0,0, 0), (0, self.DistCenter2, 0))
         
         #actually cutting the rotor
-        for i in range(0,10):
+        for i in range(0,2):
             self.groove1near[i+1] = self.groove1near[i].transformed ((0 ,self.sepang ,0))
             self.rot = self.rot.cut(self.groove1near[i+1])
     
