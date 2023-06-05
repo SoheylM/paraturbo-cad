@@ -168,7 +168,7 @@ class SGTB():
 
         self.pos_right = pos_right
         self.pos_left = pos_left
-
+    
     def mirror(self):
         # Mirros the right SGTB to get the left SGTB
         self.thrust_left = self.thrust_right.mirror(mirrorPlane = 'XY')
