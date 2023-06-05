@@ -9,7 +9,7 @@ class SGTB():
 
     def parameters(self,Element):
         # Checks for information exist in dictionary
-        # Checks for are all needed keys are in Element, are all values have same lenght, is Element a dictionary
+        # Checks for are all needed keys are in Element, is Element a dictionary
         # If not raises an error
         if type(Element) == dict:
             if all(x in Element.keys() for x in ['Laenge','sys_pos','parameters']) and \
@@ -35,7 +35,7 @@ class SGTB():
         
     def parameters_manual(self,Length,pos_SGTB,alpha_SGTB,beta_SGTB,gamma_SGTB,hg_SGTB,hr_SGTB,Ri_SGTB,Rg_SGTB,Ro_SGTB,L_SGTB):
         # Checks for information exist in given input
-        # Checks for are all values have same lenght and type
+        # Checks for the type for some inputs
         # If not raises an error
         if type(Length) == list:
                 # Taking variables from user
