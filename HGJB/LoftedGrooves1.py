@@ -11,7 +11,7 @@ import cq_warehouse.extensions
 from cadquery import exporters
 
 #open file
-file = open('Element_23_08_19.pickle', 'rb')
+file = open('Element_23_06_05.pickle', 'rb')
 
 # dump info to that file
 Element = pickle.load(file)
@@ -110,14 +110,42 @@ gap_spiral = (gap*Spiral_step)/LenBetwVert
 
 #create cylinder parameters
 CylLen1 = Laenge[pos_hgjb1]
-CylRadOut1= 1.01*DA3[pos_hgjb1]/2
+CylRadOut1= DA3[pos_hgjb1]/2 #1.01*
 
-# coords = list(zip(x_curve, y_curve, z_curve))
+hgjb1_x_first = Element['parameters']['hgjb1']['x_first_curve']
+hgjb1_y_first = Element['parameters']['hgjb1']['y_first_curve']
+hgjb1_z_first = Element['parameters']['hgjb1']['z_first_curve']
+coords_hgjb1_first = list(zip(hgjb1_x_first, hgjb1_y_first, hgjb1_z_first))
 
-# edge_1 = cq.Edge.makeSpline([cq.Vector(p) for p in coords][0:-1]).close()
+hgjb1_x_second = Element['parameters']['hgjb1']['x_second_curve']
+hgjb1_y_second = Element['parameters']['hgjb1']['y_second_curve']
+hgjb1_z_second = Element['parameters']['hgjb1']['z_second_curve']
+coords_hgjb1_second = list(zip(hgjb1_x_second, hgjb1_y_second, hgjb1_z_second))
 
-# face_1 = cq.Face.makeNSidedSurface([edge_1],[]).thicken(0.5)
+hgjb2_x_first = Element['parameters']['hgjb2']['x_first_curve']
+hgjb2_y_first = Element['parameters']['hgjb2']['y_first_curve']
+hgjb2_z_first = Element['parameters']['hgjb2']['z_first_curve']
+coords_hgjb2_first = list(zip(hgjb2_x_first, hgjb2_y_first, hgjb2_z_first))
 
+hgjb2_x_second = Element['parameters']['hgjb2']['x_second_curve']
+hgjb2_y_second = Element['parameters']['hgjb2']['y_second_curve']
+hgjb2_z_second = Element['parameters']['hgjb2']['z_second_curve']
+coords_hgjb2_second = list(zip(hgjb2_x_second, hgjb2_y_second, hgjb2_z_second))
+
+points = 50
+edge_hgjb1_first = cq.Edge.makeSpline([cq.Vector(p) for p in coords_hgjb1_first][0:points]).close()
+show_object(edge_hgjb1_first)
+edge_hgjb1_second = cq.Edge.makeSpline([cq.Vector(p) for p in coords_hgjb1_second][0:points]).close()
+show_object(edge_hgjb1_second)
+edge_hgjb2_first = cq.Edge.makeSpline([cq.Vector(p) for p in coords_hgjb2_first][0:points]).close()
+show_object(edge_hgjb2_first)
+edge_hgjb2_second = cq.Edge.makeSpline([cq.Vector(p) for p in coords_hgjb2_second][0:points]).close()
+show_object(edge_hgjb2_second)
+
+# face_hgjb1_first = cq.Face.makeNSidedSurface([edge_hgjb1_first],[])
+# face_hgjb1_second = cq.Face.makeNSidedSurface([edge_hgjb1_second],[])
+# face_hgjb2_first = cq.Face.makeNSidedSurface([edge_hgjb2_first],[])
+# face_hgjb2_second = cq.Face.makeNSidedSurface([edge_hgjb2_second ],[])
 
 #calculate turn angle in radians
 radang = (gap/CylRadOut1)#gap/CylRadOut1 #gap_spiral/(pi*D)# Betaprime #gap_spiral/pi*D #gap/CylRadOut1
