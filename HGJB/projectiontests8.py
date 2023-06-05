@@ -228,7 +228,7 @@ for i in range(0,2):
 # show_object(cylinder2, options={"alpha": 0.8})
 # show_object(parallelograms_projected[0])
 # show_object(para_init)
-# #show_object(para_solid)
+show_object(para_solid)
 # show_object(cylinder1)
 show_object(Rotor)
 
