@@ -69,7 +69,6 @@ class SGTB():
         # Building the grooves
         Ro = Ro + 0.3                                        # Oversized radius for safety between 0.3 - 0.5
         n = 10                                               # Number of points for each log spiral splines
-        alpha = np.linspace(-0.2, 1, num=n)
         alpha = np.linspace(0, np.log(Ro/Rg)/np.tan(self.beta), num=n)
         
         # Generating the spiral
