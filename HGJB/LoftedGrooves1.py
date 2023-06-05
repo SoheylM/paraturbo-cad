@@ -148,15 +148,36 @@ coords_hgjb2_second = list(zip(hgjb2_x_second, hgjb2_y_second, hgjb2_z_second))
 
 
 
-points = 50
-edge_hgjb1_first_1 = cq.Edge.makeSpline([cq.Vector(p) for p in coords_hgjb1_first][0:50]).clean()
-edge_hgjb1_first_2 = cq.Edge.makeSpline([cq.Vector(p) for p in coords_hgjb1_first][51:100]).clean()
-edge_hgjb1_first_3 = cq.Edge.makeSpline([cq.Vector(p) for p in coords_hgjb1_first][100:150]).clean()
-edge_hgjb1_first_4 = cq.Edge.makeSpline([cq.Vector(p) for p in coords_hgjb1_first][151:200]).clean()
-edge_hgjb1_first = edge_hgjb1_first_1.fuse(edge_hgjb1_first_2).fix()
-edge_hgjb1_first = edge_hgjb1_first.fuse(edge_hgjb1_first_3).fix()
-edge_hgjb1_first = edge_hgjb1_first.fuse(edge_hgjb1_first_4).fix()
+# points = 50
+edge_hgjb1_first_1 = cq.Edge.makeSpline([cq.Vector(p) for p in coords_hgjb1_first][0:50])
+edge_hgjb1_first_2 = cq.Edge.makeSpline([cq.Vector(p) for p in coords_hgjb1_first][51:100])
+edge_hgjb1_first_3 = cq.Edge.makeSpline([cq.Vector(p) for p in coords_hgjb1_first][100:150])
+edge_hgjb1_first_4 = cq.Edge.makeSpline([cq.Vector(p) for p in coords_hgjb1_first][151:200])
+
+coordinates = []
+coordinates.extend(coords_hgjb1_first[0:50])
+coordinates.extend(coords_hgjb1_first[51:100])
+coordinates.extend(coords_hgjb1_first[101:150])
+coordinates.extend(coords_hgjb1_first[151:200])
+
+edge_hgjb1_first = cq.Edge.makeSpline([cq.Vector(p) for p in coordinates][0:200]).clean()
+
+coordinates1 = []
+coordinates1.extend(coords_hgjb1_second[0:50])
+coordinates1.extend(coords_hgjb1_second[51:100])
+coordinates1.extend(coords_hgjb1_second[101:150])
+coordinates1.extend(coords_hgjb1_second[151:200])
+
+edge_hgjb1_second = cq.Edge.makeSpline([cq.Vector(p) for p in coordinates1][0:199])
+
+
+
+# edge_hgjb1_first = edge_hgjb1_first_1.fuse(edge_hgjb1_first_2, glue = True).clean().fix()
+# edge_hgjb1_first = edge_hgjb1_first.fuse(edge_hgjb1_first_3, glue = True).clean().fix()
+# edge_hgjb1_first = edge_hgjb1_first.fuse(edge_hgjb1_first_4, glue = True).clean().fix()
+
 show_object(edge_hgjb1_first)
+# show_object(edge_hgjb1_second)
 
 # show_object(edge_hgjb1_first_1)
 # show_object(edge_hgjb1_first_2)
@@ -172,7 +193,8 @@ show_object(edge_hgjb1_first)
 
 face_hgjb1_first = cq.Face.makeNSidedSurface([edge_hgjb1_first],[])
 show_object(face_hgjb1_first)
-# face_hgjb1_second = cq.Face.makeNSidedSurface([edge_hgjb1_second],[])
+face_hgjb1_second = cq.Face.makeNSidedSurface([edge_hgjb1_second],[])
+# show_object(face_hgjb1_second)
 # face_hgjb2_first = cq.Face.makeNSidedSurface([edge_hgjb2_first],[])
 # face_hgjb2_second = cq.Face.makeNSidedSurface([edge_hgjb2_second ],[])
 
