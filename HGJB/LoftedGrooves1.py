@@ -8,16 +8,30 @@ from math import sin, cos, pi, tan
 import timeit
 from enum import Enum, auto
 import cq_warehouse.extensions
+from cq_warehouse import *
 from cadquery import exporters
 
 #open file
-file = open('Element_23_06_05_v5.pickle', 'rb')
+file = open('Element_23_06_05_v2.pickle', 'rb')
 
 # dump info to that file
 Element = pickle.load(file)
 
 #close file
 file.close()
+
+
+
+file1 = open('Element_23_06_05_v6.pickle', 'rb')
+
+# dump info to that file
+Element1 = pickle.load(file1)
+
+#close file
+file1.close()
+
+
+
 
 cwf = os.getcwd().replace("\\", "/")
 
@@ -123,9 +137,9 @@ coords_hgjb1_first = list(zip(hgjb1_x_first, hgjb1_y_first, hgjb1_z_first))
 
 
 
-inner_1 = Element['parameters']['hgjb1']['x_first_surface']
-inner_2 = Element['parameters']['hgjb1']['y_first_surface']
-inner_3 = Element['parameters']['hgjb1']['z_first_surface']
+inner_1 = Element1['parameters']['hgjb1']['x_first_surface']
+inner_2 = Element1['parameters']['hgjb1']['y_first_surface']
+inner_3 = Element1['parameters']['hgjb1']['z_first_surface']
 inner = list(zip(inner_1,inner_2,inner_3))
 
 
@@ -147,20 +161,36 @@ coords_hgjb2_second = list(zip(hgjb2_x_second, hgjb2_y_second, hgjb2_z_second))
 
 
 
-# edge_hgjb1_first_1 = cq.Edge.makeSplineApprox([cq.Vector(p) for p in coords_hgjb1_first][0:30])
+edge_hgjb1_first_1 = cq.Edge.makeSplineApprox([cq.Vector(p) for p in coords_hgjb1_first][0:30])
+# edge_hgjb1_first_2 = cq.Edge.makeSplineApprox([cq.Vector(p) for p in coords_hgjb1_first][50:60])
+edge_hgjb1_first_5 = cq.Edge.makeSplineApprox([cq.Vector(p) for p in coords_hgjb1_first][30:60])
+
+coords_hgjb1_first.reverse()
+
+
+edge_hgjb1_first_3 = cq.Edge.makeSplineApprox([cq.Vector(p) for p in coords_hgjb1_first][50:80])
+# edge_hgjb1_first_4 = cq.Edge.makeSplineApprox([cq.Vector(p) for p in coords_hgjb1_first][150:200])
+edge_hgjb1_first_6 = cq.Edge.makeSplineApprox([cq.Vector(p) for p in coords_hgjb1_first][80:100])
+
+
+
 # edge_hgjb1_first_2 = cq.Edge.makeSplineApprox([cq.Vector(p) for p in coords_hgjb1_first][50:60])
 
-# coords_hgjb1_first.reverse()
 
 
-# edge_hgjb1_first_3 = cq.Edge.makeSplineApprox([cq.Vector(p) for p in coords_hgjb1_first][50:80])
+
 # edge_hgjb1_first_4 = cq.Edge.makeSplineApprox([cq.Vector(p) for p in coords_hgjb1_first][150:200])
 
 
+
+
+
+
+
 ###################################################
-# edge_hgjb1_second_1 = cq.Edge.makeSplineApprox([cq.Vector(p) for p in coords_hgjb1_second][0:30])
-# coords_hgjb1_second.reverse()
-# edge_hgjb1_second_3 = cq.Edge.makeSplineApprox([cq.Vector(p) for p in coords_hgjb1_second][50:80])
+edge_hgjb1_second_1 = cq.Edge.makeSplineApprox([cq.Vector(p) for p in coords_hgjb1_second][0:30])
+coords_hgjb1_second.reverse()
+edge_hgjb1_second_3 = cq.Edge.makeSplineApprox([cq.Vector(p) for p in coords_hgjb1_second][50:80])
 
 ###################################################
 
@@ -181,9 +211,31 @@ coords_hgjb2_second = list(zip(hgjb2_x_second, hgjb2_y_second, hgjb2_z_second))
 # show_object(edge_hgjb1_first_4)
 
 
-edge_hgjb1_first = cq.Edge.makeSplineApprox([cq.Vector(p) for p in coords_hgjb1_first][0:-1],tol=0.1,minDeg=3).close()
-# edge_hgjb1_second = cq.Edge.makeSpline([cq.Vector(p) for p in coords_hgjb1_second][0:-1]).close().clean()
+edge_hgjb1_first = cq.Edge.makeSplineApprox([cq.Vector(p) for p in coords_hgjb1_first][0:200]).close().clean()
+edge_hgjb1_second = cq.Edge.makeSplineApprox([cq.Vector(p) for p in coords_hgjb1_second][0:200]).close().clean()
 
+show_object(edge_hgjb1_first)
+
+result1 = cq.Workplane("front").polyline(coords_hgjb1_first[0:50])
+show_object(result1)
+result2 = cq.Workplane("front").polyline(coords_hgjb1_first[50:100])
+show_object(result2)
+result3 = cq.Workplane("front").polyline(coords_hgjb1_first[100:150])
+show_object(result3)
+result4 = cq.Workplane("front").polyline(coords_hgjb1_first[150:200])
+show_object(result4)
+
+
+
+
+
+# result5 = cq.Face.makeNSidedSurface([result1,result2,result3,result4],[])
+
+# face_hgjb1_first = cq.Wire.makeNonPlanarFace([edge_hgjb1_first],surfacePoints=[cq.Vector(p) for p in inner])
+# show_object(face_hgjb1_first)
+
+# planar_grid = cq.Wire.makePolygon([cq.Vector(v) for v in inner])
+# show_object(planar_grid)
 
 # coordinates1 = []
 # coordinates1.extend(coords_hgjb1_second[0:50])
@@ -195,11 +247,13 @@ edge_hgjb1_first = cq.Edge.makeSplineApprox([cq.Vector(p) for p in coords_hgjb1_
 
 
 
+
+
 # edge_hgjb1_first = edge_hgjb1_first_1.fuse(edge_hgjb1_first_2, glue = True).clean().fix()
 # edge_hgjb1_first = edge_hgjb1_first.fuse(edge_hgjb1_first_3, glue = True).clean().fix()
 # edge_hgjb1_first = edge_hgjb1_first.fuse(edge_hgjb1_first_4, glue = True).clean().fix()
 
-show_object(edge_hgjb1_first)
+# show_object(edge_hgjb1_first)
 # show_object(edge_hgjb1_second)
 
 
@@ -211,15 +265,32 @@ show_object(edge_hgjb1_first)
 # edge_hgjb2_second = cq.Edge.makeSpline([cq.Vector(p) for p in coords_hgjb2_second][0:points]).close()
 # show_object(edge_hgjb2_second)
 
-# face_hgjb1_first = cq.Face.makeRuledSurface(edge_hgjb1_first_1,edge_hgjb1_first_3)
-# show_object(face_hgjb1_first)
+face_hgjb1_first = cq.Face.makeRuledSurface(edge_hgjb1_first_1,edge_hgjb1_first_3)
+show_object(face_hgjb1_first)
+
+
+face_hgjb1_first_1 = cq.Face.makeRuledSurface(edge_hgjb1_first_5,edge_hgjb1_first_6)
+show_object(face_hgjb1_first_1)
+
+rule1 = face_hgjb1_first.fuse(face_hgjb1_first_1, glue = True).clean().fix()
+
+
+# loft_hgjb1 = cq.Solid.makeLoft([edge_hgjb1_first,edge_hgjb1_second],True)
+
+
 
 # face_hgjb1_second = cq.Face.makeRuledSurface(edge_hgjb1_second_1,edge_hgjb1_second_3)
 # show_object(face_hgjb1_second)
 
 
-face_hgjb1_first = cq.Face.makeNSidedSurface([edge_hgjb1_first],[cq.Vector(p) for p in inner],[])
-show_object(face_hgjb1_first)
+
+# face_hgjb1_first = cq.Face.makeNSidedSurface([edge_hgjb1_first],[],tol2d=0.0001,tol3d=0.0001,tolAng=0.0001,tolCurv=0.00001,maxDeg=2,maxSegments=2,nbIter=3)
+# show_object(face_hgjb1_first)
+
+# face_hgjb1_second = cq.Face.makeNSidedSurface([edge_hgjb1_second],[],tol2d=0.0001,tol3d=0.0001,tolAng=0.0001,tolCurv=0.00001,maxDeg=2,maxSegments=222,nbIter=3)
+# show_object(face_hgjb1_second)
+
+
 
 # face_hgjb1_second = cq.Face.makeNSidedSurface([edge_hgjb1_second],[])
 # show_object(face_hgjb1_second)
