@@ -123,6 +123,11 @@ coords_hgjb1_first = list(zip(hgjb1_x_first, hgjb1_y_first, hgjb1_z_first))
 
 
 
+inner_1 = Element['parameters']['hgjb1']['x_first_surface']
+inner_2 = Element['parameters']['hgjb1']['y_first_surface']
+inner_3 = Element['parameters']['hgjb1']['z_first_surface']
+inner = list(zip(inner_1,inner_2,inner_3))
+
 
 hgjb1_x_second = Element['parameters']['hgjb1']['x_second_curve']
 hgjb1_y_second = Element['parameters']['hgjb1']['y_second_curve']
@@ -176,8 +181,8 @@ coords_hgjb2_second = list(zip(hgjb2_x_second, hgjb2_y_second, hgjb2_z_second))
 # show_object(edge_hgjb1_first_4)
 
 
-edge_hgjb1_first = cq.Edge.makeSplineApprox([cq.Vector(p) for p in coords_hgjb1_first][0:-1],smoothing=(50,50,50)).close().clean()
-edge_hgjb1_second = cq.Edge.makeSplineApprox([cq.Vector(p) for p in coords_hgjb1_second][0:-1],smoothing=(50,50,50)).close().clean()
+edge_hgjb1_first = cq.Edge.makeSplineApprox([cq.Vector(p) for p in coords_hgjb1_first][0:-1],tol=0.1,minDeg=3).close()
+# edge_hgjb1_second = cq.Edge.makeSpline([cq.Vector(p) for p in coords_hgjb1_second][0:-1]).close().clean()
 
 
 # coordinates1 = []
@@ -194,7 +199,7 @@ edge_hgjb1_second = cq.Edge.makeSplineApprox([cq.Vector(p) for p in coords_hgjb1
 # edge_hgjb1_first = edge_hgjb1_first.fuse(edge_hgjb1_first_3, glue = True).clean().fix()
 # edge_hgjb1_first = edge_hgjb1_first.fuse(edge_hgjb1_first_4, glue = True).clean().fix()
 
-# show_object(edge_hgjb1_first)
+show_object(edge_hgjb1_first)
 # show_object(edge_hgjb1_second)
 
 
@@ -213,21 +218,20 @@ edge_hgjb1_second = cq.Edge.makeSplineApprox([cq.Vector(p) for p in coords_hgjb1
 # show_object(face_hgjb1_second)
 
 
+face_hgjb1_first = cq.Face.makeNSidedSurface([edge_hgjb1_first],[cq.Vector(p) for p in inner],[])
+show_object(face_hgjb1_first)
 
-face_hgjb1_first = cq.Face.makeNSidedSurface([edge_hgjb1_first],[])
-# show_object(face_hgjb1_first)
-
-face_hgjb1_second = cq.Face.makeNSidedSurface([edge_hgjb1_second],[])
+# face_hgjb1_second = cq.Face.makeNSidedSurface([edge_hgjb1_second],[])
 # show_object(face_hgjb1_second)
 
 
 # face_hgjb2_first = cq.Face.makeNSidedSurface([edge_hgjb2_first],[])
 # face_hgjb2_second = cq.Face.makeNSidedSurface([edge_hgjb2_second ],[])
 
-loft_hgjb1 = cq.Solid.makeLoft([edge_hgjb1_first,edge_hgjb1_second],True)
+# loft_hgjb1 = cq.Solid.makeLoft([edge_hgjb1_first,edge_hgjb1_second],True)
 # loft_hgjb2 = cq.Solid.makeLoft([edge_hgjb2_first, edge_hgjb2_second],True)
 
-shell_hgjb1 = cq.Shell.makeShell([face_hgjb1_first, face_hgjb1_second, loft_hgjb1]).fix()
+# shell_hgjb1 = cq.Shell.makeShell([face_hgjb1_first, face_hgjb1_second, loft_hgjb1]).fix()
 # shell_hgjb2 = cq.Shell.makeShell([face_hgjb2_first, face_hgjb2_second, loft_hgjb2]).fix()
 
 # #calculate turn angle in radians
@@ -236,10 +240,10 @@ shell_hgjb1 = cq.Shell.makeShell([face_hgjb1_first, face_hgjb1_second, loft_hgjb
 # #convert to degrees
 # rotang = radang*180/pi 
 
-solid_hgjb1 ={}
-solid_hgjb1[0] = cq.Solid.makeSolid(shell_hgjb1)
+# solid_hgjb1 ={}
+# solid_hgjb1[0] = cq.Solid.makeSolid(shell_hgjb1)
 # solid_hgjb1[0] = solid_hgjb1[0].transformed((0,0,0),(0,-7.5,10))
-show_object(solid_hgjb1[0])
+# show_object(solid_hgjb1[0])
 
 # solid_hgjb2 ={}
 # solid_hgjb2 [0] = cq.Solid.makeSolid(shell_hgjb2)
