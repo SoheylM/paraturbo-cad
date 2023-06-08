@@ -9,7 +9,7 @@ class ROTOR():
         self.method = 'Joseph'
 
     def parameters(self,Element):
-        # Checks for information exist in dictionary
+        # Checks for information exists in the dictionary
         # Checks for are all needed keys are in Element, are all values have same lenght, is Element a dictionary
         # If not raises an error
         if type(Element) == dict:
@@ -43,7 +43,7 @@ class ROTOR():
             else:
                 raise KeyError('ROTOR.parameters: Element dictionary does not include all the needed keys.')
         else:
-            raise TypeError('ROTOR.parameters: Element type is not dictionary.')
+            raise TypeError('ROTOR.parameters: Element type is not a dictionary.')
         
     def parameters_manual(self,Length,DI1,DI2,DI3,DO1,DO2,DO3,pos_HGJB1,pos_HGJB2,alpha_HGJB,beta_HGJB,gamma_HGJB,hg_HGJB,hr_HGJB,**elemtypes):
         # Checks for element types if provided

@@ -37,6 +37,21 @@ e = r_4/(Phi**2)-b_6; f = r_4 - R_rot; L_imp = r_2h+c+b_6+e; a = c-b_4; b = r_4-
 R_rot = 5; L_ind = 40; beta_4 = -45; beta_2 = -56; beta_2s = -60; r_1 = 20; r_5 = 15; e_bld = 0.25; e_tip = 0.01; e_back = 0.01
 
 '''
+Use of Helper
+.importpickle:
+    - input file name(string)
+    - do not add the .pickle to the end of the file name
+
+.assemble:
+    - input files(tuple), name of the output file(string)
+    - combines all the files given in the tuple in a single assembly
+'''
+
+DesignTurbocompressor = HELPER()
+
+Element = DesignTurbocompressor.importpickle('Element_23_06_05')
+
+'''
 SGTB Construction
 .parameters:
     - input Element(dictionary)
@@ -72,10 +87,6 @@ SGTB Construction
     - should be used together with .mirror
     - for saving as stl input 'stl' in the end
 '''
-
-DesignTurbocompressor = HELPER()
-
-Element = DesignTurbocompressor.importpickle('Element_23_06_05')
 
 DesignSGTB = SGTB()
 

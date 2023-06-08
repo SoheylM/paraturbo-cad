@@ -8,7 +8,7 @@ class SGTB():
         self.cwf = os.getcwd().replace("\\", "/")
 
     def parameters(self,Element):
-        # Checks for information exist in dictionary
+        # Checks for information exists in the dictionary
         # Checks for are all needed keys are in Element, is Element a dictionary
         # If not raises an error
         if type(Element) == dict:
@@ -31,7 +31,7 @@ class SGTB():
             else:
                 raise KeyError('SGTB.parameters: Element dictionary does not include all the needed keys.')
         else:
-            raise TypeError('SGTB.parameters: Element type is not dictionary.')
+            raise TypeError('SGTB.parameters: Element type is not a dictionary.')
         
     def parameters_manual(self,Length,pos_SGTB,alpha_SGTB,beta_SGTB,gamma_SGTB,hg_SGTB,hr_SGTB,Ri_SGTB,Rg_SGTB,Ro_SGTB,L_SGTB):
         # Checks for information exist in given input
