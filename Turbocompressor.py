@@ -64,12 +64,12 @@ SGTB Construction
 
 .grooves:
     - input number of grooves(integer)
-    - by default it is 28
+    - by default, it is 28
 
 .CAD:
-    - generates the CAD of SGTB for grooves towards right
+    - generates the CAD of SGTB for grooves towards the right
     - for color input 'color' in the end
-    - for section view input 'section view' in the end
+    - for section view input 'section view' at the end
     - for dramatized groove depth for applications such as 3D printing input 'dramatize' in the end
       and d = (integer)
 
@@ -112,15 +112,15 @@ Rotor Construction
     - input Length(list), DI1(list), DI2(list), DI3(list),
       DO1(list), DO2(list), DO3(list)
     - should not be used together with .parameters
-    - element types can be given in the end by specifying as
+    - element types can be given in the end by specifying them as
       elem_type1 = (list), elem_type2 = (list), elem_type3=(list)
 
 .CAD:
     - generates the CAD of the rotor and returns it
-    - for section view input 'section view' in the end
+    - for section view input 'section view' at the end
 
 .HGJB:
-    - makes the parametization for HGJB
+    - makes the parametrization for HGJB
 
 .HGJB_CAD:
     - input the CAD of the rotor from .CAD
