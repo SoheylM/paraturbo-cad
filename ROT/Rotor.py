@@ -220,7 +220,7 @@ class ROTOR():
     
     def HGJB(self):
         self.N_HG = 28                 # Number of grooves generally between 26 - 30
-        self.D = 16                    # On drawing [mm]
+        self.D = self.DA3[self.pos_hgjb1] #16                    # On drawing [mm]
         # Length of HGJB on drawing [mm]
         self.L = [self.length[self.pos_hgjb1], self.length[self.pos_hgjb2]]
         # Value for CAD

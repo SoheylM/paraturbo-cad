@@ -38,13 +38,13 @@ pos_hgjb2 =sys_pos['pos_hgjb2']
 cwf = os.getcwd().replace("\\", "/")
 
 # Use this in CQ-Editor
-Rotor = cq.importers.importStep(cwf + '/Rotor.stp')
+#Rotor = cq.importers.importStep(cwf + '/Rotor.stp')
 
 # Use this in VS Code
 # Rotor = cq.importers.importStep(cwf + '/HGJB/Rotor.stp')
 
 
-Rotor = Rotor.rotate((0,0,0),(1,0,0),270)
+#Rotor = Rotor.rotate((0,0,0),(1,0,0),270)
 
 #Begin code adapted from Christophe's Matlab
 #Parameters 
@@ -56,7 +56,7 @@ gamma_HG = 0.89 #given
 h_gr = 16 #groove depth given in micrometers
 h_rr = 9 #clearance on radiu given in micrometers
 D = 16 #on drawing [mm]
-L = Laenge[pos_hgjb1]#28 #length of HGJB on drawing [mm]
+L = 28 #length of HGJB on drawing [mm]
 L_land=L-(gamma_HG*L) #Value for CAD
 L=L+0.8 #oversized length for safety generally between 0.6 - 1
 Spiral_step = pi*D*tan(beta_HG)
@@ -65,6 +65,10 @@ a_HG = (pi*D*alpha_HG)/N_HG #mm
 a_HG_plus_b_HG = a_HG/alpha_HG #mm
 h_rr_tot = h_rr*2 #diametral clearance given in micrometers
 #end code adapted from Christophe's Matlab
+
+Rotor = cq.Solid.makeCylinder(
+     D/2, 20*L, pnt=cq.Vector(0, 10*L, 0), dir=cq.Vector(0, -1, 0)
+)
 
 #find distance to first HGJB
 dist1 = 0
@@ -241,7 +245,7 @@ for i in range(N_HG):
 
 Rotor = Rotor.rotate((0,0,0),(1,0,0),-270)
 
-cq.exporters.export(Rotor, "RotorExportForComp.step")
+#cq.exporters.export(Rotor, "RotorExportForComp.step")
 
 show_object(Rotor)
 #show_object(removalcylinder1)
