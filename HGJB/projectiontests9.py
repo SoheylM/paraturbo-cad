@@ -193,7 +193,7 @@ solid_1m[0] =  para_solid_m
 
 
 
-for i in range(0,10):
+for i in range(0,28):
     solid_1[i+1] = solid_1[i].transformed ((0 ,sepang ,0))
     cylinder1 = cylinder1.cut(solid_1[i+1])
     
