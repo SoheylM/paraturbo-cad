@@ -23,6 +23,7 @@ cwf = os.getcwd().replace("\\", "/")
 
 # Use this in CQ-Editor
 Rotor = cq.importers.importStep(cwf + '/Rotor.stp')
+CATIA = cq.importers.importStep(cwf + '/SC1-1010-REV1-ROTOR.step')
 
 # Use this in VS Code
 # Rotor = cq.importers.importStep(cwf + '/HGJB/Rotor.stp')
@@ -61,7 +62,7 @@ gamma_HG = 0.89#Element['parameters']['hgjb1']['gamma'] #0.89 #given
 h_gr = 16/1000/1000#Element['parameters']['hgjb1']['hg'] #16 #groove depth given in micrometers
 h_rr = 9 #clearance on radiu given in micrometers
 D = 16# DA3[pos_hgjb1] #16 #on drawing [mm]
-L = Laenge[pos_hgjb1]#28 #length of HGJB on drawing [mm]
+L = 28#Laenge[pos_hgjb1]#28 #length of HGJB on drawing [mm]
 L_land=L-(gamma_HG*L) #Value for CAD
 L=L+0.8 #oversized length for safety generally between 0.6 - 1
 Spiral_step = pi*D*tan(beta_HG)
@@ -109,7 +110,7 @@ gap = LenBetwVert*tan(Betaprime)
 gap_spiral = (gap*Spiral_step)/LenBetwVert
 
 #create cylinder parameters
-CylLen1 = Laenge[pos_hgjb1]
+CylLen1 = L
 CylRadOut1= 1*DA3[pos_hgjb1]/2
 
 
@@ -199,12 +200,15 @@ for i in range(0,2):
     solid_1m[i+1] = solid_1m[i].transformed ((0 ,sepang ,0))
     cylinder1 = cylinder1.cut(solid_1m[i+1])
     
+
+cylinder1=cylinder1.transformed((0,0,0),(30,0,0))
 # show_object(parallelograms[i])
 # show_object(cylinder2, options={"alpha": 0.8})
 # show_object(parallelograms_projected[0])
 # show_object(para_init)
 #show_object(para_solid)
 show_object(cylinder1)
+show_object(CATIA)
 #show_object(Rotor)
 
 #cq.exporters.export(cylinder1, "HGJBonRotor_Element_23_08_19.step")
