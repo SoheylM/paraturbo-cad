@@ -23,7 +23,7 @@ cwf = os.getcwd().replace("\\", "/")
 
 # Use this in CQ-Editor
 Rotor = cq.importers.importStep(cwf + '/Rotor.stp')
-CATIA = cq.importers.importStep(cwf + '/SC1-1010-REV1-ROTOR.step')
+#CATIA = cq.importers.importStep(cwf + '/SC1-1010-REV1-ROTOR.step')
 
 # Use this in VS Code
 # Rotor = cq.importers.importStep(cwf + '/HGJB/Rotor.stp')
@@ -111,7 +111,7 @@ gap_spiral = (gap*Spiral_step)/LenBetwVert
 
 #create cylinder parameters
 CylLen1 = L
-CylRadOut1= 1*DA3[pos_hgjb1]/2
+CylRadOut1= 1*D/2
 
 
 #first cylinder 
@@ -193,7 +193,7 @@ solid_1m[0] =  para_solid_m
 
 
 
-for i in range(0,2):
+for i in range(0,10):
     solid_1[i+1] = solid_1[i].transformed ((0 ,sepang ,0))
     cylinder1 = cylinder1.cut(solid_1[i+1])
     
@@ -201,17 +201,17 @@ for i in range(0,2):
     cylinder1 = cylinder1.cut(solid_1m[i+1])
     
 
-cylinder1=cylinder1.transformed((0,0,0),(30,0,0))
+cylinder1=cylinder1.transformed((0,0,-90),(1*L,25,0))
 # show_object(parallelograms[i])
 # show_object(cylinder2, options={"alpha": 0.8})
 # show_object(parallelograms_projected[0])
 # show_object(para_init)
 #show_object(para_solid)
 show_object(cylinder1)
-show_object(CATIA)
+#show_object(CATIA)
 #show_object(Rotor)
 
-#cq.exporters.export(cylinder1, "HGJBonRotor_Element_23_08_19.step")
+cq.exporters.export(cylinder1, "OrigBearingAllGrooves.step")
 
 
 
