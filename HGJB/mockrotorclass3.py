@@ -49,7 +49,7 @@ class Rotor():
         self.L = self.Laenge[self.pos_hgjb1]#28 #length of HGJB on drawing [mm]
         self.L_land=self.L-(self.gamma_HG*self.L) #Value for CAD
         self.L=self.L+0.8 #oversized length for safety generally between 0.6 - 1
-        self.Spiral_step = pi*self.D*tan(self.beta_HG)
+        #self.Spiral_step = pi*self.D*tan(self.beta_HG)
         self.Spiral_height = self.L/2
         self.a_HG = (pi*self.D*self.alpha_HG)/self.N_HG #mm
        #end code adapted from Christophe's Matlab
@@ -85,7 +85,7 @@ class Rotor():
         #gap between horizontal leaving from parallelogram lowest 
         #corner and parallelogram vertical
         self.gap = self.LenBetwVert*tan(self.Betaprime)
-        self.gap_spiral = (self.gap*self.Spiral_step)/self.LenBetwVert
+        #self.gap_spiral = (self.gap*self.Spiral_step)/self.LenBetwVert
 
         self.rot = cq.importers.importStep(self.cwf + '/Rotor.stp')
         
@@ -170,27 +170,33 @@ class Rotor():
         #actually cutting the rotor
         for i in range(0,2):
             self.groove1near[i+1] = self.groove1near[i].transformed ((0 ,self.sepang ,0))
-            self.rot = self.rot.cut(self.groove1near[i+1])
+            #self.rot = self.rot.cut(self.groove1near[i+1])
     
             self.groove1far[i+1] = self.groove1far[i].transformed ((0 ,self.sepang ,0))
-            self.rot = self.rot.cut(self.groove1far[i+1])
+            #self.rot = self.rot.cut(self.groove1far[i+1])
     
             self.groove2near[i+1] = self.groove2near[i].transformed ((0 ,self.sepang ,0))
-            self.rot = self.rot.cut(self.groove2near[i+1])
+            #self.rot = self.rot.cut(self.groove2near[i+1])
     
             self.groove2far[i+1] = self.groove2far[i].transformed ((0 ,self.sepang ,0))
-            self.rot = self.rot.cut(self.groove2far[i+1])
+            #self.rot = self.rot.cut(self.groove2far[i+1])
             
         #show_object(self.parallelograms[i])
         #show_object(self.parallelograms_projected[0])
         #show_object(self.para_init)
-        #show_object(self.para_solid)
+        show_object(self.para_solid)
+        show_object(self.para_solid_m)
+        show_object(self.groove1near[0])
+        show_object(self.groove1far[0])
+        show_object(self.groove2near[0])
+        show_object(self.groove2far[0])
         #show_object(self.cylinder1, options = {"alpha":0.8})
+        #show_object()
         
-        self.rot = self.rot.rotate((0,0,0),(1,0,0),-270)
+        # self.rot = self.rot.rotate((0,0,0),(1,0,0),-270)
 
         return self.rot
 
 t = Rotor().create_HGJB()
 
-show_object(t)
+show_object(t,options = {"alpha":0.8})
