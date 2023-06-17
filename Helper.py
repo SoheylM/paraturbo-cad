@@ -22,3 +22,4 @@ class HELPER():
             assembly.add(files[i],name='Subassembly '+str(i+1))
 
         assembly.save(self.cwf  + '/STEP/' + filename + '.step')
+        cq.exporters.export(assembly.toCompound(), self.cwf + '/STL/Turbocompressor.stl')
