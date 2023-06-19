@@ -41,7 +41,7 @@ Element = pickle.load(open("C:/Users/user/Documents/Code/CadQuery/Compressor JB/
 cwf = os.getcwd().replace("\\", "/")
 
 # Use this in CQ-Editor
-Rotor = cq.importers.importStep("C:/Users/user/Documents/Code/CadQuery/Compressor JB/paraturbo-cad/HGJB/Rotor.step").translate((0,0,-50))
+Rotor = cq.importers.importStep("C:/Users/user/Documents/Code/CadQuery/Compressor JB/paraturbo-cad/STEP/Rotor.step").translate((0,0,-50))
 
 # Use this in VS Code
 # Rotor = cq.importers.importStep(cwf + '/HGJB/Rotor.stp')
@@ -208,11 +208,11 @@ from cadquery import Edge, Vector, Wire, Solid,Shell
 # show_object(rr)
 
 
-surface1 = Workplane().splineApproxSurface(inner,0.1)
-show_object(surface1)
+# surface1 = Workplane().splineApproxSurface(inner,0.1)
+# show_object(surface1)
 
 
-shell = cq.Shell.makeShell([surface1]).fix()
+# shell = cq.Shell.makeShell([surface1]).fix()
 
 
 # solid = cq.Solid.makeSolid(surface1)
@@ -222,8 +222,6 @@ shell = cq.Shell.makeShell([surface1]).fix()
 # show_object(Rotor)
 
 
-
-'''
 
 profile = {}
 profile1 = {}
@@ -328,13 +326,13 @@ for i in range(0,28):
 
 
 
-for i in range(0,3):
+# for i in range(0,3):
 
-    mir2[i+1]=m.transformAll(mir2[i])
-    mir12[i+1]=m.transformAll(mir12[i])
-    usa2[i+1]=[mir2[i+1],mir12[i+1]]
-    surf2[i+1] = Workplane().polyhedron(*gridSurface(usa2[i],0.1))
-    show_object(surf2[i+1])
+#     mir2[i+1]=m.transformAll(mir2[i])
+#     mir12[i+1]=m.transformAll(mir12[i])
+#     usa2[i+1]=[mir2[i+1],mir12[i+1]]
+#     surf2[i+1] = Workplane().polyhedron(*gridSurface(usa2[i],0.1))
+#     show_object(surf2[i+1])
 
 # assembly = cq.Assembly()
 # for i in range(28):
@@ -369,9 +367,9 @@ Rotordone = Rotor - texts
 
 
 # print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')
-# cq.exporters.export(Rotordone,"Rotordone.stl", tolerance = 0.1, angularTolerance = 1)
+cq.exporters.export(Rotordone,"Rotordone.stl", tolerance = 0.1, angularTolerance = 1)
 print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')
-cq.exporters.export(Rotordone,"Rotordone.step", opt={"write_pcurves": False, "precision_mode": 1})
+# cq.exporters.export(Rotordone,"Rotordone.step", opt={"write_pcurves": False, "precision_mode": 1})
 print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')
 
 '''
@@ -444,29 +442,29 @@ print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')
 # profile1 = inner11
 
 '''
-inner = [inner1,inner11]
+# inner = [inner1,inner11]
 
-profile = {}
-profile1 = {}
-usage={}
-surface={}
+# profile = {}
+# profile1 = {}
+# usage={}
+# surface={}
 
-angle_step = 360/28
-profile[0] = inner1
-profile1[0] = inner11
-usage[0]=[inner1,inner11]
-surface[0] = Workplane().splineApproxSurface(usage[0],0.1)
+# angle_step = 360/28
+# profile[0] = inner1
+# profile1[0] = inner11
+# usage[0]=[inner1,inner11]
+# surface[0] = Workplane().splineApproxSurface(usage[0],0.1)
 
-for i in range(0,2):
-    m = rotationZ(angle_step)
-    profile[i+1]=m.transformAll(profile[i])
-    profile1[i+1]=m.transformAll(profile1[i])
-    usage[i+1]=[profile[i+1],profile1[i+1]]
-    surface[i+1] = Workplane().splineApproxSurface(usage[i],0.1)
-    show_object(surface[i+1])
-    Rotor = Rotor.cut(surface[i+1])
+# for i in range(0,2):
+#     m = rotationZ(angle_step)
+#     profile[i+1]=m.transformAll(profile[i])
+#     profile1[i+1]=m.transformAll(profile1[i])
+#     usage[i+1]=[profile[i+1],profile1[i+1]]
+#     surface[i+1] = Workplane().splineApproxSurface(usage[i],0.1)
+#     show_object(surface[i+1])
+#     Rotor = Rotor.cut(surface[i+1])
 
-show_object(Rotor)
+# show_object(Rotor)
 '''
 
 
@@ -518,25 +516,20 @@ show_object(Rotor)
 
 # inner = [coords_hgjb1_first]
 '''
-hgjb1_x_second = Element['parameters']['hgjb1']['x_second_curve']
-hgjb1_y_second = Element['parameters']['hgjb1']['y_second_curve']
-hgjb1_z_second = Element['parameters']['hgjb1']['z_second_curve']
-coords_hgjb1_second = list(zip(hgjb1_x_second, hgjb1_y_second, hgjb1_z_second))
+# hgjb1_x_second = Element['parameters']['hgjb1']['x_second_curve']
+# hgjb1_y_second = Element['parameters']['hgjb1']['y_second_curve']
+# hgjb1_z_second = Element['parameters']['hgjb1']['z_second_curve']
+# coords_hgjb1_second = list(zip(hgjb1_x_second, hgjb1_y_second, hgjb1_z_second))
 
-hgjb2_x_first = Element['parameters']['hgjb2']['x_first_curve']
-hgjb2_y_first = Element['parameters']['hgjb2']['y_first_curve']
-hgjb2_z_first = Element['parameters']['hgjb2']['z_first_curve']
-coords_hgjb2_first = list(zip(hgjb2_x_first, hgjb2_y_first, hgjb2_z_first))
+# hgjb2_x_first = Element['parameters']['hgjb2']['x_first_curve']
+# hgjb2_y_first = Element['parameters']['hgjb2']['y_first_curve']
+# hgjb2_z_first = Element['parameters']['hgjb2']['z_first_curve']
+# coords_hgjb2_first = list(zip(hgjb2_x_first, hgjb2_y_first, hgjb2_z_first))
 
-hgjb2_x_second = Element['parameters']['hgjb2']['x_second_curve']
-hgjb2_y_second = Element['parameters']['hgjb2']['y_second_curve']
-hgjb2_z_second = Element['parameters']['hgjb2']['z_second_curve']
-coords_hgjb2_second = list(zip(hgjb2_x_second, hgjb2_y_second, hgjb2_z_second))
-
-'''
-
-
-###################################################
+# hgjb2_x_second = Element['parameters']['hgjb2']['x_second_curve']
+# hgjb2_y_second = Element['parameters']['hgjb2']['y_second_curve']
+# hgjb2_z_second = Element['parameters']['hgjb2']['z_second_curve']
+# coords_hgjb2_second = list(zip(hgjb2_x_second, hgjb2_y_second, hgjb2_z_second))
 
 
 
@@ -745,3 +738,4 @@ coords_hgjb2_second = list(zip(hgjb2_x_second, hgjb2_y_second, hgjb2_z_second))
 #show_object(Rotor)
 
 # cq.exporters.export(Rotor,"JBtrial.step")
+
