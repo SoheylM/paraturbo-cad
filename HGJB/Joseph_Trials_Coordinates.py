@@ -161,27 +161,27 @@ from cqmore.matrix import translation, rotationX, rotationZ
 from cqmore.polyhedron import sweep
 from cqmore.matrix import mirror, translation
 
-inner_1 = Element['parameters']['hgjb1']['x_first_curve'][0:50]
-inner_2 = Element['parameters']['hgjb1']['y_first_curve'][0:50]
-inner_3 = Element['parameters']['hgjb1']['z_first_curve'][0:50]
+inner_1 = Element['parameters']['hgjb2']['x_first_curve'][0:50]
+inner_2 = Element['parameters']['hgjb2']['y_first_curve'][0:50]
+inner_3 = Element['parameters']['hgjb2']['z_first_curve'][0:50]
 inner1 = list(zip(inner_1,inner_2,inner_3))
 
-inner_11 = Element['parameters']['hgjb1']['x_first_curve'][100:150]
-inner_21 = Element['parameters']['hgjb1']['y_first_curve'][100:150]
-inner_31 = Element['parameters']['hgjb1']['z_first_curve'][100:150]
+inner_11 = Element['parameters']['hgjb2']['x_first_curve'][100:150]
+inner_21 = Element['parameters']['hgjb2']['y_first_curve'][100:150]
+inner_31 = Element['parameters']['hgjb2']['z_first_curve'][100:150]
 inner11 = list(zip(inner_11,inner_21,inner_31))
 
 
 
 
-x_second = Element['parameters']['hgjb1']['x_second_curve'][0:50]
-y_second = Element['parameters']['hgjb1']['y_second_curve'][0:50]
-z_second = Element['parameters']['hgjb1']['z_second_curve'][0:50]
+x_second = Element['parameters']['hgjb2']['x_second_curve'][0:50]
+y_second = Element['parameters']['hgjb2']['y_second_curve'][0:50]
+z_second = Element['parameters']['hgjb2']['z_second_curve'][0:50]
 inner2 = list(zip(x_second,y_second,z_second))
 
-x_second1 = Element['parameters']['hgjb1']['x_second_curve'][100:150]
-y_second1 = Element['parameters']['hgjb1']['y_second_curve'][100:150]
-z_second1 = Element['parameters']['hgjb1']['z_second_curve'][100:150]
+x_second1 = Element['parameters']['hgjb2']['x_second_curve'][100:150]
+y_second1 = Element['parameters']['hgjb2']['y_second_curve'][100:150]
+z_second1 = Element['parameters']['hgjb2']['z_second_curve'][100:150]
 inner22 = list(zip(x_second1,y_second1,z_second1))
 
 
@@ -257,7 +257,7 @@ profile1[0] = inner11
 usage[0]=[inner1,inner11]
 # surface[0] = Workplane().polyhedron(*gridSurface(inner,0.1))
 
-
+# Rotor = Workplane().cylinder(500,7.42)
 
 trans[0] = translation((0, 0, 1)).transformAll(profile[0])
 trans1[0] = translation((0, 0, 1)).transformAll(profile1[0])
@@ -287,10 +287,11 @@ for i in range(0,28):
     profile[i+1]=m.transformAll(profile[i])
     profile1[i+1]=m.transformAll(profile1[i])
     usage[i+1]=[profile[i+1],profile1[i+1]]
-    surface[i+1] = Workplane().polyhedron(*gridSurface(usage[i],0.1))
-    # Rotor = Rotor - surface[i+1]
-    # surface[i+1] = Workplane().splineApproxSurface(usage[i],0.1)
+    # surface[i+1] = Workplane().polyhedron(*gridSurface(usage[i],0.1))
+    # 
+    surface[i+1] = Workplane().splineApproxSurface(usage[i],-0.1,clean=True,combine=False)
     #show_object(surface[i+1])
+    # Rotor = Rotor - surface[i+1]
 
     #trans[i+1] = translation((0, 0, 1)).transformAll(profile[i])
     #trans1[i+1] = translation((0, 0, 1)).transformAll(profile1[i])
@@ -301,28 +302,29 @@ for i in range(0,28):
     mirrored_pts[i+1]=m.transformAll(mirrored_pts[i])
     mirrored_pts1[i+1]=m.transformAll(mirrored_pts1[i])
     usagemm[i+1]=[mirrored_pts[i+1],mirrored_pts1[i+1]]
-    surfacemm[i+1] = Workplane().polyhedron(*gridSurface(usagemm[i],0.1))
-    # Rotor = Rotor - surfacemm[i+1]
-    # surfacemm[i+1] = Workplane().splineApproxSurface(usagemm[i],0)
+    # surfacemm[i+1] = Workplane().polyhedron(*gridSurface(usagemm[i],0.1))
+    # 
+    surfacemm[i+1] = Workplane().splineApproxSurface(usagemm[i],0.1,clean=True,combine=False)
     # show_object(surfacemm[i+1])
+    # Rotor = Rotor - surfacemm[i+1]
 
     mir[i+1]=m.transformAll(mir[i])
     mir1[i+1]=m.transformAll(mir1[i])
     usa[i+1]=[mir[i+1],mir1[i+1]]
-    surf[i+1] = Workplane().polyhedron(*gridSurface(usa[i],0.1))
-    # Rotor = Rotor - surf[i+1]
+    # surf[i+1] = Workplane().polyhedron(*gridSurface(usa[i],0.1))
+    # 
     # show_object(surf[i+1])
-    # surf[i+1] = Workplane().splineApproxSurface(usa[i],0)
-
+    surf[i+1] = Workplane().splineApproxSurface(usa[i],-0.1,clean=True,combine=False)
+    # Rotor = Rotor - surf[i+1]
 
     tra[i+1]=m.transformAll(tra[i])
     tra1[i+1]=m.transformAll(tra1[i])
     usa2[i+1]=[tra[i+1],tra1[i+1]]
-    surf2[i+1] = Workplane().polyhedron(*gridSurface(usa2[i],0.1))
+    # surf2[i+1] = Workplane().polyhedron(*gridSurface(usa2[i],0.1))
     # Rotor = Rotor - surf2[i+1]
     # show_object(surf2[i+1])
-    # surf2[i+1] = Workplane().splineApproxSurface(usa2[i],0)
-
+    surf2[i+1] = Workplane().splineApproxSurface(usa2[i],0.1,clean=True,combine=False)
+    # Rotor = Rotor - surf2[i+1]
 
 
 
@@ -362,15 +364,25 @@ for i in range(28):
     
 # Rotor = Rotor.cut(texts)
 
+# show_object(texts)
 
 Rotordone = Rotor - texts
 
+# Rotordone = Workplane().cylinder(500,7.42) - texts
+print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')
+
+# show_object(Rotordone)
 
 # print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')
-cq.exporters.export(Rotordone,"Rotordone.stl", tolerance = 0.1, angularTolerance = 1)
+# cq.exporters.export(Rotordone,"Rotordone.stl", tolerance = 0.1, angularTolerance = 0.5)
+cq.exporters.export(Rotordone,"Rotordone.stl", tolerance = 0.1, angularTolerance = 0.5)
+
 print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')
 # cq.exporters.export(Rotordone,"Rotordone.step", opt={"write_pcurves": False, "precision_mode": 1})
-print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')
+# print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')
+
+
+
 
 '''
 
@@ -739,3 +751,37 @@ print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')
 
 # cq.exporters.export(Rotor,"JBtrial.step")
 
+
+
+
+#################
+###################
+#####################
+
+
+# from cqmore import Workplane
+
+# def paraboloid(x, y):
+#     return (x, y, ((y ** 2) - (x ** 2)) / 4)
+
+# min_value = -30
+# max_value = 30
+# step = 5
+# thickness = 0.5
+
+# points = [[
+#         paraboloid(x / 10, y / 10) 
+#     for y in range(min_value, max_value + step, step)
+# ] for x in range(min_value, max_value + step, step)]
+
+# surface33 = Workplane().splineApproxSurface(points, thickness)
+
+# show_object(surface33)
+
+
+
+
+
+#################
+###################
+#####################
