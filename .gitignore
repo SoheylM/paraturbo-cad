@@ -1,2 +1,6 @@
 
 *.pyc
+
+COMP/Impeller.py
+
+ROT/Rotor.py

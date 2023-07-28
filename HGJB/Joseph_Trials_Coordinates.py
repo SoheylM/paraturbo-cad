@@ -33,7 +33,8 @@ from cqmore.polyhedron import gridSurface
 #close file
 #file.close()
 
-Element = pickle.load(open("C:/Users/user/Documents/Code/CadQuery/Compressor JB/paraturbo-cad/ELEMENT/Element_23_06_05_v2.pickle", "rb"))
+#Element = pickle.load(open("C:/Users/user/Documents/Code/CadQuery/Compressor JB/paraturbo-cad/ELEMENT/Element_23_06_05_v2.pickle", "rb"))
+Element = pickle.load(open("Z:/Code/paraturbo-cad/ELEMENT/Element_23_06_05_v2.pickle", "rb"))
 
 
 
@@ -41,7 +42,8 @@ Element = pickle.load(open("C:/Users/user/Documents/Code/CadQuery/Compressor JB/
 cwf = os.getcwd().replace("\\", "/")
 
 # Use this in CQ-Editor
-Rotor = cq.importers.importStep("C:/Users/user/Documents/Code/CadQuery/Compressor JB/paraturbo-cad/STEP/Rotor.step").translate((0,0,-50))
+#Rotor = cq.importers.importStep("C:/Users/user/Documents/Code/CadQuery/Compressor JB/paraturbo-cad/STEP/Rotor.step").translate((0,0,-50))
+Rotor = cq.importers.importStep("Z:/Code/paraturbo-cad/STEP/Rotor_23_06_05_v2.step").translate((0,0,-50))
 
 # Use this in VS Code
 # Rotor = cq.importers.importStep(cwf + '/HGJB/Rotor.stp')
@@ -346,7 +348,7 @@ for i in range(0,28):
 #assembly.save(self.cwf  + '/STEP/Compressor.step')
 
 texts = Workplane()
-for i in range(28):
+for i in range(-1,28): # to include the initial groove
     texts.add(surface[i+1])
     texts.add(surfacemm[i+1])
     texts.add(surf[i+1])
@@ -375,11 +377,11 @@ print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')
 
 # print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')
 # cq.exporters.export(Rotordone,"Rotordone.stl", tolerance = 0.1, angularTolerance = 0.5)
-cq.exporters.export(Rotordone,"Rotordone.stl", tolerance = 0.1, angularTolerance = 0.5)
+#cq.exporters.export(Rotordone,"Rotordone.stl", tolerance = 0.1, angularTolerance = 0.5)
 
+#print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')
+cq.exporters.export(Rotordone,"Rotordone.step", opt={"write_pcurves": False, "precision_mode": 1})
 print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')
-# cq.exporters.export(Rotordone,"Rotordone.step", opt={"write_pcurves": False, "precision_mode": 1})
-# print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')
 
 
 
