@@ -42,21 +42,70 @@ class ROTOR():
 
                         if self.method_hgjb == 'Joseph':
                             # Extract grooves coordinates
-                            inner_1 = Element['parameters']['hgjb2']['x_first_curve'][0:50]
-                            inner_2 = Element['parameters']['hgjb2']['y_first_curve'][0:50]
-                            inner_3 = Element['parameters']['hgjb2']['z_first_curve'][0:50]
+                            n_coord = len(Element['parameters']['hgjb2']['x_first_curve'])
+                            inner_1 = Element['parameters']['hgjb2']['x_first_curve'][0:n_coord//4]
+                            inner_2 = Element['parameters']['hgjb2']['y_first_curve'][0:n_coord//4]
+                            inner_3 = Element['parameters']['hgjb2']['z_first_curve'][0:n_coord//4]
                             inner1 = list(zip(inner_1,inner_2,inner_3))
                             self.inner1 = inner1
 
-                            inner_11 = Element['parameters']['hgjb2']['x_first_curve'][100:150]
-                            inner_21 = Element['parameters']['hgjb2']['y_first_curve'][100:150]
-                            inner_31 = Element['parameters']['hgjb2']['z_first_curve'][100:150]
+                            inner_11 = Element['parameters']['hgjb2']['x_first_curve'][3*n_coord//4:]
+                            inner_21 = Element['parameters']['hgjb2']['y_first_curve'][3*n_coord//4:]
+                            inner_31 = Element['parameters']['hgjb2']['z_first_curve'][3*n_coord//4:]
                             inner11 = list(zip(inner_11,inner_21,inner_31))
                             inner11.reverse()
                             self.inner11 = inner11
 
-                            
+                            # Extracting bottom groove surface points
+                            P2 = Element['parameters']['hgjb2']['P2_second_surface']
+                            self.bottom_groove_surf = P2 #[[cq.Vector(P2[i, j, 0], P2[i, j, 1], P2[i, j, 2]) for j in range(P2.shape[1])] for i in range(P2.shape[0])]
 
+                            # Calculating the shift in the position of the true impeller model
+                            self.shift = 0
+                            for i in range(len(self.length)):
+                                if self.elem_type1[i]=='COMP1' or self.elem_type2[i]=='COMP1' or self.elem_type3[i]=='COMP1':
+                                    self.shift += self.length[i]
+                            # Collecting impeller geometry for shift computation 
+                            # Rotor radius
+                            self.R_rot = (Element['parameters']['comp1']['Rrot'])*1000
+                            # Components positions
+                            self.pos_comp1 = Element['sys_pos']['pos_comp1']
+                            # Tip radius (7mm-35mm)
+                            self.r_4 = round(Element['parameters']['comp1']['r4'],12)*1000
+                            # Tip width (0.1mm-10.5mm)
+                            self.b_4 = (Element['parameters']['comp1']['b4'])*1000
+                            # Inlet hub radius (0.7mm-10.5mm)
+                            self.r_2h = (Element['parameters']['comp1']['r2h'])*1000
+                            # Inlet shoulder radius (0.84mm-24.5mm)
+                            self.r_2s = (Element['parameters']['comp1']['r2s'])*1000
+                            # Inducer inlet radius (0.84mm-35mm)
+                            self.r_1 = (Element['parameters']['comp1']['r1'])*1000
+                            # Diffuser exit radius (7mm-52.5mm)
+                            self.r_5 = (Element['parameters']['comp1']['r5'])*1000
+                            # Blade thickness (0.1mm-0.5mm)
+                            self.e_bld = (Element['parameters']['comp1']['Blade_e'])*1000
+                            # Inducer length (7mm-140mm)
+                            self.L_ind = (Element['parameters']['comp1']['L_ind'])*1000
+                            # Tip clearance (0.001mm-0.158mm)
+                            self.e_tip = (Element['parameters']['comp1']['Clearance'])*1000
+                            # Backface clearance (0.007mm-5.25mm)
+                            self.e_back = (Element['parameters']['comp1']['Backface'])*1000
+                            # Exit blade angle (-45deg-0deg)
+                            self.beta_4 = Element['parameters']['comp1']['beta4']
+                            # Defining calculated geometrical parameters
+                            self.phi = 1.618
+                            self.b_6 = self.b_4/self.phi
+                            self.a = (self.r_4/self.phi)-self.b_4
+                            self.b = self.r_4-self.r_2s
+                            self.c = self.r_4/self.phi
+                            self.d = self.r_4-self.r_2h
+                            self.e =(self.r_4/(self.phi**2))-self.b_6
+                            self.f = self.r_4-self.R_rot
+                            self.L_imp = self.r_2h+self.c+self.b_6+self.e
+                            # Offset due to impeller : comp_offset = Limp-shift
+                            self.comp_offset = self.L_imp - self.shift #1.6355 # need to grab the actual values if necessary
+
+                            
                     else:
                         raise ValueError('ROTOR.parameters: Size of the needed dictionary values are not equal.')
             else:
@@ -288,18 +337,17 @@ class ROTOR():
         self.gap_spiral = [(self.gap[0]*self.Spiral_step[0])/self.LenBetwVert[0] , (self.gap[1]*self.Spiral_step[1])/self.LenBetwVert[1]]
 
         if self.method_hgjb == 'Joseph':
-            # Offset due to impeller : comp_offset = Limp-shift
-            comp_offset = 0
             # Distance to translate hgjb1
-            self.dist_hack0 = -(self.DistCenter1+comp_offset-self.L_land/2) #-50
+            self.dist_hack0 = -(self.DistCenter1+self.comp_offset-self.L_land[0]/2) #-50
             # Distance to increase L_land : set to zero
             self.dist_hack1 = 0 #1
             # Distance to translate hgjb2
-            self.dist_hack2 = self.DistCenter2 -(self.DistCenter1+comp_offset) #60
+            self.dist_hack2 = self.DistCenter2 -(self.DistCenter1) #60
             # Step angle in degrees
-            self.angle_step = 360/self.N_HG 
+            self.angle_step = self.sepang #360/self.N_HG 
 
     def HGJB_CAD(self,rotor):
+
         if self.method_hgjb == 'Tim':
             rotor = rotor.rotate((0,0,0),(1,0,0),270)
 
@@ -413,6 +461,8 @@ class ROTOR():
                 rotor = rotor.cut(self.groove2far[i+1])
 
             rotor = rotor.rotate((0,0,0),(1,0,0),-270)
+
+            self.ROT = rotor
         
         elif self.method_hgjb == 'Joseph':
             print('method_hgjb ==', self.method_hgjb)
@@ -461,8 +511,11 @@ class ROTOR():
             # Translate the rotor
             rotor = rotor.translate((0,0,dist_hack0))
 
+            """
+
             # Start defining grooves for each half bearing
             profile[0]  = inner1
+            #print('profile[0]', profile[0])
             profile1[0] = inner11
             usage[0]    = [inner1,inner11]
 
@@ -515,13 +568,101 @@ class ROTOR():
                 texts.add(surf[i+1])
                 texts.add(surf2[i+1])
 
+            """
+
+            ## NEW METHOD ##
+            # Define half bearing with pooints on the surface:
+            P2 = self.bottom_groove_surf
+
+            # Convert P2 to a flat list of tuples
+            #hgjb1_half1 = P2.reshape(-1, 3).tolist()
+            hgjb1_half1 = [tuple(point) for point in P2.reshape(-1, 3).tolist()]
+
+
+            # Define transformations
+            t2 = translation((0, 0, dist_hack2)) # translate to hgjb2
+            mirror_operation = mirror((0, 0, 1)) # mirror half bearing
+
+            # Apply transformations
+            hgjb1_half2 = mirror_operation.transformAll(hgjb1_half1) # mirror groove at hgjb1 (2 half bearings)
+            hgjb2_half1 = t2.transformAll(hgjb1_half1) 
+            hgjb2_half2 = t2.transformAll(hgjb1_half2)
+
+            # Initialize dictionaries
+            dic_hgjb1_half1 = {}
+            dic_hgjb1_half2 = {}
+            dic_hgjb2_half1 = {}
+            dic_hgjb2_half2 = {}
+
+            surf_hgjb1_half1 = {}
+            surf_hgjb1_half2 = {}
+            surf_hgjb2_half1 = {}
+            surf_hgjb2_half2 = {}
+
+            # Assign first values
+            dic_hgjb1_half1[0] = hgjb1_half1
+            dic_hgjb1_half2[0] = hgjb1_half2
+            dic_hgjb2_half1[0] = hgjb2_half1
+            dic_hgjb2_half2[0] = hgjb2_half2
+
+            # Define rotation matrix
+            m = rotationZ(angle_step)
+
+            # Now you can use these with splineApproxSurface
+            thickness = 0.1  # example value for thickness, adjust as needed
+
+            # Convert transformed points to 2D list of Vector objects            
+            points_hgjb1_half1 = [[cq.Vector(*hgjb1_half1[i * P2.shape[1] + j]) for j in range(P2.shape[1])] for i in range(P2.shape[0])]
+            points_hgjb1_half2 = [[cq.Vector(*hgjb1_half2[i * P2.shape[1] + j]) for j in range(P2.shape[1])] for i in range(P2.shape[0])]
+            points_hgjb2_half1 = [[cq.Vector(*hgjb2_half1[i * P2.shape[1] + j]) for j in range(P2.shape[1])] for i in range(P2.shape[0])]
+            points_hgjb2_half2 = [[cq.Vector(*hgjb2_half2[i * P2.shape[1] + j]) for j in range(P2.shape[1])] for i in range(P2.shape[0])]
+
+            # Perform loop to cover N_HG=28 grooves
+            for i in range(0,self.N_HG):
+
+                dic_hgjb1_half1[i+1] = m.transformAll(dic_hgjb1_half1[i])
+                hgjb1_half1_tmp      = dic_hgjb1_half1[i]
+                points_hgjb1_half1 = [[cq.Vector(*hgjb1_half1_tmp[i * P2.shape[1] + j]) for j in range(P2.shape[1])] for i in range(P2.shape[0])]
+                surf_hgjb1_half1[i+1]  = Workplane().splineApproxSurface(points_hgjb1_half1,-thickness,clean=True,combine=False)
+                print('dic_hgjb1_half1 i =', i)
+
+                dic_hgjb1_half2[i+1] = m.transformAll(dic_hgjb1_half2[i])
+                hgjb1_half2_tmp      = dic_hgjb1_half2[i]
+                points_hgjb1_half2 = [[cq.Vector(*hgjb1_half2_tmp[i * P2.shape[1] + j]) for j in range(P2.shape[1])] for i in range(P2.shape[0])]
+                surf_hgjb1_half2[i+1]  = Workplane().splineApproxSurface(points_hgjb1_half2,thickness,clean=True,combine=False)
+                print('dic_hgjb1_half2 i =', i)
+
+                dic_hgjb2_half1[i+1] = m.transformAll(dic_hgjb2_half1[i])
+                hgjb2_half1_tmp      = dic_hgjb2_half1[i]
+                points_hgjb2_half1 = [[cq.Vector(*hgjb2_half1_tmp[i * P2.shape[1] + j]) for j in range(P2.shape[1])] for i in range(P2.shape[0])]
+                surf_hgjb2_half1[i+1]  = Workplane().splineApproxSurface(points_hgjb2_half1,-thickness,clean=True,combine=False)
+                print('dic_hgjb2_half1 i =', i)
+
+                dic_hgjb2_half2[i+1] = m.transformAll(dic_hgjb2_half2[i])
+                hgjb2_half2_tmp      = dic_hgjb2_half2[i]
+                points_hgjb2_half2 = [[cq.Vector(*hgjb2_half2_tmp[i * P2.shape[1] + j]) for j in range(P2.shape[1])] for i in range(P2.shape[0])]
+                surf_hgjb2_half2[i+1]  = Workplane().splineApproxSurface(points_hgjb2_half2,thickness,clean=True,combine=False)
+                print('dic_hgjb2_half2 i =', i)
+
+            texts = Workplane()
+            for i in range(0,self.N_HG): 
+                texts.add(surf_hgjb1_half1[i+1])
+                texts.add(surf_hgjb1_half2[i+1])
+                texts.add(surf_hgjb2_half1[i+1])
+                texts.add(surf_hgjb2_half2[i+1])
+                print('texts add i=', i)
+
+
             # Subract the grooves from the rotor
             rotor = rotor - texts
 
             # Translate back the rotor
             rotor = rotor.translate((0,0,-dist_hack0))
 
-        self.ROT = rotor
+            # Testing export
+            cq.exporters.export(rotor,self.cwf  + '/STEP/Rotor_Joseph.step', opt={"write_pcurves": False, "precision_mode": -1})
+
+        #self.ROT = rotor
         
     def assemble(self,*settings):
        # Enters if the element types are not given correctly or not given
@@ -543,8 +684,11 @@ class ROTOR():
             else:
                 assembly = cq.Assembly(name = 'Turbocompressor Rotor')
                 assembly.add(ROT, name = 'Rotor', color=cq.Color('gray50'))
+                print('assembly ROT')
                 assembly.add(PLUG, name = 'Plug', color=cq.Color('gray50'))
+                print('assembly PLUG')
                 assembly.add(MAG, name = 'Magnet', color=cq.Color('gray50'))
+                print('assembly MAG')
 
             # Saves as stl if given in arguments
             if 'stl' or 'STL' in settings:
@@ -554,5 +698,6 @@ class ROTOR():
         
         # Saves as step
         assembly.save(self.cwf  + '/STEP/Rotor.step')
+        print('assembly saved')
 
         return assembly
