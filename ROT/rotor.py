@@ -624,25 +624,25 @@ class ROTOR():
                 hgjb1_half1_tmp      = dic_hgjb1_half1[i]
                 points_hgjb1_half1 = [[cq.Vector(*hgjb1_half1_tmp[i * P2.shape[1] + j]) for j in range(P2.shape[1])] for i in range(P2.shape[0])]
                 surf_hgjb1_half1[i+1]  = Workplane().splineApproxSurface(points_hgjb1_half1,-thickness,clean=True,combine=False)
-                print('dic_hgjb1_half1 i =', i)
+                #print('dic_hgjb1_half1 i =', i)
 
                 dic_hgjb1_half2[i+1] = m.transformAll(dic_hgjb1_half2[i])
                 hgjb1_half2_tmp      = dic_hgjb1_half2[i]
                 points_hgjb1_half2 = [[cq.Vector(*hgjb1_half2_tmp[i * P2.shape[1] + j]) for j in range(P2.shape[1])] for i in range(P2.shape[0])]
                 surf_hgjb1_half2[i+1]  = Workplane().splineApproxSurface(points_hgjb1_half2,thickness,clean=True,combine=False)
-                print('dic_hgjb1_half2 i =', i)
+                #print('dic_hgjb1_half2 i =', i)
 
                 dic_hgjb2_half1[i+1] = m.transformAll(dic_hgjb2_half1[i])
                 hgjb2_half1_tmp      = dic_hgjb2_half1[i]
                 points_hgjb2_half1 = [[cq.Vector(*hgjb2_half1_tmp[i * P2.shape[1] + j]) for j in range(P2.shape[1])] for i in range(P2.shape[0])]
                 surf_hgjb2_half1[i+1]  = Workplane().splineApproxSurface(points_hgjb2_half1,-thickness,clean=True,combine=False)
-                print('dic_hgjb2_half1 i =', i)
+                #print('dic_hgjb2_half1 i =', i)
 
                 dic_hgjb2_half2[i+1] = m.transformAll(dic_hgjb2_half2[i])
                 hgjb2_half2_tmp      = dic_hgjb2_half2[i]
                 points_hgjb2_half2 = [[cq.Vector(*hgjb2_half2_tmp[i * P2.shape[1] + j]) for j in range(P2.shape[1])] for i in range(P2.shape[0])]
                 surf_hgjb2_half2[i+1]  = Workplane().splineApproxSurface(points_hgjb2_half2,thickness,clean=True,combine=False)
-                print('dic_hgjb2_half2 i =', i)
+                #print('dic_hgjb2_half2 i =', i)
 
             texts = Workplane()
             for i in range(0,self.N_HG): 
@@ -650,7 +650,7 @@ class ROTOR():
                 texts.add(surf_hgjb1_half2[i+1])
                 texts.add(surf_hgjb2_half1[i+1])
                 texts.add(surf_hgjb2_half2[i+1])
-                print('texts add i=', i)
+                #print('texts add i=', i)
 
 
             # Subract the grooves from the rotor
