@@ -2,9 +2,9 @@
 import cadquery as cq
 import numpy as np
 import pandas as pd
-#from cadquery import *
-#from cq_warehouse import *
-#from cq_warehouse.extensions import *
+from cadquery import *
+from cq_warehouse import *
+from cq_warehouse.extensions import *
 import os
 
 # Defining a class to model the impeller
@@ -36,8 +36,7 @@ class IMPELLER():
         self.pos_comp1 = Element['sys_pos']['pos_comp1']
 
         # Tip radius (7mm-35mm)
-        self.r_4 = round(Element['parameters']['comp1']['r4'],12)*1000 # necesary to avoid bugs
-        #self.r_4 = (Element['parameters']['comp1']['r4'])*1000
+        self.r_4 = round(Element['parameters']['comp1']['r4'],12)*1000
 
         # Tip width (0.1mm-10.5mm)
         self.b_4 = (Element['parameters']['comp1']['b4'])*1000
@@ -173,92 +172,18 @@ class IMPELLER():
         else:
             bottom_hub = True
 
-        # NO NEEDED
-        """
         r_2h = self.r_2h
         r_4 = self.r_4
         b_4 = self.b_4
         R_rot = self.R_rot  
         
         phi = 1.618
-        self.b_6 = b_4/phi
-        self.c = r_4/phi
-        self.e =(r_4/(phi**2))-self.b_6
-        self.L_imp = r_2h+self.c+self.b_6+self.e
-        """
-
+        b_6 = b_4/phi
+        c = r_4/phi
+        e =(r_4/(phi**2))-b_6
+        L_imp = r_2h+c+b_6+e
         # Tolerance to control the smoothness of the hub profile
-        self.delta_x = self.b_6/3
-        #print('b_6',self.b_6)
-
-        # BUGGY BECAUSE delta_x NOT CONSTANT BETWEEN x_1[-1] and x_2[0], x_2[-1] and x_3[0] etc.
-        """
-        # Define the intervals
-        x_1 = np.arange(0, self.r_2h, self.delta_x)
-        print('x_1',x_1)
-        x_2 = np.arange(self.r_2h, self.r_2h + self.c, self.delta_x)
-        print('x_2',x_2)
-        x_3 = np.arange(self.r_2h + self.c, self.r_2h + self.c + self.b_6, self.delta_x)
-        print('x_3',x_3)
-        x_4 = np.arange(self.r_2h + self.c + self.b_6, self.L_imp, self.delta_x)
-        print('x_4',x_4)
-        x_5 = np.arange(self.L_imp, self.L_imp + self.R_rot/3, self.delta_x)
-        print('x_5',x_5)
-        """
-
-        # Define the intervals
-        n_points_1 = round(self.r_2h / self.delta_x)
-        n_points_2 = round(self.c / self.delta_x)
-        n_points_3 = round(self.b_6 / self.delta_x)
-        n_points_4 = round((self.L_imp - self.r_2h - self.c - self.b_6) / self.delta_x)
-        n_points_5 = round((self.R_rot/3) / self.delta_x)
-
-        x_1 = np.linspace(0, self.r_2h, n_points_1, endpoint=False)
-        x_2 = np.linspace(self.r_2h, self.r_2h + self.c, n_points_2, endpoint=False)
-        x_3 = np.linspace(self.r_2h + self.c, self.r_2h + self.c + self.b_6, n_points_3, endpoint=False)
-        x_4 = np.linspace(self.r_2h + self.c + self.b_6, self.L_imp, n_points_4, endpoint=False)
-        x_5 = np.linspace(self.L_imp, self.L_imp + self.R_rot/3, n_points_5, endpoint=True)
-
-        # Concatenate all x arrays
-        self.x_hub = np.concatenate((x_1, x_2, x_3, x_4, x_5))
-
-        # Apply the piecewise function
-        ##y_1 = np.sqrt(self.r_2h**2 - (x_1 - self.r_2h)**2)
-        y_1 = np.array([np.sqrt(self.r_2h**2 - (x_val - self.r_2h)**2) if (self.r_2h**2 - (x_val - self.r_2h)**2) >= 0 else 0 for x_val in x_1])
-        ##y_2 = self.r_4 - np.sqrt(self.d**2 - (self.d**2/self.c**2)*(x_2 - self.r_2h)**2) 
-        y_2 = np.array([self.r_4 - np.sqrt(self.d**2 - (self.d**2/self.c**2)*(x_val - self.r_2h)**2) if (self.d**2 - (self.d**2/self.c**2)*(x_val - self.r_2h)**2) >= 0 else self.r_4 for x_val in x_2])
-        y_3 = np.full_like(x_3, self.r_4)  # create an array filled with r_4 value
-        ##y_4 = self.r_4 - np.sqrt(self.f**2 - (self.f**2/self.e**2)*(x_4 - self.L_imp)**2)
-        y_4 = np.array([self.r_4 - np.sqrt(self.f**2 - (self.f**2/self.e**2)*(x_val - self.L_imp)**2) if (self.f**2 - (self.f**2/self.e**2)*(x_val - self.L_imp)**2) >= 0 else self.r_4 for x_val in x_4])
-        y_5 = np.full_like(x_5, self.R_rot)  # create an array filled with R_rot value
-
-
-        # Concatenate all y arrays
-        self.y_hub = np.concatenate((y_1, y_2, y_3, y_4, y_5))
-
-        print('self.x_hub',self.x_hub)
-        print('self.y_hub',self.y_hub)
-
-        # Initialize the three lists to mix spline and polyline
-        self.coords_hub_before_3 = []
-        self.coords_hub_3 = []
-        self.coords_hub_after_3 = []
-
-        # Create tuple coordinates and segregate to respective parts
-        for i in range(len(self.x_hub)):
-            if self.x_hub[i] <= self.r_2h + self.c:
-                self.coords_hub_before_3.append((self.x_hub[i], self.y_hub[i]))
-            elif self.r_2h + self.c < self.x_hub[i] <= self.r_2h + self.c + self.b_6:
-                self.coords_hub_3.append((self.x_hub[i], self.y_hub[i]))
-            else:
-                self.coords_hub_after_3.append((self.x_hub[i], self.y_hub[i]))
-
-        print('self.coords_hub_before_3',self.coords_hub_before_3)
-        print('self.coords_hub_3',self.coords_hub_3)
-        print('self.coords_hub_after_3',self.coords_hub_after_3)
-        
-        # working but slight bug with disconnected blade which I suspect to be linked to the addition of zero at beginnig of y_hub
-        """
+        delta_x = b_6/3
 
         # Initializing the x and y coordinate arrays
         n_hub = int(np.round((L_imp+(R_rot/3))/delta_x))
@@ -266,76 +191,43 @@ class IMPELLER():
         self.y_hub=[]
         self.y_hub.insert(0,0)
 
-        # Initialize the three lists to mix spline and polyline
-        self.coords_hub_before_3 = []
-        self.coords_hub_3 = []
-        self.coords_hub_after_3 = []
-
         # Dividing the hub into 5 parts: hub_1,hub_2,hub_3,hub_4,hub_5
         # Looping over the 5 parts to update the x and y coordinates
         for i in range(0,len(self.x_hub)):
 
         # Hub_1
-            if (self.x_hub[i]>=0)&(self.x_hub[i]<r_2h):
+            if (self.x_hub[i]>=0)&(self.x_hub[i]<=r_2h):
                 self.y_hub[i] = eval('((self.r_2h**2)-((self.x_hub[i]-self.r_2h)**2))**0.5')
                 self.y_hub.insert(i,self.y_hub[i])
-                self.coords_hub_before_3.append((self.x_hub[i], self.y_hub[i]))
-                print('self.x_hub[i] hub1',self.x_hub[i])
-                print('self.y_hub[i] hub1',self.y_hub[i])
 
         # Hub_2
-            if (self.x_hub[i]>=r_2h)&(self.x_hub[i]<r_2h+c):
+            if (self.x_hub[i]>=r_2h)&(self.x_hub[i]<=r_2h+c):
                 self.y_hub[i] = eval('self.r_4-((self.d**2)-((self.d/self.c)**2)*((self.x_hub[i]-self.r_2h)**2))**0.5')
                 self.y_hub.insert(i,self.y_hub[i])
-                self.coords_hub_before_3.append((self.x_hub[i], self.y_hub[i]))
-                print('self.x_hub[i] hub2',self.x_hub[i])
-                print('self.y_hub[i] hub2',self.y_hub[i])
 
         # Hub_3
-            if (self.x_hub[i]>=r_2h+c)&(self.x_hub[i]<r_2h+c+b_6):
+            if (self.x_hub[i]>=r_2h+c)&(self.x_hub[i]<=r_2h+c+b_6):
                 self.y_hub[i] = r_4
                 self.y_hub.insert(i,self.y_hub[i])
-                self.coords_hub_3.append((self.x_hub[i], self.y_hub[i]))
-                print('self.x_hub[i] hub3',self.x_hub[i])
-                print('self.y_hub[i] hub3',self.y_hub[i])
-                
 
         # Hub_4
-            if (self.x_hub[i]>=r_2h+c+b_6)&(self.x_hub[i]<L_imp):
+            if (self.x_hub[i]>=r_2h+c+b_6)&(self.x_hub[i]<=L_imp):
                 self.y_hub[i] = eval('self.r_4-((self.f**2)-((self.f/self.e)**2)*((self.x_hub[i]-self.L_imp)**2))**0.5')
                 self.y_hub.insert(i,self.y_hub[i])
-                self.coords_hub_after_3.append((self.x_hub[i], self.y_hub[i]))
-                print('self.x_hub[i] hub4',self.x_hub[i])
-                print('self.y_hub[i] hub4',self.y_hub[i])
 
         # Hub_5
             if (self.x_hub[i]>=L_imp)&(self.x_hub[i]<=L_imp+(R_rot/3)):
                 self.y_hub[i] = R_rot
                 self.y_hub.insert(i,self.y_hub[i])
-                self.coords_hub_after_3.append((self.x_hub[i], self.y_hub[i]))
-                print('self.x_hub[i] hub5',self.x_hub[i])
-                print('self.y_hub[i] hub5',self.y_hub[i])
-
 
         # Grouping the x and y coordinates into tuples
         self.coords_hub = list(zip(self.x_hub,self.y_hub))
-        """
 
-        # Create the profile with spline and polyline
-        self.sketch_hub = (cq.Workplane("XY")
-            .spline(self.coords_hub_before_3, includeCurrent=False)
-            .polyline(self.coords_hub_3, includeCurrent=True)
-            .spline(self.coords_hub_after_3, includeCurrent=True)
-            .vLineTo(0)
-            .close())
-
-        """
         # Skteching half the hub continuously
         self.sketch_hub = (cq.Workplane("XY")
                     .polyline(self.coords_hub,includeCurrent=False)
                     .vLineTo(0)
                     .close())
-        """
 
         # Calculating the shift in the position of the true impeller model
         self.shift = 0
@@ -351,7 +243,7 @@ class IMPELLER():
                 .rotate((0,0,0),(0,1,0),-90)
                 .rotate((0,0,0),(0,0,1),90))
         
-        #print('self.L_imp-self.shift',self.L_imp-self.shift)
+        print('self.L_imp-self.shift',self.L_imp-self.shift)
 
         assembly = cq.Assembly(name = 'Turboompressor Hub')
         assembly.add(hub,color=cq.Color('red3'), name = 'Hub')
@@ -410,10 +302,14 @@ class IMPELLER():
     
     # Defining a method to model the blades
     def model_blades(self,coords):
+                
+        # Adding the first point of the curve to the end of its point array to close it
+            # coords[0].append(coords[0][0])
+            # coords[len(coords)-1].append(coords[len(coords)-1][0])
         
         # Initializing lists to store the solids
         blade_solid={}
-
+        
         # Sketching the first blade curve as an edge
         blade_edge0 = cq.Edge.makeSpline([cq.Vector(p) for p in coords[0]][0:-1]).close()
         
@@ -435,72 +331,8 @@ class IMPELLER():
         # Solidifying the produced shell and rotating
         # blade_solid[0] = cq.Solid.makeSolid(blade_shell).translate((0,0,-14))
         blade_solid[0] = cq.Solid.makeSolid(blade_shell).translate((0,0,-abs(self.L_imp-self.shift)))
-        #print('abs(self.L_imp-self.shift)',abs(self.L_imp-self.shift))
 
         return blade_solid
-    
-    def trim_blades(self, blade):
-
-        # Create a larger outer cylinder
-        outer_cylinder = cq.Solid.makeCylinder(2*self.r_4, self.L_imp, cq.Vector(0, 0, -abs(self.L_imp-self.shift)))
-
-        # Create a smaller inner cylinder
-        inner_cylinder = cq.Solid.makeCylinder(self.r_4, self.L_imp, cq.Vector(0, 0, -abs(self.L_imp-self.shift)))
-
-        # Subtract the smaller cylinder from the larger one to create a hollow cylinder
-        hollow_cylinder = outer_cylinder.cut(inner_cylinder)
-
-        #print('blade[0]',blade[0])
-
-        # Use a boolean cut operation to subtract the hollow cylinder from the blade
-        ##blade[0] = blade[0].cut(hollow_cylinder)
-
-        #print('blade[0]',blade[0])
-
-        # Create a Workplane
-        ##workplane = cq.Workplane("XY")
-
-        # Add the blade to the Workplane
-        ##workplane = workplane.add(blade[0])
-
-        # Perform the union operation
-        ##result = workplane.intersect(hollow_cylinder)
-
-        # Update the blade[0] with the result
-        ##blade[0] = result.val()
-        blade_tmp = blade[0]
-        blade[0] = blade_tmp.cut(hollow_cylinder) #.copy()
-        
-
-        return blade
-    
-    def trim_blades_old(self, blade):
-
-        # Create a Workplane
-        workplane = cq.Workplane("XY")
-
-        # Add the blade to the Workplane
-        workplane = workplane.add(blade[0])
-
-        # Create a larger outer cylinder
-        outer_cylinder = cq.Workplane("XY").circle(2*self.r_4).extrude(self.L_imp)
-
-        # Create a smaller inner cylinder
-        inner_cylinder = cq.Workplane("XY").circle(self.r_4).extrude(self.L_imp)
-
-        # Subtract the smaller cylinder from the larger one to create a hollow cylinder
-        hollow_cylinder = outer_cylinder.cut(inner_cylinder)
-
-        # Perform the union operation
-        result = workplane.cut(hollow_cylinder)
-
-        # Update the blade[0] with the result
-        blade[0] = result.val()
-
-        
-
-        return blade
-
     
     # Defining a method to pattern the blades
     def rotate_blade(self,blade,bladename):
@@ -517,12 +349,9 @@ class IMPELLER():
 
         return assembly
     
-    
-    
     # Defining a method to combine the impeller components in a common assembly
     def assemble(self,files,*settings):
         assembly = cq.Assembly(name='Compressor')
-
         for i in range(0,len(files)):
             assembly.add(files[i],name='Subassembly '+str(i+1))
 
@@ -536,37 +365,37 @@ class IMPELLER():
     # Defining a method to extract coordinates of the blades from a pickle file
     def blades_coords(self,Element):
 
-        # x,y,z coordinates for the main blade first curve
-        self.x_first_curve_bld    = Element['parameters']['comp1']['x_first_curve_bld']
-        self.y_first_curve_bld    = Element['parameters']['comp1']['y_first_curve_bld']
-        self.z_first_curve_bld    = Element['parameters']['comp1']['z_first_curve_bld']
+            # x,y,z coordinates for the main blade first curve
+            self.x_first_curve_bld = Element['parameters']['comp1']['x_first_curve_bld']
+            self.y_first_curve_bld = Element['parameters']['comp1']['y_first_curve_bld']
+            self.z_first_curve_bld = Element['parameters']['comp1']['z_first_curve_bld']
 
-        # x,y,z coordinates for the main blade first curve
-        self.x_second_curve_bld   = Element['parameters']['comp1']['x_second_curve_bld']
-        self.y_second_curve_bld   = Element['parameters']['comp1']['y_second_curve_bld']
-        self.z_second_curve_bld   = Element['parameters']['comp1']['z_second_curve_bld']
+            # x,y,z coordinates for the main blade first curve
+            self.x_second_curve_bld = Element['parameters']['comp1']['x_second_curve_bld']
+            self.y_second_curve_bld = Element['parameters']['comp1']['y_second_curve_bld']
+            self.z_second_curve_bld = Element['parameters']['comp1']['z_second_curve_bld']
 
-        # x,y,z coordinates for the splitter blade first curve
-        self.x_first_curve_split  = Element['parameters']['comp1']['x_first_curve_split']
-        self.y_first_curve_split  = Element['parameters']['comp1']['y_first_curve_split']
-        self.z_first_curve_split  = Element['parameters']['comp1']['z_first_curve_split']
+            # x,y,z coordinates for the splitter blade first curve
+            self.x_first_curve_split = Element['parameters']['comp1']['x_first_curve_split']
+            self.y_first_curve_split = Element['parameters']['comp1']['y_first_curve_split']
+            self.z_first_curve_split = Element['parameters']['comp1']['z_first_curve_split']
 
-        # x,y,z coordinates for the splitter blade second curve
-        self.x_second_curve_split = Element['parameters']['comp1']['x_second_curve_split']
-        self.y_second_curve_split = Element['parameters']['comp1']['y_second_curve_split']
-        self.z_second_curve_split = Element['parameters']['comp1']['z_second_curve_split']
+            # x,y,z coordinates for the splitter blade second curve
+            self.x_second_curve_split = Element['parameters']['comp1']['x_second_curve_split']
+            self.y_second_curve_split = Element['parameters']['comp1']['y_second_curve_split']
+            self.z_second_curve_split = Element['parameters']['comp1']['z_second_curve_split']
 
-        # Storing lists of non-planar blade curves
-        
-        curve_first_bld     = list(zip(self.x_first_curve_bld,self.y_first_curve_bld,self.z_first_curve_bld))
-        curve_second_bld    = list(zip(self.x_second_curve_bld,self.y_second_curve_bld,self.z_second_curve_bld))
-        
-        curve_first_split   = list(zip(self.x_first_curve_split,self.y_first_curve_split,self.z_first_curve_split))
-        curve_second_split  = list(zip(self.x_second_curve_split,self.y_second_curve_split,self.z_second_curve_split))
+            # Storing lists of non-planar blade curves
+            
+            curve_first_bld = list(zip(self.x_first_curve_bld,self.y_first_curve_bld,self.z_first_curve_bld))
+            curve_second_bld = list(zip(self.x_second_curve_bld,self.y_second_curve_bld,self.z_second_curve_bld))
+            
+            curve_first_split = list(zip(self.x_first_curve_split,self.y_first_curve_split,self.z_first_curve_split))
+            curve_second_split = list(zip(self.x_second_curve_split,self.y_second_curve_split,self.z_second_curve_split))
 
-        # Grouping the curve x,y,z coordinates in tuples   
-                
-        curve_bld     = [curve_first_bld,curve_second_bld]
-        curve_split   = [curve_first_split,curve_second_split]
+            # Grouping the curve x,y,z coordinates in tuples   
+                 
+            curve_bld = [curve_first_bld,curve_second_bld]
+            curve_split = [curve_first_split,curve_second_split]
 
-        return curve_bld, curve_split 
+            return curve_bld, curve_split 
