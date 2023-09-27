@@ -50,7 +50,7 @@ Use of Helper
 
 DesignTurbocompressor = HELPER()
 
-Element = DesignTurbocompressor.importpickle('Element_23_07_05_05gs')
+Element = DesignTurbocompressor.importpickle('JMD_case1\max_eta\Elementmax_eta')
 
 '''
 SGTB Construction
@@ -89,16 +89,16 @@ SGTB Construction
     - for saving as stl input 'stl' in the end
 '''
 start_time = time.time()
-DesignSGTB = SGTB()
+DesignSGTB = SGTB(DesignTurbocompressor)
 
 DesignSGTB.parameters(Element)
 # DesignSGTB.parameters_manual(Length,pos_SGTB,alpha_SGTB,beta_SGTB,gamma_SGTB,hg_SGTB,hr_SGTB,Ri_SGTB,Rg_SGTB,Ro_SGTB,L_SGTB)
 DesignSGTB.grooves(28)
 DesignSGTB.CAD('color')
 DesignSGTB.mirror()
-SGTBs = DesignSGTB.combined()
-SGTB_right = DesignSGTB.right()
-SGTB_left = DesignSGTB.left()
+SGTBs = DesignSGTB.combined('stl')
+SGTB_right = DesignSGTB.right('stl')
+SGTB_left = DesignSGTB.left('stl')
 end_time = time.time()
 print("SGTB Execution Time: ", np.round(end_time - start_time,2), "seconds")
 
@@ -136,16 +136,16 @@ Rotor Construction
 '''
 
 start_time = time.time()
-DesignRotor = ROTOR('Joseph') # ROTOR('Joseph') ROTOR()
+DesignRotor = ROTOR('Joseph', DesignTurbocompressor) # ROTOR('Joseph') ROTOR()
 
 DesignRotor.parameters(Element)
 # DesignRotor.parameters_manual(Length,DI1,DI2,DI3,DO1,DO2,DO3,pos_HGJB1,pos_HGJB2,alpha_HGJB,beta_HGJB,gamma_HGJB,hg_HGJB,hr_HGJB,elem_type1=types1,elem_type2=types2,elem_type3=types3)
-ROT = DesignRotor.CAD()
+ROT = DesignRotor.CAD('color')
 DesignRotor.HGJB()
 DesignRotor.HGJB_CAD(ROT)
 print('grooves done.')
 print('ROT',ROT)
-Rot = DesignRotor.assemble('color')
+Rot = DesignRotor.assemble('stl')
 print('rotor assembled.')
 end_time = time.time()
 print("ROTOR+HGJB Execution Time: ", np.round(end_time - start_time,2), "seconds")
@@ -197,7 +197,7 @@ Impeller Construction
 '''
 
 start_time = time.time()
-DesignImpeller = IMPELLER()
+DesignImpeller = IMPELLER(DesignTurbocompressor)
 DesignImpeller.parameters_impeller(Element)
 print('parameters_impeller.')
 
@@ -226,7 +226,7 @@ Splitterblades = DesignImpeller.rotate_blade(Splitterblade,'Splitter Blade')
 print('model_blades rotate_blade.')
 
 
-Compressor = DesignImpeller.assemble((Hub,Mainblades,Splitterblades))
+Compressor = DesignImpeller.assemble((Hub,Mainblades,Splitterblades), 'stl')
 print('impeller assemble.')
 end_time = time.time()
 print("COMP Execution Time: ", np.round(end_time - start_time,2), "seconds")
@@ -234,7 +234,7 @@ print("COMP Execution Time: ", np.round(end_time - start_time,2), "seconds")
 # show_object(Compressor, name = 'Compressor')
 
 start_time = time.time()
-DesignTurbocompressor.assemble((Rot,SGTBs,Hub,Mainblades,Splitterblades),'Turbocompressor')
+DesignTurbocompressor.assemble((Rot,SGTBs,Hub,Mainblades,Splitterblades),'Turbocompressor', 'stl')
 print('turbocompressor assemble.')
 end_time = time.time()
 print("Full ASSEMBLY Execution Time: ", np.round(end_time - start_time,2), "seconds")

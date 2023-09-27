@@ -3,9 +3,10 @@ import numpy as np
 import os
 
 class SGTB():
-    def __init__(self):
+    def __init__(self, helper_instance=None):
         self.n_grooves = 28
-        self.cwf = os.getcwd().replace("\\", "/")
+        self.cwf       = os.getcwd().replace("\\", "/")
+        self.helper    = helper_instance
 
     def parameters(self,Element):
         # Checks for information exists in the dictionary
@@ -20,7 +21,7 @@ class SGTB():
                     self.pos = np.int64(Element['sys_pos']['pos_sgtb'])
                     self.alpha = np.float64(Element['parameters']['sgtb']['alpha'])
                     self.beta = np.float64(Element['parameters']['sgtb']['beta'])
-                    self.beta = (np.pi*self.beta)/180 
+                    self.beta = -(np.pi*self.beta)/180  # minus sign added to revert the SGTB to be consistent with rotation of rotor
                     self.gamma = np.float64(Element['parameters']['sgtb']['gamma'])
                     self.hg = 1000*np.float64(Element['parameters']['sgtb']['hg'])
                     self.hr = 1000*np.float64(Element['parameters']['sgtb']['hr'])
@@ -43,7 +44,7 @@ class SGTB():
                 self.pos = np.int64(pos_SGTB)
                 self.alpha = np.float64(alpha_SGTB)
                 self.beta = np.float64(beta_SGTB)
-                self.beta = (np.pi*self.beta)/180
+                self.beta = -(np.pi*self.beta)/180 # minus sign added to revert the SGTB to be consistent with rotation of rotor
                 self.gamma = np.float64(gamma_SGTB)
                 self.hg = np.float64(hg_SGTB)
                 self.hr = np.float64(hr_SGTB)
@@ -187,12 +188,17 @@ class SGTB():
                 name='Left SGTB',color=cq.Color('gray50'))
             
         # Saves as stl if given in arguments
-        if 'stl' or 'STL' in settings:
-            cq.exporters.export(self.thrust_right, self.cwf + '/STL/SGTB Right.stl')
-            cq.exporters.export(self.thrust_left, self.cwf + '/STL/SGTB Left.stl')
+        #if 'stl' or 'STL' in settings:
+        #    cq.exporters.export(self.thrust_right, self.cwf + '/STL/SGTB Right.stl')
+        #    cq.exporters.export(self.thrust_left, self.cwf + '/STL/SGTB Left.stl')
         
         # Saves as step
         assembly.save(self.cwf  + '/STEP/SGTBs.step')
+
+        if 'stl' or 'STL' in settings:
+            #print(self.cwf + '/STEP/SGTBs')
+            #print(self.cwf + '/STL/SGTBs')
+            self.helper.convert_step_to_stl(self.cwf + '/STEP/SGTBs', self.cwf + '/STL/SGTBs')
 
         return assembly
 
@@ -207,11 +213,14 @@ class SGTB():
                 name='Right SGTB',color=cq.Color('gray50'))
         
         # Saves as stl if given in arguments
-        if 'stl' or 'STL' in settings:
-            cq.exporters.export(self.thrust_right, self.cwf + '/STL/SGTB Right.stl')
+        #if 'stl' or 'STL' in settings:
+        #    cq.exporters.export(self.thrust_right, self.cwf + '/STL/SGTB Right.stl')
         
         # Saves as step
         assembly.save(self.cwf  + '/STEP/SGTB Right.step')
+
+        if 'stl' or 'STL' in settings:
+            self.helper.convert_step_to_stl(self.cwf + '/STEP/SGTB Right', self.cwf + '/STL/SGTB Right')
 
         return assembly
     
@@ -226,10 +235,13 @@ class SGTB():
                 name='Left SGTB',color=cq.Color('gray50'))
         
         # Saves as stl if given in arguments
-        if 'stl' or 'STL' in settings:
-            cq.exporters.export(self.thrust_left, self.cwf + '/STL/SGTB Left.stl')
+        #if 'stl' or 'STL' in settings:
+        #    cq.exporters.export(self.thrust_left, self.cwf + '/STL/SGTB Left.stl')
        
         # Saves as step
         assembly.save(self.cwf  + '/STEP/SGTB Left.step')
+
+        if 'stl' or 'STL' in settings:
+            self.helper.convert_step_to_stl(self.cwf + '/STEP/SGTB Left', self.cwf + '/STL/SGTB Left')
 
         return assembly

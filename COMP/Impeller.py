@@ -11,9 +11,10 @@ import os
 class IMPELLER():
 
     # Defining the class constructor
-    def __init__(self):
+    def __init__(self, helper_instance=None):
         self.auto_Rrot = True
-        self.cwf = os.getcwd().replace("\\", "/")
+        self.cwf       = os.getcwd().replace("\\", "/")
+        self.helper    = helper_instance
 
     # Defining a method to extract the impeller parameters from the pickle file in mm
     def parameters_impeller(self,Element):     
@@ -526,10 +527,13 @@ class IMPELLER():
         for i in range(0,len(files)):
             assembly.add(files[i],name='Subassembly '+str(i+1))
 
-        if 'stl' or 'STL' in settings:
-            cq.exporters.export(assembly.toCompound(), self.cwf + '/STL/Compressor.stl')
+        #if 'stl' or 'STL' in settings:
+        #    cq.exporters.export(assembly.toCompound(), self.cwf + '/STL/Compressor.stl')
 
         assembly.save(self.cwf  + '/STEP/Compressor.step')
+
+        if 'stl' or 'STL' in settings:
+            self.helper.convert_step_to_stl(self.cwf + '/STEP/Compressor', self.cwf + '/STL/Compressor')
 
         return assembly
     

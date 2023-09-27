@@ -4,10 +4,11 @@ import os
 import cq_warehouse.extensions
 
 class ROTOR():
-    def __init__(self, method_hgjb='Tim'):
-        self.cwf = os.getcwd().replace("\\", "/")
-        self.method = 'Joseph'
+    def __init__(self, method_hgjb='Tim', helper_instance=None):
+        self.cwf         = os.getcwd().replace("\\", "/")
+        self.method      = 'Joseph'
         self.method_hgjb = method_hgjb
+        self.helper      = helper_instance
 
     def parameters(self,Element):
         # Checks for information exists in the dictionary
@@ -608,37 +609,42 @@ class ROTOR():
     def assemble(self,*settings):
        # Enters if the element types are not given correctly or not given
         if self.method == 'manual':
-            ROT = self.ROT
+            ROT = cq.importers.importStep(self.cwf + '/STEP/Rotor_Joseph.step') #self.ROT
             assembly = cq.Assembly(name = 'Turbocompressor Rotor')
             assembly.add(ROT, name = 'Rotor', color=cq.Color('gray50')) 
 
         else:
             PLUG = self.PLUG
-            ROT = self.ROT
+            ROT = cq.importers.importStep(self.cwf + '/STEP/Rotor_Joseph.step')
             MAG = self.MAG
             # Adds parts to assembly with our without color
             if 'color' in settings:
+                print('color wanted on rotor.')
                 assembly = cq.Assembly(name = 'Turbocompressor Rotor')
-                assembly.add(ROT, name = 'Rotor', color=cq.Color('green4'))
-                assembly.add(PLUG, name = 'Plug', color=cq.Color('blue3'))
-                assembly.add(MAG, name = 'Magnet', color=cq.Color('red3'))
+                assembly.add(ROT, name   = 'Rotor', color=cq.Color('green4'))
+                assembly.add(PLUG, name  = 'Plug', color=cq.Color('blue3'))
+                assembly.add(MAG, name   = 'Magnet', color=cq.Color('red3'))
             else:
                 assembly = cq.Assembly(name = 'Turbocompressor Rotor')
-                assembly.add(ROT, name = 'Rotor', color=cq.Color('gray50'))
+                assembly.add(ROT, name   = 'Rotor', color=cq.Color('gray50'))
                 print('assembly ROT')
-                assembly.add(PLUG, name = 'Plug', color=cq.Color('gray50'))
+                assembly.add(PLUG, name  = 'Plug', color=cq.Color('gray50'))
                 print('assembly PLUG')
-                assembly.add(MAG, name = 'Magnet', color=cq.Color('gray50'))
+                assembly.add(MAG, name   = 'Magnet', color=cq.Color('gray50'))
                 print('assembly MAG')
 
             # Saves as stl if given in arguments
-            if 'stl' or 'STL' in settings:
-                cq.exporters.export(ROT, self.cwf + '/STL/Rotor.stl')
-                cq.exporters.export(PLUG, self.cwf + '/STL/Plug.stl')
-                cq.exporters.export(MAG, self.cwf + '/STL/Magnet.stl')
+            #if 'stl' or 'STL' in settings:
+            #    cq.exporters.export(ROT, self.cwf + '/STL/Rotor.stl')
+            #    cq.exporters.export(PLUG, self.cwf + '/STL/Plug.stl')
+            #    cq.exporters.export(MAG, self.cwf + '/STL/Magnet.stl')
         
         # Saves as step
         assembly.save(self.cwf  + '/STEP/Rotor.step')
+        #cq.exporters.export(assembly, self.cwf  + '/STEP/Rotor.step', opt={"write_pcurves": False, "precision_mode": -1})
         print('assembly saved')
+
+        if 'stl' or 'STL' in settings:
+            self.helper.convert_step_to_stl(self.cwf + '/STEP/Rotor', self.cwf + '/STL/Rotor')
 
         return assembly
