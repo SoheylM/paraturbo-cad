@@ -502,7 +502,7 @@ class IMPELLER():
 
         return blade
 
-    
+    '''
     # Defining a method to pattern the blades
     def rotate_blade(self,blade,bladename):
 
@@ -517,7 +517,22 @@ class IMPELLER():
             assembly.add(blade[i+1],color=cq.Color('red3'), name = bladename + ' ' + str(i+2))
 
         return assembly
-    
+    '''
+    # Defining a method to pattern the blades
+    def rotate_blade(self, blade, bladename):
+
+        assembly = cq.Assembly(name=bladename)
+        assembly.add(blade[0], color=cq.Color('red3'), name=bladename + ' 1')
+
+        # Looping to model the blade pattern
+        for i in range(0, self.N_bld-1):
+        
+            # Rotating about the Z axis by the corresponding angle
+            # The rotation center is assumed to be (0, 0, 0) for simplicity
+            blade[i+1] = blade[i].rotate((0, 0, 0), (0, 0, 1), 360/self.N_bld)
+            assembly.add(blade[i+1], color=cq.Color('red3'), name=bladename + ' ' + str(i+2))
+
+        return assembly
     
     
     # Defining a method to combine the impeller components in a common assembly

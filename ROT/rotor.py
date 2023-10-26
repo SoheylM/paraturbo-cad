@@ -1,7 +1,7 @@
 import cadquery as cq
 import numpy as np
 import os
-import cq_warehouse.extensions
+# import cq_warehouse.extensions
 
 class ROTOR():
     def __init__(self, method_hgjb='Tim', helper_instance=None):
@@ -641,10 +641,15 @@ class ROTOR():
         
         # Saves as step
         assembly.save(self.cwf  + '/STEP/Rotor.step')
+        cq.exporters.export(PLUG, self.cwf + '/STEP/Plug.step')
+        cq.exporters.export(MAG, self.cwf + '/STEP/Magnet.step')
+        cq.exporters.export(ROT, self.cwf + '/STEP/Rotor_Single.step')
         #cq.exporters.export(assembly, self.cwf  + '/STEP/Rotor.step', opt={"write_pcurves": False, "precision_mode": -1})
         print('assembly saved')
 
         if 'stl' or 'STL' in settings:
-            self.helper.convert_step_to_stl(self.cwf + '/STEP/Rotor', self.cwf + '/STL/Rotor')
+            self.helper.convert_step_to_stl(self.cwf + '/STEP/Rotor_Single', self.cwf + '/STL/Rotor_Single')
+            self.helper.convert_step_to_stl(self.cwf + '/STEP/Plug', self.cwf + '/STL/Plug')
+            self.helper.convert_step_to_stl(self.cwf + '/STEP/Magnet', self.cwf + '/STL/Magnet')
 
         return assembly

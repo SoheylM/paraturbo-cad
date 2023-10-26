@@ -1,0 +1,12 @@
+cadquery==2.3.1
+git+https://github.com/JustinSDK/cqMore
+pandas
+PyQt5
+spyder
+pyqtgraph
+logbook
+git+https://github.com/CadQuery/CQ-editor.git
+trimesh
+gmsh
+scipy
+notebook

@@ -11,10 +11,10 @@ sys.path.append(cwf  + '/COMP')
 sys.path.append(cwf  + '/HGJB')
 
 from helper import HELPER
-from Rotor import ROTOR
+from rotor import ROTOR
 from sgtb import SGTB
 #from impeller_old_but_correct_cut import IMPELLER
-from Impeller import IMPELLER
+from impeller import IMPELLER
 
 t0 = time.time()
 
