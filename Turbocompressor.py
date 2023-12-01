@@ -209,7 +209,7 @@ print('parameters_impeller.')
 # To be used to only model the impeller independently
 # Imp.manualparams_impeller(Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot,'auto_rotor')
 
-Hub, Hub_solid = DesignImpeller.hub_v4()
+Hub, Hub_solid = DesignImpeller.hub_v5()
 print('hub.')
 
 # Coords_mainblades = Imp.blades_excel('coordinates_blade_python.xlsx')
@@ -232,7 +232,7 @@ Splitterblades, Splitterblades_solid_list = DesignImpeller.rotate_blade(Splitter
 print('model_blades rotate_blade.')
 
 
-Compressor = DesignImpeller.assemble_v7((Hub_solid,Mainblades_solid_list,Splitterblades_solid_list), 'stl')
+Compressor = DesignImpeller.assemble_v3((Hub_solid,Mainblades_solid_list,Splitterblades_solid_list), 'stl')
 print('impeller assemble.')
 end_time = time.time()
 print("COMP Execution Time: ", np.round(end_time - start_time,2), "seconds")

@@ -7,6 +7,7 @@ import pandas as pd
 #from cq_warehouse.extensions import *
 import os
 #from OCP.TopoDS import TopoDS_Shape 
+import time
 
 # Defining a class to model the impeller
 class IMPELLER():
@@ -588,6 +589,125 @@ class IMPELLER():
         # NO SPLIT
         hub = (self.sketch_hub
                 .revolve(360,(0,0,0),(1,0,0))
+                .translate((-abs(self.L_imp-self.shift),0,0))
+                .rotate((0,0,0),(0,1,0),-90)
+                .rotate((0,0,0),(0,0,1),90)) # a Workplane object
+        
+        #print('self.L_imp-self.shift',self.L_imp-self.shift)
+
+        assembly = cq.Assembly(name = 'Turbocompressor Hub')
+        assembly.add(hub,color=cq.Color('red3'), name = 'Hub')
+
+        return assembly, hub
+    
+    def hub_v5(self,*settings):
+
+        epsilon = 0.1 #mm
+
+        if 'section view' in settings:
+            bottom_hub = False
+        else:
+            bottom_hub = True
+
+
+        # Tolerance to control the smoothness of the hub profile
+        self.delta_x = self.b_6/3
+        #print('b_6',self.b_6)
+
+        n_z = 200
+        # Angle for ellipse description
+        alpha_hub = np.linspace(3 * np.pi / 2, 2 * np.pi, n_z, endpoint=False)
+        # Define z_hub
+        z_hub = lambda theta: self.r_2h + self.c * np.cos(theta)
+        # Define r_hub
+        r_hub = lambda theta: self.r_4 + self.d * np.sin(theta)
+
+        # Define the intervals
+        n_points_1 = round(self.r_2h / self.delta_x)
+        n_points_2 = round(self.c / self.delta_x)
+        n_points_3 = round(self.b_6 / self.delta_x)
+        n_points_4 = round((self.L_imp - self.r_2h - self.c - self.b_6) / self.delta_x)
+        n_points_5 = round((self.R_rot/3) / self.delta_x)
+
+        x_1 = np.linspace(0, self.r_2h, n_points_1, endpoint=False)
+        x_2 = z_hub(alpha_hub) #np.linspace(self.r_2h, self.r_2h + self.c, n_points_2, endpoint=False)
+        x_3 = np.linspace(self.r_2h + self.c, self.r_2h + self.c + self.b_6, n_points_3, endpoint=False)
+        x_4 = np.linspace(self.r_2h + self.c + self.b_6, self.L_imp, n_points_4, endpoint=False)
+        x_5 = np.linspace(self.L_imp, self.L_imp + self.R_rot/3, n_points_5, endpoint=True)
+
+        # Concatenate all x arrays
+        self.x_hub = np.concatenate((x_1, x_2, x_3, x_4, x_5))
+
+        # Apply the piecewise function
+        ##y_1 = np.sqrt(self.r_2h**2 - (x_1 - self.r_2h)**2)
+        y_1 = np.array([np.sqrt(self.r_2h**2 - (x_val - self.r_2h)**2) if (self.r_2h**2 - (x_val - self.r_2h)**2) >= 0 else 0 for x_val in x_1])+epsilon
+        ##y_2 = self.r_4 - np.sqrt(self.d**2 - (self.d**2/self.c**2)*(x_2 - self.r_2h)**2) 
+        y_2 = r_hub(alpha_hub)+epsilon #np.array([self.r_4 - np.sqrt(self.d**2 - (self.d**2/self.c**2)*(x_val - self.r_2h)**2) if (self.d**2 - (self.d**2/self.c**2)*(x_val - self.r_2h)**2) >= 0 else self.r_4 for x_val in x_2])
+        y_3 = np.full_like(x_3, self.r_4)+epsilon  # create an array filled with r_4 value
+        ##y_4 = self.r_4 - np.sqrt(self.f**2 - (self.f**2/self.e**2)*(x_4 - self.L_imp)**2)
+        y_4 = np.array([self.r_4 - np.sqrt(self.f**2 - (self.f**2/self.e**2)*(x_val - self.L_imp)**2) if (self.f**2 - (self.f**2/self.e**2)*(x_val - self.L_imp)**2) >= 0 else self.r_4 for x_val in x_4])+epsilon
+        y_5 = np.full_like(x_5, self.R_rot)+epsilon  # create an array filled with R_rot value
+
+
+        # Concatenate all y arrays
+        self.y_hub = np.concatenate((y_1, y_2, y_3, y_4, y_5))
+
+        print('self.x_hub',self.x_hub)
+        print('self.y_hub',self.y_hub)
+
+        # Initialize the three lists to mix spline and polyline
+        self.coords_hub_before_3_split1 = []
+        self.coords_hub_before_3_split2 = []
+        self.coords_hub_3 = []
+        self.coords_hub_after_3 = []
+
+        # Create tuple coordinates and segregate to respective parts
+        for i in range(len(self.x_hub)):
+            if self.x_hub[i] <= self.r_2h:
+                self.coords_hub_before_3_split1.append((self.x_hub[i], self.y_hub[i]))
+            elif self.r_2h < self.x_hub[i] <= self.r_2h + self.c :
+                self.coords_hub_before_3_split2.append((self.x_hub[i], self.y_hub[i]))
+            elif self.r_2h + self.c < self.x_hub[i] <= self.r_2h + self.c + self.b_6:
+                self.coords_hub_3.append((self.x_hub[i], self.y_hub[i]))
+            else:
+                self.coords_hub_after_3.append((self.x_hub[i], self.y_hub[i]))
+
+        print('self.coords_hub_before_3',self.coords_hub_before_3_split1)
+        print('self.coords_hub_before_3',self.coords_hub_before_3_split2)
+        print('self.coords_hub_3',self.coords_hub_3)
+        print('self.coords_hub_after_3',self.coords_hub_after_3)
+
+        tangent_12 = self.compute_tangent_between_splines(self.coords_hub_before_3_split1, self.coords_hub_before_3_split2)
+        # Create tangents list for the first spline
+        # All tangents are None except for the last one
+        tangents_first_spline = [None] * (len(self.coords_hub_before_3_split1) - 1) + [tangent_12]
+
+        # Tangents for the second spline
+        # The first tangent is the same as the last tangent of the first spline
+        tangents_second_spline = [tangent_12] + [None] * (len(self.coords_hub_before_3_split2))
+        
+        # Create the profile with spline and polyline
+        self.sketch_hub = (cq.Workplane("XY")
+            .spline(self.coords_hub_before_3_split1, tangents=tangents_first_spline, includeCurrent=False)
+            .spline(self.coords_hub_before_3_split2, tangents=tangents_second_spline, includeCurrent=True)
+            .polyline(self.coords_hub_3, includeCurrent=True)
+            .spline(self.coords_hub_after_3, includeCurrent=True)
+            .vLineTo(0+epsilon)
+            .close())
+
+
+
+        # Calculating the shift in the position of the true impeller model
+        self.shift = 0
+        for i in range(len(self.Laenge)):
+            if self.elem_type1[i]=='COMP1' or self.elem_type2[i]=='COMP1' or self.elem_type3[i]=='COMP1':
+                self.shift += self.Laenge[i]
+
+        # Revolving the sketch about the rotation axis
+        # NO SPLIT
+        hub = (self.sketch_hub
+                .revolve(180,(0,0,0),(1,0,0))
+                .mirror("XY", union=True)
                 .translate((-abs(self.L_imp-self.shift),0,0))
                 .rotate((0,0,0),(0,1,0),-90)
                 .rotate((0,0,0),(0,0,1),90)) # a Workplane object
@@ -1258,6 +1378,8 @@ class IMPELLER():
         assembly.add(hub_solid, name='Combined Impeller')
 
         assembly.save(self.cwf  + '/STEP/Compressor.step')
+        print('Pausing 5 seconds for writing Comrpessor STEP.')
+        time.sleep(5)
 
         if 'stl' or 'STL' in settings:
             self.helper.convert_step_to_stl(self.cwf + '/STEP/Compressor', self.cwf + '/STL/Compressor')
@@ -1349,7 +1471,9 @@ class IMPELLER():
         assembly.add(blade_solids, name='blade_solids')
         assembly.add(splitter_blade_solids, name='splitter_blade_solids')
 
-        assembly.save(self.cwf  + '/STEP/Compressor.step', mode="fused", glue=True, write_pcurves=False)
+        assembly.save(self.cwf  + '/STEP/Compressor.step', mode="fused", clean = True, glue=False, write_pcurves=False)
+        print('Pausing 5 seconds for writing Comrpessor STEP.')
+        time.sleep(5)
 
         if 'stl' or 'STL' in settings:
             self.helper.convert_step_to_stl(self.cwf + '/STEP/Compressor', self.cwf + '/STL/Compressor')
@@ -1391,6 +1515,8 @@ class IMPELLER():
         assembly.add(hub_solid, name='Combined Impeller')
 
         assembly.save(self.cwf  + '/STEP/Compressor.step')
+        print('Pausing 5 seconds for writing Comrpessor STEP.')
+        time.sleep(5)
 
         if 'stl' or 'STL' in settings:
             self.helper.convert_step_to_stl(self.cwf + '/STEP/Compressor', self.cwf + '/STL/Compressor')
