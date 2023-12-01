@@ -14,7 +14,7 @@ from helper import HELPER
 from rotor import ROTOR
 from sgtb import SGTB
 #from impeller_old_but_correct_cut import IMPELLER
-from impeller import IMPELLER
+from Impeller import IMPELLER
 
 t0 = time.time()
 
@@ -88,6 +88,8 @@ SGTB Construction
     - should be used together with .mirror
     - for saving as stl input 'stl' in the end
 '''
+# COMMENTED
+"""
 start_time = time.time()
 DesignSGTB = SGTB(DesignTurbocompressor)
 
@@ -101,6 +103,7 @@ SGTB_right = DesignSGTB.right('stl')
 SGTB_left = DesignSGTB.left('stl')
 end_time = time.time()
 print("SGTB Execution Time: ", np.round(end_time - start_time,2), "seconds")
+"""
 
 # show_object(SGTBs, name='SGTBs')
 # show_object(SGTB_right, name='SGTB Right')
@@ -134,7 +137,8 @@ Rotor Construction
     - for color input 'color' in the end
     - for saving as stl input 'stl' in the end
 '''
-
+# COMMENTED
+"""
 start_time = time.time()
 DesignRotor = ROTOR('Joseph', DesignTurbocompressor) # ROTOR('Joseph') ROTOR()
 
@@ -149,6 +153,7 @@ Rot = DesignRotor.assemble('stl')
 print('rotor assembled.')
 end_time = time.time()
 print("ROTOR+HGJB Execution Time: ", np.round(end_time - start_time,2), "seconds")
+"""
 
 # show_object(Rot, name='Rotor')
 
@@ -204,7 +209,7 @@ print('parameters_impeller.')
 # To be used to only model the impeller independently
 # Imp.manualparams_impeller(Element,r_4,r_2s,beta_4,b_4,r_1,r_2h,r_5,e_bld,e_tip,e_back,L_ind,beta_2,beta_2s,N_bld,R_rot,'auto_rotor')
 
-Hub = DesignImpeller.hub()
+Hub, Hub_solid = DesignImpeller.hub_v4()
 print('hub.')
 
 # Coords_mainblades = Imp.blades_excel('coordinates_blade_python.xlsx')
@@ -212,27 +217,30 @@ print('hub.')
 
 Coords_mainblades, Coords_splitterblades = DesignImpeller.blades_coords(Element)
 print('blades_coords.')
+#print('Coords_mainblades',Coords_mainblades)
 
-Mainblade = DesignImpeller.model_blades(Coords_mainblades)
+Mainblade = DesignImpeller.model_blades_v8(Coords_mainblades)
 #Mainblade = DesignImpeller.trim_blades_old(Mainblade) # bugged
-Mainblades = DesignImpeller.rotate_blade(Mainblade,'Main Blade')
+Mainblades, Mainblades_solid_list = DesignImpeller.rotate_blade(Mainblade,'Main Blade')
 
 print('model_blades rotate_blade.')
 
-Splitterblade = DesignImpeller.model_blades(Coords_splitterblades)
+Splitterblade = DesignImpeller.model_blades_v8(Coords_splitterblades)
 #Splitterblade = DesignImpeller.trim_blades_old(Splitterblade) #bugged
-Splitterblades = DesignImpeller.rotate_blade(Splitterblade,'Splitter Blade')
+Splitterblades, Splitterblades_solid_list = DesignImpeller.rotate_blade(Splitterblade,'Splitter Blade')
 
 print('model_blades rotate_blade.')
 
 
-Compressor = DesignImpeller.assemble((Hub,Mainblades,Splitterblades), 'stl')
+Compressor = DesignImpeller.assemble_v7((Hub_solid,Mainblades_solid_list,Splitterblades_solid_list), 'stl')
 print('impeller assemble.')
 end_time = time.time()
 print("COMP Execution Time: ", np.round(end_time - start_time,2), "seconds")
 
 # show_object(Compressor, name = 'Compressor')
 
+# COMMENTED
+"""
 start_time = time.time()
 DesignTurbocompressor.assemble((Rot,SGTBs,Hub,Mainblades,Splitterblades),'Turbocompressor', 'stl')
 print('turbocompressor assemble.')
@@ -240,3 +248,4 @@ end_time = time.time()
 print("Full ASSEMBLY Execution Time: ", np.round(end_time - start_time,2), "seconds")
 
 print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')
+"""
