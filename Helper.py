@@ -33,11 +33,21 @@ class HELPER():
 
         if gmsh_args is None:
             num_threads = os.cpu_count() or 1  # Get the number of CPUs, default to 1 if unable to detect
+            """
             gmsh_args = [
                 ("Mesh.Algorithm", 1),  # Different algorithm types
                 ("Mesh.CharacteristicLengthFromCurvature", 50),  # Tuning the smoothness
                 ("General.NumThreads", num_threads),  # Multithreading capability
                 ("Mesh.MinimumCirclePoints", 50)
+            ]
+            """
+            gmsh_args = [
+                ("Mesh.Algorithm", 1),  # Try a different algorithm that may be more suitable for your geometry
+                ("Mesh.CharacteristicLengthFromCurvature", 100),  # Less sensitivity to curvature
+                ("Mesh.CharacteristicLengthMin", 0.1),  # Minimum mesh size
+                ("Mesh.CharacteristicLengthMax", 20),  # Maximum mesh size
+                ("General.NumThreads", num_threads),  # Multithreading capability
+                ("Mesh.MinimumCirclePoints", 20)  # Fewer points for circles if high precision is not needed
             ]
 
         mesh = trimesh.Trimesh(**trimesh.interfaces.gmsh.load_gmsh(
