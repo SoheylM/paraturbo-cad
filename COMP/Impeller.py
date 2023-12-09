@@ -885,8 +885,8 @@ class IMPELLER():
         y_2 = r_hub(alpha_hub)+epsilon #np.array([self.r_4 - np.sqrt(self.d**2 - (self.d**2/self.c**2)*(x_val - self.r_2h)**2) if (self.d**2 - (self.d**2/self.c**2)*(x_val - self.r_2h)**2) >= 0 else self.r_4 for x_val in x_2])
         y_3 = np.full_like(x_3, self.r_4)+epsilon  # create an array filled with r_4 value
         ##y_4 = self.r_4 - np.sqrt(self.f**2 - (self.f**2/self.e**2)*(x_4 - self.L_imp)**2)
-        y_4 = np.array([self.r_4 - np.sqrt(self.f**2 - (self.f**2/self.e**2)*(x_val - self.L_imp)**2) if (self.f**2 - (self.f**2/self.e**2)*(x_val - self.L_imp)**2) >= 0 else self.r_4 for x_val in x_4])+epsilon
-        y_5 = np.full_like(x_5, self.R_rot)+epsilon  # create an array filled with R_rot value
+        y_4 = np.array([self.r_4 - np.sqrt(self.f**2 - (self.f**2/self.e**2)*(x_val - self.L_imp)**2) if (self.f**2 - (self.f**2/self.e**2)*(x_val - self.L_imp)**2) >= 0 else self.r_4 for x_val in x_4])#+epsilon
+        y_5 = np.full_like(x_5, self.R_rot)#+epsilon  # create an array filled with R_rot value
 
 
         # Concatenate all y arrays
