@@ -844,6 +844,14 @@ class IMPELLER():
 
         epsilon = 0.05*(self.r_2h/(2.582-0.05))
 
+        # Catch too small
+        if epsilon<0.05*(2.582/(2.582-0.05)):
+            epsilon = 0.05*(2.582/(2.582-0.05))*1.15 #mm
+        
+        # Catch too big (not sure the impeller will model though)
+        if epsilon>0.5*self.r_2h:
+            epsilon=0.5*self.r_2h
+
         if 'section view' in settings:
             bottom_hub = False
         else:
@@ -2264,7 +2272,8 @@ class IMPELLER():
         # Move the cylinder up so that it starts where the hemisphere ends
         cylinder = cylinder.translate((0, 0, -(self.L_imp + self.R_rot/3))).val()
 
-        hub_solid = hub_solid.intersect(cylinder,clean=True, tol=1e-2)
+        #hub_solid = hub_solid.intersect(cylinder,clean=True, tol=1e-2)
+        hub_solid = hub_solid.intersect(cylinder,clean=True)
 
 
         """
