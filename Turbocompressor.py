@@ -50,7 +50,7 @@ Use of Helper
 
 DesignTurbocompressor = HELPER()
 
-Element = DesignTurbocompressor.importpickle('JMD_case2\max_eta\Elementmax_eta')
+Element = DesignTurbocompressor.importpickle('JMD_case4\max_tradeoff\Elementmax_tradeoff')
 
 '''
 SGTB Construction
@@ -89,7 +89,7 @@ SGTB Construction
     - for saving as stl input 'stl' in the end
 '''
 # COMMENTED
-
+"""
 start_time = time.time()
 DesignSGTB = SGTB(DesignTurbocompressor)
 
@@ -103,7 +103,7 @@ SGTB_right = DesignSGTB.right('stl')
 SGTB_left = DesignSGTB.left('stl')
 end_time = time.time()
 print("SGTB Execution Time: ", np.round(end_time - start_time,2), "seconds")
-
+"""
 
 # show_object(SGTBs, name='SGTBs')
 # show_object(SGTB_right, name='SGTB Right')
@@ -138,7 +138,7 @@ Rotor Construction
     - for saving as stl input 'stl' in the end
 '''
 # COMMENTED
-
+"""
 start_time = time.time()
 DesignRotor = ROTOR('Joseph', DesignTurbocompressor) # ROTOR('Joseph') ROTOR()
 
@@ -153,7 +153,7 @@ Rot = DesignRotor.assemble('stl')
 print('rotor assembled.')
 end_time = time.time()
 print("ROTOR+HGJB Execution Time: ", np.round(end_time - start_time,2), "seconds")
-
+"""
 
 # show_object(Rot, name='Rotor')
 
@@ -240,7 +240,7 @@ print("COMP Execution Time: ", np.round(end_time - start_time,2), "seconds")
 # show_object(Compressor, name = 'Compressor')
 
 # COMMENTED
-
+"""
 start_time = time.time()
 #DesignTurbocompressor.assemble((Rot,SGTBs,Hub,Mainblades,Splitterblades),'Turbocompressor', 'stl')
 DesignTurbocompressor.assemble((Rot,SGTBs,Compressor),'Turbocompressor', 'stl')
@@ -249,3 +249,4 @@ end_time = time.time()
 print("Full ASSEMBLY Execution Time: ", np.round(end_time - start_time,2), "seconds")
 
 print('Time: ' + str(np.round((time.time()-t0),2)) + ' seconds')
+"""
