@@ -6,12 +6,16 @@ import trimesh
 import time
 
 class HELPER():
-    def __init__(self):
-        self.cwf = os.getcwd().replace("\\", "/")
+    def __init__(self, base_path=None):
+        if base_path is None:
+            self.cwf = os.getcwd().replace("\\", "/") + '/../paraturbo-cad/'
+        else:
+            self.cwf = base_path.replace("\\", "/")  # Ensure it's always in the correct format
+        #self.cwf = os.getcwd().replace("\\", "/") + '/../paraturbo-cad/'
 
     def importpickle(self,filename):
         # Importing pickle file and closing the file
-        file = open(self.cwf  + '/ELEMENT/' + filename + '.pickle', 'rb')
+        file = open(self.cwf  + filename + '.pickle', 'rb')
         Element = pickle.load(file)
         file.close
 
@@ -24,8 +28,8 @@ class HELPER():
             assembly.add(files[i],name='Subassembly '+str(i+1))
 
         assembly.save(self.cwf  + '/STEP/' + filename + '.step')
-        print('Pausing 5 seconds for writing '+ filename +' STEP.')
-        time.sleep(5)
+        print('Pausing 18 seconds for writing '+ filename +' STEP.')
+        time.sleep(18)
         #cq.exporters.export(assembly.toCompound(), self.cwf + '/STL/Turbocompressor.stl')
         if 'stl' or 'STL' in settings:
             self.convert_step_to_stl(self.cwf + '/STEP/Turbocompressor', self.cwf + '/STL/Turbocompressor')
@@ -36,21 +40,11 @@ class HELPER():
 
         if gmsh_args is None:
             num_threads = os.cpu_count() or 1  # Get the number of CPUs, default to 1 if unable to detect
-            """
             gmsh_args = [
                 ("Mesh.Algorithm", 1),  # Different algorithm types
                 ("Mesh.CharacteristicLengthFromCurvature", 50),  # Tuning the smoothness
                 ("General.NumThreads", num_threads),  # Multithreading capability
                 ("Mesh.MinimumCirclePoints", 50)
-            ]
-            """
-            gmsh_args = [
-                ("Mesh.Algorithm", 1),  # Try a different algorithm that may be more suitable for your geometry
-                ("Mesh.CharacteristicLengthFromCurvature", 100),  # Less sensitivity to curvature
-                ("Mesh.CharacteristicLengthMin", 0.1),  # Minimum mesh size
-                ("Mesh.CharacteristicLengthMax", 20),  # Maximum mesh size
-                ("General.NumThreads", num_threads),  # Multithreading capability
-                ("Mesh.MinimumCirclePoints", 20)  # Fewer points for circles if high precision is not needed
             ]
 
         mesh = trimesh.Trimesh(**trimesh.interfaces.gmsh.load_gmsh(

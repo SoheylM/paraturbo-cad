@@ -1,11 +1,16 @@
 import cadquery as cq
 import numpy as np
 import os
+import time
 
 class SGTB():
-    def __init__(self, helper_instance=None):
+    def __init__(self, helper_instance=None, base_path=None):
         self.n_grooves = 28
-        self.cwf       = os.getcwd().replace("\\", "/")
+        if base_path is None:
+            self.cwf = os.getcwd().replace("\\", "/") + '/../paraturbo-cad/'
+        else:
+            self.cwf = base_path.replace("\\", "/")  # Ensure it's always in the correct format
+        #self.cwf       = os.getcwd().replace("\\", "/") + '/../paraturbo-cad/'
         self.helper    = helper_instance
 
     def parameters(self,Element):
@@ -194,6 +199,7 @@ class SGTB():
         
         # Saves as step
         assembly.save(self.cwf  + '/STEP/SGTBs.step')
+        time.sleep(1)
 
         if 'stl' or 'STL' in settings:
             #print(self.cwf + '/STEP/SGTBs')
@@ -218,6 +224,7 @@ class SGTB():
         
         # Saves as step
         assembly.save(self.cwf  + '/STEP/SGTB Right.step')
+        time.sleep(5)
 
         if 'stl' or 'STL' in settings:
             self.helper.convert_step_to_stl(self.cwf + '/STEP/SGTB Right', self.cwf + '/STL/SGTB Right')
@@ -240,6 +247,7 @@ class SGTB():
        
         # Saves as step
         assembly.save(self.cwf  + '/STEP/SGTB Left.step')
+        time.sleep(5)
 
         if 'stl' or 'STL' in settings:
             self.helper.convert_step_to_stl(self.cwf + '/STEP/SGTB Left', self.cwf + '/STL/SGTB Left')

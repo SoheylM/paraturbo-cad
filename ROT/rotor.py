@@ -1,11 +1,16 @@
 import cadquery as cq
 import numpy as np
 import os
+import time
 # import cq_warehouse.extensions
 
 class ROTOR():
-    def __init__(self, method_hgjb='Tim', helper_instance=None):
-        self.cwf         = os.getcwd().replace("\\", "/")
+    def __init__(self, method_hgjb='Joseph', helper_instance=None, base_path=None):
+        if base_path is None:
+            self.cwf = os.getcwd().replace("\\", "/") + '/../paraturbo-cad/'
+        else:
+            self.cwf = base_path.replace("\\", "/")  # Ensure it's always in the correct format
+        #self.cwf         = os.getcwd().replace("\\", "/") + '/../paraturbo-cad/'
         self.method      = 'Joseph'
         self.method_hgjb = method_hgjb
         self.helper      = helper_instance
@@ -36,30 +41,46 @@ class ROTOR():
                         self.alpha_HG = [np.float64(Element['parameters']['hgjb1']['alpha']) , np.float64(Element['parameters']['hgjb2']['alpha'])]
                         self.beta_HG1 = np.float64(Element['parameters']['hgjb1']['beta'])
                         self.beta_HG2 = np.float64(Element['parameters']['hgjb2']['beta'])
+                        self.beta_HG_deg = [(self.beta_HG1) , (self.beta_HG2)]
                         self.beta_HG = [(self.beta_HG1*np.pi)/180 , (self.beta_HG2*np.pi)/180]
                         self.gamma_HG = [np.float64(Element['parameters']['hgjb1']['gamma']) , np.float64(Element['parameters']['hgjb2']['gamma'])]
                         self.h_gr = [np.float64(Element['parameters']['hgjb1']['hg']) , np.float64(Element['parameters']['hgjb2']['hg'])]
                         self.h_rr = [np.float64(Element['parameters']['hgjb1']['hr']) , np.float64(Element['parameters']['hgjb2']['hr'])]
 
                         if self.method_hgjb == 'Joseph':
+
+                            # Create the groove geometry
+                            self.groove_parametrization_function()
+
                             # Extract grooves coordinates
-                            n_coord = len(Element['parameters']['hgjb2']['x_first_curve'])
-                            inner_1 = Element['parameters']['hgjb2']['x_first_curve'][0:n_coord//4]
-                            inner_2 = Element['parameters']['hgjb2']['y_first_curve'][0:n_coord//4]
-                            inner_3 = Element['parameters']['hgjb2']['z_first_curve'][0:n_coord//4]
+                            n_coord = len(self.x_first_curve) #len(Element['parameters']['hgjb2']['x_first_curve'])
+                            inner_1 = self.x_first_curve[0:n_coord//4] #Element['parameters']['hgjb2']['x_first_curve'][0:n_coord//4]
+                            print('inner_1',inner_1)
+                            print("Element['parameters']['hgjb2']['x_first_curve'][0:n_coord//4]",Element['parameters']['hgjb2']['x_first_curve'][0:n_coord//4])
+                            inner_2 = self.y_first_curve[0:n_coord//4] #Element['parameters']['hgjb2']['y_first_curve'][0:n_coord//4]
+                            inner_3 = self.z_first_curve[0:n_coord//4] #Element['parameters']['hgjb2']['z_first_curve'][0:n_coord//4]
                             inner1 = list(zip(inner_1,inner_2,inner_3))
                             self.inner1 = inner1
+                            ##assert np.array_equal(n_coord, len(Element['parameters']['hgjb2']['x_first_curve'])), "Mismatch in length of x_first_curve"
+                            ##assert np.array_equal(inner_1, Element['parameters']['hgjb2']['x_first_curve'][0:n_coord//4]), "Mismatch in inner_1"
+                            ##assert np.array_equal(inner_2, Element['parameters']['hgjb2']['y_first_curve'][0:n_coord//4]), "Mismatch in inner_2"
+                            ##assert np.array_equal(inner_3, Element['parameters']['hgjb2']['z_first_curve'][0:n_coord//4]), "Mismatch in inner_3"
 
-                            inner_11 = Element['parameters']['hgjb2']['x_first_curve'][3*n_coord//4:]
-                            inner_21 = Element['parameters']['hgjb2']['y_first_curve'][3*n_coord//4:]
-                            inner_31 = Element['parameters']['hgjb2']['z_first_curve'][3*n_coord//4:]
+                            # Extract grooves coordinates
+                            inner_11 = self.x_first_curve[3*n_coord//4:] #Element['parameters']['hgjb2']['x_first_curve'][3*n_coord//4:]
+                            inner_21 = self.y_first_curve[3*n_coord//4:] #Element['parameters']['hgjb2']['y_first_curve'][3*n_coord//4:]
+                            inner_31 = self.z_first_curve[3*n_coord//4:] #Element['parameters']['hgjb2']['z_first_curve'][3*n_coord//4:]
                             inner11 = list(zip(inner_11,inner_21,inner_31))
                             inner11.reverse()
                             self.inner11 = inner11
+                            ##assert np.array_equal(inner_11, Element['parameters']['hgjb2']['x_first_curve'][3*n_coord//4:]), "Mismatch in inner_11"
+                            ##assert np.array_equal(inner_21, Element['parameters']['hgjb2']['y_first_curve'][3*n_coord//4:]), "Mismatch in inner_21"
+                            ##assert np.array_equal(inner_31, Element['parameters']['hgjb2']['z_first_curve'][3*n_coord//4:]), "Mismatch in inner_31"
 
                             # Extracting bottom groove surface points
-                            P2 = Element['parameters']['hgjb2']['P2_second_surface']
+                            P2 = self.P2_second_surface #Element['parameters']['hgjb2']['P2_second_surface']
                             self.bottom_groove_surf = P2 #[[cq.Vector(P2[i, j, 0], P2[i, j, 1], P2[i, j, 2]) for j in range(P2.shape[1])] for i in range(P2.shape[0])]
+                            ##assert np.array_equal(P2, Element['parameters']['hgjb2']['P2_second_surface']), "Mismatch in P2"
 
                             # Calculating the shift in the position of the true impeller model
                             self.shift = 0
@@ -171,8 +192,8 @@ class ROTOR():
                     self.pos_hgjb1 = np.int64(pos_HGJB1)
                     self.pos_hgjb2 = np.int64(pos_HGJB2)
                     self.alpha_HG = [np.float64(alpha_HGJB)]
-                    self.beta_HG = np.float64(beta_HGJB)
-                    self.beta_HG = [(np.pi*self.beta_HG)/180]
+                    self.beta_HG_deg = np.float64(beta_HGJB)
+                    self.beta_HG = [(np.pi*np.float64(beta_HGJB))/180]
                     self.gamma_HG = [np.float64(gamma_HGJB)]
                     self.h_gr = [np.float64(hg_HGJB)]
                     self.h_rr = [np.float64(hr_HGJB)]
@@ -180,6 +201,130 @@ class ROTOR():
                     raise ValueError('ROTOR.parameters_manual: Size of the given lists are not equal.')
         else:
             raise TypeError('ROTOR.parameters_manual: The type of the given variables are not suitable.')
+
+    def groove_parametrization_function(self, *args):
+        # Implemented assuming similar HGJB radial bearings
+        # You will have to modify if hgjb1 != hgjb2 in parameters
+
+        alpha_HG  = self.alpha_HG[0]
+        beta_HG   = self.beta_HG_deg[0]
+        hg_HG     = self.h_gr[0]
+        D         = self.DO3[self.pos_hgjb1]/1000 # get back to m for this method
+        gamma     = self.gamma_HG[0]
+
+        # all ok
+        print('alpha_HG',alpha_HG)
+        print('beta_HG',beta_HG)
+        print('hg_HG',hg_HG)
+        print('D',D)
+        print('gamma',gamma)
+
+
+        # Calculate dependent variables
+        L = ((self.length[self.pos_hgjb1])/2)/1000 # extended by 1mm to prevent suffocation, half bearing here, converted to m ;)
+        print('L',L)
+        L_g = gamma * L
+        L_land = L - L_g
+
+        # Parameters
+        N_HG = 28  # number of grooves
+        beta_HG = beta_HG * np.pi / 180
+
+        # Calculation for CAD
+        Spiral_step = np.pi * D * np.tan(beta_HG)
+        a_HG = (np.pi * D * alpha_HG) / N_HG
+
+        # Example geometry for V grooves
+        beta = beta_HG
+        theta = beta - np.pi / 2
+        D_g = L_g * np.tan(theta) # this is the spiral step
+        a_g = a_HG
+
+        # Define parallelogram vertices
+        v1 = np.array([0, L_land, 0])
+        v2 = np.array([-D_g, L_g + L_land, 0])
+        v4 = np.array([-a_g, L_land, 0])
+
+        # Define bending parameters
+        xmin = -Spiral_step / 2
+        xmax = Spiral_step / 2
+        Rc = D / 2
+        zmaxc = L
+        zminc = -L
+        N_mesh = 100 #10 * int(np.ceil(Rc / 5))
+        angle_covered = 2 * np.pi * Spiral_step / (np.pi * D)
+
+        # Create parallelogram surface
+        X, Y = np.meshgrid(np.linspace(0, 1, N_mesh), np.linspace(0, 1, N_mesh))
+        P = np.tile(v1, (X.size, 1)) + np.outer(X.flatten(), v2 - v1) + np.outer(Y.flatten(), v4 - v1)
+        P = P.reshape(X.shape[0], X.shape[1], 3)
+
+        # Do the bending
+        Z2 = P[:, :, 1]
+        X1 = P[:, :, 0]
+        phi = (X1 - xmin) / (xmax - xmin) * angle_covered
+        X2 = Rc * np.cos(phi)
+        Y2 = Rc * np.sin(phi)
+
+        # Plot cylinder
+        u = np.linspace(0, 2 * np.pi, 100)
+        v = np.linspace(zminc, zmaxc, 100)
+        x = Rc * np.outer(np.cos(u), np.ones_like(v))
+        y = Rc * np.outer(np.sin(u), np.ones_like(v))
+        z = np.outer(np.ones_like(u), v)
+
+        # Plot bent parallelogram
+        P2 = np.dstack((X2, Y2, Z2))
+
+        # Extract the edge points
+        edge1 = P2[0, :, :]  # First row
+        edge2 = P2[-1, :, :]  # Last row
+        edge3 = P2[:, 0, :]  # First column
+        edge4 = P2[:, -1, :]  # Last column
+
+        # Concatenate all edge points into one matrix for easy plotting
+        allEdgePoints = np.vstack((edge1, edge4, edge2[::-1], edge3[::-1]))
+
+        # Scale parallelogram to new radius
+        Rc_new = Rc - hg_HG
+        print('hg_HG',hg_HG)
+        print('Rc_new',Rc_new)
+        print('Rc',Rc)
+        scale_factor = Rc_new / Rc
+        P2_new = P2.copy()
+        P2_new[:, :, 0] = P2_new[:, :, 0] * scale_factor
+        P2_new[:, :, 1] = P2_new[:, :, 1] * scale_factor
+
+        # Extract the edge points
+        # food please
+        edge1_new = P2_new[0, :, :]  # First row
+        edge2_new = P2_new[-1, :, :]  # Last row
+        edge3_new = P2_new[:, 0, :]  # First column
+        edge4_new = P2_new[:, -1, :]  # Last column
+
+        # Concatenate all edge points into one matrix for easy plotting
+        allEdgePoints_new = np.vstack((edge1_new, edge4_new, edge2_new[::-1], edge3_new[::-1]))
+        
+        # Gathering the coordinates for first (at ridge) and second (at bottom of groove) curves
+        self.x_first_curve = allEdgePoints[:, 0]*1000 #to convert in mm
+        self.y_first_curve = allEdgePoints[:, 1]*1000
+        self.z_first_curve = allEdgePoints[:, 2]*1000
+
+        self.x_first_surface     = 1000*P2[:, :, 0].ravel()
+        self.y_first_surface     = 1000*P2[:, :, 1].ravel()
+        self.z_first_surface     = 1000*P2[:, :, 2].ravel()
+
+        self.P2_first_surface      = 1000*P2
+
+        self.x_second_curve = allEdgePoints_new[:, 0]*1000 #to convert in mm
+        self.y_second_curve = allEdgePoints_new[:, 1]*1000
+        self.z_second_curve = allEdgePoints_new[:, 2]*1000
+
+        self.x_second_surface    = 1000*P2_new[:, :, 0].ravel()
+        self.y_second_surface    = 1000*P2_new[:, :, 1].ravel()
+        self.z_second_surface    = 1000*P2_new[:, :, 2].ravel()
+
+        self.P2_second_surface  = 1000*P2_new
         
     def CAD(self,*settings):
         # Checking for section view in arguments
@@ -551,7 +696,7 @@ class ROTOR():
             m = rotationZ(angle_step)
 
             # Now you can use these with splineApproxSurface
-            thickness = 2*1000*self.h_gr[0] #*1000 to convert to base mm #0.1  # example value for thickness, adjust as needed
+            thickness = 2*1000*self.h_gr[0]  # example value for thickness, adjust as needed
 
             # Convert transformed points to 2D list of Vector objects            
             points_hgjb1_half1 = [[cq.Vector(*hgjb1_half1[i * P2.shape[1] + j]) for j in range(P2.shape[1])] for i in range(P2.shape[0])]
@@ -603,6 +748,7 @@ class ROTOR():
 
             # Testing export
             cq.exporters.export(rotor,self.cwf  + '/STEP/Rotor_Joseph.step', opt={"write_pcurves": False, "precision_mode": -1})
+            time.sleep(5)
 
         #self.ROT = rotor
         
@@ -644,12 +790,15 @@ class ROTOR():
         cq.exporters.export(PLUG, self.cwf + '/STEP/Plug.step')
         cq.exporters.export(MAG, self.cwf + '/STEP/Magnet.step')
         cq.exporters.export(ROT, self.cwf + '/STEP/Rotor_Single.step')
+        time.sleep(5)
         #cq.exporters.export(assembly, self.cwf  + '/STEP/Rotor.step', opt={"write_pcurves": False, "precision_mode": -1})
         print('assembly saved')
 
         if 'stl' or 'STL' in settings:
-            self.helper.convert_step_to_stl(self.cwf + '/STEP/Rotor_Single', self.cwf + '/STL/Rotor_Single')
             self.helper.convert_step_to_stl(self.cwf + '/STEP/Plug', self.cwf + '/STL/Plug')
             self.helper.convert_step_to_stl(self.cwf + '/STEP/Magnet', self.cwf + '/STL/Magnet')
+            self.helper.convert_step_to_stl(self.cwf + '/STEP/Rotor_Single', self.cwf + '/STL/Rotor_Single')
+            
+            
 
         return assembly
