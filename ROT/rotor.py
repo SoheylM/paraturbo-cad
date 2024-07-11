@@ -696,7 +696,11 @@ class ROTOR():
             m = rotationZ(angle_step)
 
             # Now you can use these with splineApproxSurface
+<<<<<<< HEAD
             thickness = 2*1000*self.h_gr[0]  # example value for thickness, adjust as needed
+=======
+            thickness = 2*1000*self.h_gr[0] #*1000 to convert to base mm #0.1  # example value for thickness, adjust as needed
+>>>>>>> e0e5dc50d3161159e294d49eb90f7885f9d152e4
 
             # Convert transformed points to 2D list of Vector objects            
             points_hgjb1_half1 = [[cq.Vector(*hgjb1_half1[i * P2.shape[1] + j]) for j in range(P2.shape[1])] for i in range(P2.shape[0])]
