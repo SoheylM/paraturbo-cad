@@ -3,6 +3,7 @@ import numpy as np
 import os
 import pickle
 import trimesh
+import time
 
 class HELPER():
     def __init__(self):
@@ -23,6 +24,8 @@ class HELPER():
             assembly.add(files[i],name='Subassembly '+str(i+1))
 
         assembly.save(self.cwf  + '/STEP/' + filename + '.step')
+        print('Pausing 5 seconds for writing '+ filename +' STEP.')
+        time.sleep(5)
         #cq.exporters.export(assembly.toCompound(), self.cwf + '/STL/Turbocompressor.stl')
         if 'stl' or 'STL' in settings:
             self.convert_step_to_stl(self.cwf + '/STEP/Turbocompressor', self.cwf + '/STL/Turbocompressor')
