@@ -48,7 +48,7 @@ To generate gas-bearing supported turbocompressors, follow these steps:
 2. **Run the Script**:
    - Execute the script using Python. This will read the `Element_CAD.pickle` file located in the `ELEMENT` subfolder of `paraturbo-cad`.
 ```bash
-   python Turbocompressor_CAD.py
+python Turbocompressor_CAD.py
 ```
 
    - The script takes approximately 7 minutes to generate the complete turbocompressor assembly along with all its subsystems as STEP and STL files.
@@ -66,7 +66,7 @@ If you wish to explore or generate different designs:
 1. **Use the Downloaded Designs:**:
     - To use a different design, change the import statement in Turbocompressor_CAD.py to reference the desired .pickle file:
 ```bash
-    Element = DesignTurbocompressor.importpickle('/path/to/your/downloaded/Element_to_CAD.pickle')
+Element = DesignTurbocompressor.importpickle('/path/to/your/downloaded/Element_to_CAD.pickle')
 ```
     Replace /path/to/your/downloaded/Element_to_CAD.pickle with the actual path to the downloaded and desired .pickle file.
 
