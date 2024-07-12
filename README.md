@@ -56,6 +56,12 @@ To generate gas-bearing supported turbocompressors, follow these steps:
 
 If you wish to explore or generate different designs:
 
+- Visit our dataset on Zenodo to download additional designs:
+    Massoudi, S., Bejjani, J., Horvath, T., Üstün, D. and Schiffmann, J. “ParaturboCAD Dataset of R134a HGJB Supported Centrifugal Compressors Optimized Across Varied Mass Flows.” (2024). DOI 10.5281/zenodo.11352178
+
+- This dataset includes over 1000+ designs of turbocompressors.
+
+
 1. **Use the Downloaded Designs:**:
     - To use a different design, change the import statement in Turbocompressor_CAD.py to reference the desired .pickle file:
 
