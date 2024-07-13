@@ -13,7 +13,7 @@ The image below illustrates the various levels of geometrical abstraction used i
 - **Parametric Components**: Constructed from basic shapes, these include the rotor, magnet, plug, and impeller, each designed with customizable dimensions.
 - **Assembly**: The highest abstraction level, where all components are assembled into a fully parametric turbocompressor spindle.
 
-![Turbocompressor Assembly Overview](images/turbocompressor_assembly.jpg "Turbocompressor Assembly Overview")
+![Turbocompressor Assembly Overview](images/paraturbocad_abstraction.jpg "Turbocompressor Assembly Overview")
 
 
 ## Citation
