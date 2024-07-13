@@ -24,7 +24,7 @@ cd paraturbo-cad
 
 2. **Set up a Python Environment**
 ```bash
-conda create --name paraturbocad python=3.9
+conda create --name paraturbocad python=3.9 git
 conda activate paraturbocad
 pip install -r requirements.txt
 ```
