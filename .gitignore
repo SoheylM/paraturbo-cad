@@ -1,3 +1,6 @@
 *.pyc
 *.CATPart
 *.CATProduct
+*.stl
+*.step
+*.vscode
