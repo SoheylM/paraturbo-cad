@@ -10,12 +10,10 @@ sys.path.append(cwf  + '/../paraturbo-cad')
 sys.path.append(cwf  + '/../paraturbo-cad/SGTB')
 sys.path.append(cwf  + '/../paraturbo-cad/ROT')
 sys.path.append(cwf  + '/../paraturbo-cad/COMP')
-sys.path.append(cwf  + '/../paraturbo-cad/HGJB')
 
 from helper_CAD import HELPER
 from rotor_CAD import ROTOR
 from sgtb_CAD import SGTB
-#from impeller_old_but_correct_cut import IMPELLER
 from Impeller_CAD import IMPELLER
 
 
