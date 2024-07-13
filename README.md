@@ -17,7 +17,7 @@ Massoudi, S., Bejjani, J., Horvath, T., Üstün, D., Schiffmann, J. (2024). PARA
 ### Steps
 1. **Clone the Repository**
 ```bash
-git clone https://github.com/YourGitHub/ParaturboCAD.git
+git clone https://github.com/SoheylM/paraturbo-cad.git
 cd paraturbo-cad
 ```
 
