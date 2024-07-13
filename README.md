@@ -3,6 +3,19 @@
 ## Overview
 This repository contains the ParaturboCAD library, a comprehensive Python-based tool for the automated visualization and design of gas-bearing supported turbocompressors. Developed as part of ongoing research, this tool leverages CadQuery 2, a scripting CAD platform, to streamline the design process traditionally involving multiple software tools and extensive manual intervention.
 
+## Turbocompressor Component Overview
+
+The image below illustrates the various levels of geometrical abstraction used in the parametric construction of the gas-bearing supported turbocompressor rotor, highlighting the progression from basic parametric shapes to the complete spindle assembly.
+
+### Parametric Construction Hierarchy
+
+- **Parametric Shapes**: The foundation of the modeling process, such as the impeller's blades and hub, and the grooves in the axial and journal bearings.
+- **Parametric Components**: Constructed from basic shapes, these include the rotor, magnet, plug, and impeller, each designed with customizable dimensions.
+- **Assembly**: The highest abstraction level, where all components are assembled into a fully parametric turbocompressor spindle.
+
+![Turbocompressor Assembly Overview](images/turbocompressor_assembly.jpg "Turbocompressor Assembly Overview")
+
+
 ## Citation
 If you use this software in your research, please cite it as follows:
 
@@ -51,7 +64,8 @@ To generate gas-bearing supported turbocompressors, follow these steps:
 python Turbocompressor_CAD.py
 ```
 
-   - The script takes approximately 7 minutes to generate the complete turbocompressor assembly along with all its subsystems as STEP and STL files.
+   - The script takes approximately 7 minutes to generate the complete turbocompressor assembly along with all its subsystems as STEP and STL files. 
+   The STEP files can be open in any CAD software and the STL files can be used for 3D printing the turbocompressor.
 
 ### Modifying Designs
 
@@ -72,10 +86,15 @@ Element = DesignTurbocompressor.importpickle('/path/to/your/downloaded/Element_t
 
 2. **Run the Script**:
    - Execute the script using Python. This will read the `Element_CAD.pickle` file located in the `ELEMENT` subfolder of `paraturbo-cad`.
+```bash
+python Turbocompressor_CAD.py
+```
 
-   python Turbocompressor_CAD.py
-
-
+## Use of cq-editor
+Use CadQuery GUI editor based on PyQT that supports Linux, Windows and Mac by running the following command:
+```bash
+cq-editor
+```
 
 ## License
 
