@@ -3,7 +3,7 @@ git+https://github.com/SoheylM/cqMore
 git+https://github.com/SoheylM/CQ-editor.git
 pandas==2.1.4
 PyQt5==5.15.10
-spyder=5.5.0
+spyder==5.5.0
 pyqtgraph==0.13.3
 logbook==1.7.0
 trimesh==4.0.5
