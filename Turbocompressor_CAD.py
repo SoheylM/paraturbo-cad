@@ -66,7 +66,7 @@ def main(case_folder=None):
     DesignTurbocompressor = HELPER(base_path=case_folder)
 
     if case_folder_default:
-        Element = DesignTurbocompressor.importpickle('/../paraturbo-cad/ELEMENT/Element_to_CAD_good')
+        Element = DesignTurbocompressor.importpickle('/../paraturbo-cad/ELEMENT/Element_to_CAD')
     else:
         # Path where the rotor's pickled element will be saved
         Element = DesignTurbocompressor.importpickle('/Element_to_CAD')
