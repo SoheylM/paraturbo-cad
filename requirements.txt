@@ -9,4 +9,4 @@ logbook==1.7.0
 trimesh==4.0.5
 gmsh==4.11.1
 scipy==1.11.4
-notebook==7.0.6
+notebook
