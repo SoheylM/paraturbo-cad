@@ -19,7 +19,7 @@ The image below illustrates the various levels of geometrical abstraction used i
 ## Citation
 If you use this software in your research, please cite it as follows:
 
-Massoudi, S., Bejjani, J., Horvath, T., Üstün, D., Schiffmann, J. (2024). PARATURBOCAD: AUTOMATED PARAMETRIC GEOMETRY CONSTRUCTION FOR GAS-BEARING SUPPORTED TURBOCOMPRESSOR DESIGN WITH PYTHON. Proceedings of the ASME 2024 International Design Engineering Technical Conferences and Computers and Information in Engineering Conference, DETC2024-143696, August 25-28, Washington, District of Columbia. [Software]. Available at https://github.com/SoheylM/ParaturboCAD.
+Massoudi, S., Bejjani, J., Horvath, T., Üstün, D., Schiffmann, J. (2024). PARATURBOCAD: AUTOMATED PARAMETRIC GEOMETRY CONSTRUCTION FOR GAS-BEARING SUPPORTED TURBOCOMPRESSOR DESIGN WITH PYTHON. Proceedings of the ASME 2024 International Design Engineering Technical Conferences and Computers and Information in Engineering Conference, DETC2024-143696, August 25-28, Washington, District of Columbia. [Software]. Available at [https://github.com/SoheylM/ParaturboCAD](https://github.com/SoheylM/paraturbo-cad).
 
 ## Installation
 
