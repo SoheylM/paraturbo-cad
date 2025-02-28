@@ -24,7 +24,7 @@ Massoudi, S., Bejjani, J., Horvath, T., Üstün, D., Schiffmann, J. (2024). PARA
 ## Installation
 
 ### Prerequisites
-- Python 3.9
+- Python 3.11 (tested successfully, may support other Python versions)
 - Anaconda (Recommended for managing Python packages and environments)
 
 ### Steps
@@ -37,7 +37,7 @@ cd paraturbo-cad
 
 2. **Set up a Python Environment**
 ```bash
-conda create --name paraturbocad python=3.9 git
+conda create --name paraturbocad python=3.11.8 git
 conda activate paraturbocad
 pip install -r requirements.txt
 ```

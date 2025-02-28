@@ -1,12 +1,12 @@
-cadquery==2.3.1
+cadquery==2.5.2
 git+https://github.com/SoheylM/cqMore
-git+https://github.com/SoheylM/CQ-editor.git
-pandas==2.1.4
-PyQt5==5.15.10
-spyder==5.5.0
-pyqtgraph==0.13.3
-logbook==1.7.0
-trimesh==4.0.5
-gmsh==4.11.1
-scipy==1.11.4
-notebook
+CQ-editor==0.4.0 #git+https://github.com/SoheylM/CQ-editor.git
+pandas==2.2.3
+PyQt5==5.15.11
+#spyder #==6.0.4
+pyqtgraph==0.13.7
+logbook==1.8.0
+trimesh==4.6.4
+gmsh==4.13.1
+scipy==1.15.2
+notebook #==7.3.2
